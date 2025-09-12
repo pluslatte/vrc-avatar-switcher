@@ -48,6 +48,28 @@ const AvatarList = (props: AvatarListProps) => {
   );
 }
 
+const AvatarListStoreWrapper = () => {
+  const storeQuery = useQuery({
+    queryKey: ['storedAuth'], queryFn: async () => {
+      const store = await load('auth.json');
+      const storedAuthCookie = await store.get('auth_cookie') as string | undefined;
+      const storedTwofaCookie = await store.get('two_fa_cookie') as string | undefined;
+      store.close();
+      return { storedAuthCookie, storedTwofaCookie };
+    }
+  });
+
+  return (<div>
+    {storeQuery.isPending && <div>Loading stored auth...</div>}
+    {storeQuery.isError && <div>Error loading stored auth: {(storeQuery.error as Error).message}</div>}
+
+    {storeQuery.data && storeQuery.data.storedAuthCookie && storeQuery.data.storedTwofaCookie && (
+      <AvatarList rawAuthCookie={storeQuery.data.storedAuthCookie} raw2faCookie={storeQuery.data.storedTwofaCookie} />
+    )}
+  </div>
+  );
+}
+
 interface CommandLoginOk {
   status: 'Success' | 'Requires2FA' | 'RequiresEmail2FA';
   auth_cookie: string;
@@ -163,7 +185,12 @@ const LoginForm = () => {
           <Button type="submit">Submit Email 2FA</Button>
         </form>
       )}
-      {step === "done" && <div>Login successful!</div>}
+      {step === "done" && (
+        <div>
+          <div>Login successful!</div>
+          <AvatarListStoreWrapper />
+        </div>
+      )}
     </div>
   );
 };

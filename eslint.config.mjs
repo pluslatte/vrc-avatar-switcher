@@ -14,7 +14,7 @@ export default defineConfig(
 
   [
     {
-      ignores: ['postcss.config.cjs'],
+      ignores: ['postcss.config.cjs', 'src-tauri/**'],
     },
     {
       plugins: {

@@ -69,35 +69,32 @@ struct CommandLoginOk {
     two_fa_cookie: Option<String>,
 }
 #[tauri::command]
-async fn command_new_auth(username: &str, password: &str) -> Result<String, String> {
+async fn command_new_auth(username: &str, password: &str) -> Result<CommandLoginOk, String> {
     let jar = Arc::new(Jar::default());
     match get_new_auth_cookie_without_2fa(&jar, username, password).await? {
         AuthCookieOk::Success => {
             let extract = extract_cookies_from_jar(&jar);
-            Ok(serde_json::to_string(&CommandLoginOk {
+            Ok(CommandLoginOk {
                 status: CommandLoginStatus::Success,
                 auth_cookie: extract.0,
                 two_fa_cookie: Some(extract.1),
             })
-            .map_err(|e| e.to_string())?)
         }
         AuthCookieOk::RequiresEmail2FA => {
             let extract = extract_cookies_from_jar(&jar);
-            Ok(serde_json::to_string(&CommandLoginOk {
+            Ok(CommandLoginOk {
                 status: CommandLoginStatus::RequiresEmail2FA,
                 auth_cookie: extract.0,
                 two_fa_cookie: Some(extract.1),
             })
-            .map_err(|e| e.to_string())?)
         }
         AuthCookieOk::Requires2FA => {
             let extract = extract_cookies_from_jar(&jar);
-            Ok(serde_json::to_string(&CommandLoginOk {
+            Ok(CommandLoginOk {
                 status: CommandLoginStatus::Requires2FA,
                 auth_cookie: extract.0,
                 two_fa_cookie: Some(extract.1),
             })
-            .map_err(|e| e.to_string())?)
         }
     }
 }

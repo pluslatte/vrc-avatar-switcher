@@ -1,29 +1,74 @@
 import { Button, Input, MantineProvider } from "@mantine/core";
 import '@mantine/core/styles.css';
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
+import { useState } from "react";
+
+const queryClient = new QueryClient();
+
+interface Avatar {
+  id: string;
+  name: string;
+  imageUrl: string;
+  thumbnailImageUrl: string;
+}
+
+interface AvatarListProps {
+  rawAuthCookie: string;
+  raw2faCookie: string;
+}
+const AvatarList = (props: AvatarListProps) => {
+  const query = useQuery({
+    queryKey: ['avatars', props.rawAuthCookie, props.raw2faCookie], queryFn: async () => (
+      await invoke<Avatar[]>(
+        "command_fetch_avatars",
+        {
+          rawAuthCookie: props.rawAuthCookie,
+          raw2faCookie: props.raw2faCookie
+        }
+      )
+    )
+  });
+
+  return (<div>
+    {query.isPending && <div>Loading...</div>}
+    {query.isError && <div>Error: {(query.error as Error).message}</div>}
+    {query.data && (
+      <ul>
+        {query.data.map(avatar => (
+          <li key={avatar.id}>
+            <img src={avatar.thumbnailImageUrl} alt={avatar.name} />
+            <p>{avatar.name}</p>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+  );
+}
 
 function App() {
+  const [flag, setFlag] = useState(false);
+  const [authCookie, setAuthCookie] = useState("");
+  const [twofaCookie, setTwofaCookie] = useState("");
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const auth_cookie = formData.get("auth_cookie") as string;
-    const twofa_cookie = formData.get("2fa_cookie") as string;
-    console.log("Auth Cookie:", auth_cookie);
-    console.log("2FA Cookie:", twofa_cookie);
-
-    invoke("command_fetch_avatars", { rawAuthCookie: auth_cookie, raw2faCookie: twofa_cookie })
-  }
+    setFlag(true);
+  };
 
   return (
     <main>
-      <MantineProvider>
-        <h1>Hello World!</h1>
-        <form onSubmit={handleSubmit}>
-          <Input name="auth_cookie" placeholder="Auth Cookie" />
-          <Input name="2fa_cookie" placeholder="2FA Cookie" />
-          <Button type="submit">Fetch</Button>
-        </form>
-      </MantineProvider>
+      <QueryClientProvider client={queryClient}>
+        <MantineProvider>
+          <h1>Hello World!</h1>
+          <form onSubmit={handleSubmit}>
+            <Input placeholder="Auth Cookie" onInput={(e) => setAuthCookie(e.currentTarget.value)} />
+            <Input placeholder="2FA Cookie" onInput={(e) => setTwofaCookie(e.currentTarget.value)} />
+            <Button type="submit">Fetch</Button>
+          </form>
+          {flag && <AvatarList rawAuthCookie={authCookie} raw2faCookie={twofaCookie} />}
+        </MantineProvider>
+      </QueryClientProvider>
     </main>
   );
 }

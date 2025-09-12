@@ -3,10 +3,6 @@ import '@mantine/core/styles.css';
 import { invoke } from "@tauri-apps/api/core";
 
 function App() {
-  // async function greet() {
-  //   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  //   setGreetMsg(await invoke("greet", { name }));
-  // }
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -15,7 +11,7 @@ function App() {
     console.log("Auth Cookie:", auth_cookie);
     console.log("2FA Cookie:", twofa_cookie);
 
-    invoke("fetch_avatars", { rawAuthCookie: auth_cookie, raw2faCookie: twofa_cookie })
+    invoke("command_fetch_avatars", { rawAuthCookie: auth_cookie, raw2faCookie: twofa_cookie })
   }
 
   return (

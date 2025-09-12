@@ -7,12 +7,15 @@ use std::sync::Arc;
 use reqwest::cookie::{self, Jar};
 use serde::{Deserialize, Serialize};
 use tauri::http::HeaderValue;
-use vrchatapi::models::Avatar;
+use vrchatapi::{
+    apis::authentication_api::{verify2_fa, verify2_fa_email_code},
+    models::{Avatar, TwoFactorAuthCode, TwoFactorEmailCode},
+};
 
 use crate::{
     auth::{get_new_auth_cookie_without_2fa, AuthCookieOk},
     avatars::fetch_avatars,
-    config::create_configuration_from_raw_cookies,
+    config::{create_configuration, set_raw_cookies_into_jar},
 };
 
 fn extract_cookies_from_jar<C>(jar: &Arc<C>) -> (String, String)
@@ -47,7 +50,9 @@ async fn command_fetch_avatars(
     raw_auth_cookie: &str,
     raw_2fa_cookie: &str,
 ) -> Result<Vec<Avatar>, String> {
-    let config = create_configuration_from_raw_cookies(raw_auth_cookie, raw_2fa_cookie)?;
+    let jar = Arc::new(Jar::default());
+    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
+    let config = create_configuration(&jar)?;
     fetch_avatars(&config).await
 }
 
@@ -106,9 +111,56 @@ struct Command2FAOk {
 async fn command_2fa(
     raw_auth_cookie: &str,
     raw_2fa_cookie: &str,
+    username: &str,
+    password: &str,
     two_fa_code: &str,
 ) -> Result<Command2FAOk, String> {
-    let config = create_configuration_from_raw_cookies(raw_auth_cookie, raw_2fa_cookie)?;
+    let jar = Arc::new(Jar::default());
+    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
+    let config = create_configuration(&jar)?;
+
+    verify2_fa(&config, TwoFactorAuthCode::new(two_fa_code.to_string()))
+        .await
+        .map_err(|e| e.to_string())?;
+
+    match get_new_auth_cookie_without_2fa(&jar, username, password).await? {
+        AuthCookieOk::Success => {
+            let extract = extract_cookies_from_jar(&jar);
+            Ok(Command2FAOk {
+                auth_cookie: extract.0,
+                two_fa_cookie: extract.1,
+            })
+        }
+        _ => Err("2FA verification failed.".to_string()),
+    }
+}
+
+#[tauri::command]
+async fn command_email_2fa(
+    raw_auth_cookie: &str,
+    raw_2fa_cookie: &str,
+    username: &str,
+    password: &str,
+    two_fa_code: &str,
+) -> Result<Command2FAOk, String> {
+    let jar = Arc::new(Jar::default());
+    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
+    let config = create_configuration(&jar)?;
+
+    verify2_fa_email_code(&config, TwoFactorEmailCode::new(two_fa_code.to_string()))
+        .await
+        .map_err(|e| e.to_string())?;
+
+    match get_new_auth_cookie_without_2fa(&jar, username, password).await? {
+        AuthCookieOk::Success => {
+            let extract = extract_cookies_from_jar(&jar);
+            Ok(Command2FAOk {
+                auth_cookie: extract.0,
+                two_fa_cookie: extract.1,
+            })
+        }
+        _ => Err("2FA verification failed.".to_string()),
+    }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -118,7 +170,9 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             command_fetch_avatars,
-            command_new_auth
+            command_new_auth,
+            command_2fa,
+            command_email_2fa
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

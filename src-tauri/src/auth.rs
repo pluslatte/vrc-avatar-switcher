@@ -2,11 +2,14 @@ use std::sync::Arc;
 
 use reqwest::cookie::Jar;
 use vrchatapi::{
-    apis::authentication_api::get_current_user,
-    models::{EitherUserOrTwoFactor::CurrentUser, EitherUserOrTwoFactor::RequiresTwoFactorAuth},
+    apis::authentication_api::{get_current_user, verify2_fa},
+    models::{
+        EitherUserOrTwoFactor::{CurrentUser, RequiresTwoFactorAuth},
+        TwoFactorAuthCode, Verify2FaResult,
+    },
 };
 
-use crate::config::create_configuration;
+use crate::config::{create_configuration, create_configuration_for_login};
 
 pub enum AuthCookieOk {
     Success,
@@ -18,7 +21,7 @@ pub async fn get_new_auth_cookie_without_2fa(
     username: &str,
     password: &str,
 ) -> Result<AuthCookieOk, String> {
-    let config = create_configuration(&jar, username, password)?;
+    let config = create_configuration_for_login(&jar, username, password)?;
 
     match get_current_user(&config).await.map_err(|e| e.to_string())? {
         CurrentUser(_) => Ok(AuthCookieOk::Success),

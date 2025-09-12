@@ -49,7 +49,7 @@ const AvatarList = (props: AvatarListProps) => {
 }
 
 interface CommandLoginOk {
-  status: 0 | 1 | 2;
+  status: 'Success' | 'Requires2FA' | 'RequiresEmail2FA';
   auth_cookie: string;
   two_fa_cookie: string | null;
 }
@@ -74,20 +74,22 @@ const LoginForm = () => {
         "command_new_auth",
         { username, password }
       );
-      if (result.status === 0) {
+      if (result.status === 'Success') {
         setStep("done");
         const store = await load('auth.json');
         await store.set('auth_cookie', result.auth_cookie);
         await store.set('two_fa_cookie', result.two_fa_cookie);
         await store.save();
-      } else if (result.status === 1) {
+      } else if (result.status === 'Requires2FA') {
         setAuthCookie(result.auth_cookie);
         setTwofaCookie(result.two_fa_cookie || "");
         setStep("2fa");
-      } else if (result.status === 2) {
+      } else if (result.status === 'RequiresEmail2FA') {
         setAuthCookie(result.auth_cookie);
         setTwofaCookie(result.two_fa_cookie || "");
         setStep("email2fa");
+      } else {
+        console.error("Unknown login status:", result.status);
       }
     } catch (error) {
       console.error("Login failed:", error);
@@ -99,7 +101,7 @@ const LoginForm = () => {
     try {
       const result = await invoke<Command2FAOk>(
         "command_2fa",
-        { authCookie, twofaCookie, username, password, code }
+        { rawAuthCookie: authCookie, raw2faCookie: twofaCookie, username, password, twoFaCode: code }
       );
       setStep("done");
       const store = await load('auth.json');
@@ -115,7 +117,7 @@ const LoginForm = () => {
     try {
       const result = await invoke<Command2FAOk>(
         "command_email_2fa",
-        { authCookie, twofaCookie, username, password, code }
+        { rawAuthCookie: authCookie, raw2faCookie: twofaCookie, username, password, twoFaCode: code }
       );
       setStep("done");
       const store = await load('auth.json');

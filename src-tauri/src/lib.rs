@@ -2,14 +2,10 @@ use std::{str::FromStr, sync::Arc, thread::sleep, time::Duration};
 
 use reqwest::cookie::CookieStore;
 use tauri::http::HeaderValue;
-use vrchatapi::apis::{self, configuration::Configuration};
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-struct Avatar {
-    id: String,
-    name: String,
-    image_url: String,
-}
+use vrchatapi::{
+    apis::{self, configuration::Configuration},
+    models::Avatar,
+};
 
 #[tauri::command]
 async fn fetch_avatars(raw_auth_cookie: &str, raw_2fa_cookie: &str) -> Result<Vec<Avatar>, String> {
@@ -62,11 +58,7 @@ async fn fetch_avatars(raw_auth_cookie: &str, raw_2fa_cookie: &str) -> Result<Ve
                 avatar_count += avatars.len();
                 avatars.iter().for_each(|avatar| {
                     println!("Fetched: {}", avatar.name);
-                    out.push(Avatar {
-                        id: avatar.id.clone(),
-                        name: avatar.name.clone(),
-                        image_url: avatar.image_url.clone(),
-                    });
+                    out.push(avatar.clone());
                 });
 
                 sleep(Duration::from_millis(1000)); // To avoid rate limiting

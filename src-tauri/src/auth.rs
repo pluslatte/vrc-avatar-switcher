@@ -2,7 +2,10 @@ use std::sync::Arc;
 
 use reqwest::cookie::Jar;
 use vrchatapi::{
-    apis::authentication_api::get_current_user,
+    apis::{
+        authentication_api::{get_current_user, verify_auth_token},
+        configuration::Configuration,
+    },
     models::EitherUserOrTwoFactor::{CurrentUser, RequiresTwoFactorAuth},
 };
 
@@ -32,5 +35,18 @@ pub async fn get_new_auth_cookie_without_2fa(
                 Ok(AuthCookieOk::Requires2FA)
             }
         }
+    }
+}
+
+pub async fn is_auth_cookie_valid(config: &Configuration) -> Result<bool, String> {
+    match verify_auth_token(config).await {
+        Ok(result) => {
+            if result.ok {
+                Ok(true)
+            } else {
+                Ok(false)
+            }
+        }
+        Err(e) => Err(format!("Error verifying auth token: {e}")),
     }
 }

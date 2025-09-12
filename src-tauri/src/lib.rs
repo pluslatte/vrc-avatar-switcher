@@ -13,7 +13,7 @@ use vrchatapi::{
 };
 
 use crate::{
-    auth::{get_new_auth_cookie_without_2fa, AuthCookieOk},
+    auth::{get_new_auth_cookie_without_2fa, is_auth_cookie_valid, AuthCookieOk},
     avatars::fetch_avatars,
     config::{create_configuration, set_raw_cookies_into_jar},
 };
@@ -160,6 +160,14 @@ async fn command_email_2fa(
     }
 }
 
+#[tauri::command]
+async fn command_check_auth(raw_auth_cookie: &str, raw_2fa_cookie: &str) -> Result<bool, String> {
+    let jar = Arc::new(Jar::default());
+    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
+    let config = create_configuration(&jar)?;
+    is_auth_cookie_valid(&config).await
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -169,7 +177,8 @@ pub fn run() {
             command_fetch_avatars,
             command_new_auth,
             command_2fa,
-            command_email_2fa
+            command_email_2fa,
+            command_check_auth
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,18 +1,24 @@
+mod auth;
 mod avatars;
 mod config;
 
 use vrchatapi::models::Avatar;
 
-use crate::{avatars::fetch_avatars, config::create_configuration};
+use crate::{avatars::fetch_avatars, config::create_configuration_from_raw_cookies};
 
 #[tauri::command]
 async fn command_fetch_avatars(
     raw_auth_cookie: &str,
     raw_2fa_cookie: &str,
 ) -> Result<Vec<Avatar>, String> {
-    let config = create_configuration(raw_auth_cookie, raw_2fa_cookie)?;
+    let config = create_configuration_from_raw_cookies(raw_auth_cookie, raw_2fa_cookie)?;
     fetch_avatars(&config).await
 }
+
+// #[tauri::command]
+// async fn command_login(username: &str, password: &str) -> Result<, String> {
+
+// }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

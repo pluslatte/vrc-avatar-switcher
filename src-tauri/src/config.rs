@@ -4,7 +4,7 @@ use reqwest::cookie::{CookieStore, Jar};
 use tauri::http::HeaderValue;
 use vrchatapi::apis::configuration::Configuration;
 
-pub fn create_configuration(
+pub fn create_configuration_from_raw_cookies(
     raw_auth_cookie: &str,
     raw_2fa_cookie: &str,
 ) -> Result<Configuration, String> {
@@ -28,4 +28,20 @@ pub fn create_configuration(
     };
 
     Ok(config)
+}
+
+pub fn create_configuration(
+    jar: &Arc<Jar>,
+    username: &str,
+    password: &str,
+) -> Result<Configuration, String> {
+    Ok(Configuration {
+        basic_auth: Some((username.to_string(), Some(password.to_string()))),
+        user_agent: Some("avatar-switcher/0.1.0".to_string()),
+        client: reqwest::Client::builder()
+            .cookie_provider(jar.clone())
+            .build()
+            .map_err(|e| e.to_string())?,
+        ..Default::default()
+    })
 }

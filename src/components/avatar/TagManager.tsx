@@ -63,7 +63,8 @@ const TagManager = (props: TagManagerProps) => {
         />
         <Button
           color={newTagColor}
-          variant="outline"
+          variant="gradient"
+          gradient={{ from: 'dark', to: newTagColor, deg: 45 }}
           disabled={newTagName.trim() === '' ||
             Object.keys(props.tags).includes(newTagName) ||
             props.associatedTagNames.includes(newTagName.toUpperCase())}

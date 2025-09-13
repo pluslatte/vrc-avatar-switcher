@@ -131,6 +131,7 @@ const DashBoard = (props: DashBoardProps) => {
 
       <AppShell.Footer>
         <FooterContents
+          registeredTagNames={Object.keys(tagStoreQuery.data)}
           selectedSort={avatarSortOrder}
           cardImageSize={cardImageSize}
           cardImageSizeLoading={cardImageSizeLoading}

@@ -1,6 +1,8 @@
 import { command_fetch_avatars } from '@/lib/commands';
 import { loadCookies } from '@/lib/stores';
+import { Grid } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
+import AvatarCard from './AvatarCard';
 
 const AvatarList = () => {
   const query = useQuery({
@@ -14,14 +16,13 @@ const AvatarList = () => {
     {query.isPending && <div>Loading...</div>}
     {query.isError && <div>Error: {(query.error as Error).message}</div>}
     {query.data && (
-      <ul>
+      <Grid>
         {query.data.map(avatar => (
-          <li key={avatar.id}>
-            <img src={avatar.thumbnailImageUrl} alt={avatar.name} />
-            <p>{avatar.name}</p>
-          </li>
+          <Grid.Col span={3} key={avatar.id}>
+            <AvatarCard avatar={avatar} />
+          </Grid.Col>
         ))}
-      </ul>
+      </Grid>
     )}
   </div>
   );

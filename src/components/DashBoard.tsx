@@ -1,5 +1,5 @@
-import AvatarList from '@/components/AvatarList';
-import LogoutButton from './LogoutButton';
+import AvatarList from '@/components/avatar/AvatarList';
+import LogoutButton from '@/components/LogoutButton';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;

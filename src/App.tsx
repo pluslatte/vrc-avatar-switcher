@@ -1,4 +1,3 @@
-import '@mantine/core/styles.css';
 import { command_check_auth } from '@/lib/commands';
 import { loadCookies } from '@/lib/stores';
 import DashBoard from '@/components/DashBoard';

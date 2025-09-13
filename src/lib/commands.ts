@@ -1,11 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-
-export interface Avatar {
-  id: string;
-  name: string;
-  imageUrl: string;
-  thumbnailImageUrl: string;
-}
+import { Avatar } from '@/lib/models';
 
 export const command_fetch_avatars = async (
   rawAuthCookie: string,

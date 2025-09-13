@@ -66,6 +66,7 @@ const AvatarCard = (props: AvatarCardProps) => {
             avatarId={props.avatar.id}
             tags={props.tags}
             tagColors={props.tagColors}
+            associatedTagNames={props.associatedTagNames}
             handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
             handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
             handlerRegisterAvatarTagColor={props.handlerRegisterAvatarTagColor}

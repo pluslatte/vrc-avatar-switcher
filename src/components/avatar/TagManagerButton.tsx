@@ -6,6 +6,7 @@ interface TagManagerButtonProps {
   avatarId: string;
   tags: Record<string, string[]>;
   tagColors: Record<string, string>;
+  associatedTagNames: string[];
   handlerRegisterAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
   handlerRemoveAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
   handlerRegisterAvatarTagColor: (tagColors: Record<string, string>, tagName: string, color: string) => void;
@@ -33,6 +34,7 @@ const TagManagerButton = (props: TagManagerButtonProps) => {
           avatarId={props.avatarId}
           tags={props.tags}
           tagColors={props.tagColors}
+          associatedTagNames={props.associatedTagNames}
           handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
           handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
           handlerRegisterAvatarTagColor={props.handlerRegisterAvatarTagColor}

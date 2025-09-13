@@ -1,5 +1,5 @@
 import { Avatar } from '@/lib/models';
-import { Box, Button, Card, Image, Text } from '@mantine/core';
+import { BackgroundImage, Button, Card, Text } from '@mantine/core';
 
 interface AvatarCardProps {
   avatar: Avatar;
@@ -22,14 +22,24 @@ const AvatarCard = (props: AvatarCardProps) => {
       withBorder
       bg={props.isActive ? 'darkcyan' : ''}
     >
-      <Box h={props.imageSize || 120}>
-        <Image
-          radius={'md'}
-          src={props.avatar.thumbnailImageUrl}
-          alt={props.avatar.name}
-          height="100%"
-        />
-      </Box>
+      <BackgroundImage
+        radius={'md'}
+        src={props.avatar.thumbnailImageUrl}
+      >
+        <Button
+          variant="gradient"
+          gradient={{ from: 'transparent', to: 'dark', deg: 180 }}
+          fullWidth
+          fz="h2"
+          radius="md"
+          h={props.imageSize || 120}
+          disabled={props.isActive}
+          loading={props.pendingSwitch && !props.isActive}
+          onClick={handleSwitch}
+        >
+          {props.isActive ? 'Active' : 'Select'}
+        </Button>
+      </BackgroundImage>
 
       <Card.Section p="sm" h="48px">
         <Text
@@ -40,18 +50,6 @@ const AvatarCard = (props: AvatarCardProps) => {
         </Text>
       </Card.Section>
 
-      <Button
-        color="cyan"
-        variant="outline"
-        fullWidth
-        size="lg"
-        radius="md"
-        disabled={props.isActive}
-        loading={props.pendingSwitch && !props.isActive}
-        onClick={handleSwitch}
-      >
-        {props.isActive ? 'Active' : 'Select'}
-      </Button>
     </Card>
   );
 };

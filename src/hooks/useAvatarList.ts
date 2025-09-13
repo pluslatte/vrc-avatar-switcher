@@ -33,9 +33,5 @@ export const useAvatarList = () => {
     }
   });
 
-  const handlerAvatarSwitch = (avatarId: string) => {
-    switchAvatarMutation.mutate(avatarId);
-  };
-
-  return { avatarListQuery, handlerAvatarSwitch };
+  return { avatarListQuery, switchAvatarMutation };
 };

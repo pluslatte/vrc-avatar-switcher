@@ -6,7 +6,11 @@ interface DashBoardProps {
   onLogoutSuccess: () => void;
 }
 const DashBoard = (props: DashBoardProps) => {
-  const { avatarListQuery, handlerAvatarSwitch } = useAvatarList();
+  const { avatarListQuery, switchAvatarMutation } = useAvatarList();
+
+  const handlerAvatarSwitch = (avatarId: string) => {
+    switchAvatarMutation.mutate(avatarId);
+  };
 
   if (avatarListQuery.isPending) return <div>Loading...</div>;
   if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;

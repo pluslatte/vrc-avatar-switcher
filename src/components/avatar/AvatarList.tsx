@@ -12,7 +12,7 @@ interface AvatarListProps {
 }
 const AvatarList = (props: AvatarListProps) => {
   return (
-    <Grid overflow="hidden">
+    <Grid overflow="hidden" gutter="lg">
       {props.avatars.map(avatar => {
         const isActive = props.currentUser.currentAvatar === avatar.id;
         const card = (

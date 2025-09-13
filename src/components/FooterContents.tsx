@@ -1,5 +1,5 @@
 import { ActionIcon, Group, SegmentedControl, Select, Text, Tooltip } from '@mantine/core';
-import { IconImageInPicture, IconReload, IconTableRow } from '@tabler/icons-react';
+import { IconImageInPicture, IconReload, IconTableColumn } from '@tabler/icons-react';
 
 interface FooterContentsProps {
   selectedSort: 'Name' | 'Updated';
@@ -31,7 +31,7 @@ const FooterContents = (props: FooterContentsProps) => {
           { label: '特大', value: '220' },
         ]}
       />
-      <IconTableRow />
+      <IconTableColumn />
       <SegmentedControl
         value={props.cardNumberPerRow.toString()}
         onChange={props.setCardNumberPerRow}

@@ -1,12 +1,12 @@
 mod auth;
 mod avatars;
 mod config;
+mod cookie_jar;
 
 use std::sync::Arc;
 
-use reqwest::cookie::{self, Jar};
+use reqwest::cookie::Jar;
 use serde::{Deserialize, Serialize};
-use tauri::http::HeaderValue;
 use vrchatapi::{
     apis::authentication_api::{verify2_fa, verify2_fa_email_code},
     models::{Avatar, TwoFactorAuthCode, TwoFactorEmailCode},
@@ -15,35 +15,9 @@ use vrchatapi::{
 use crate::{
     auth::{get_new_auth_cookie_without_2fa, is_auth_cookie_valid, AuthCookieOk},
     avatars::fetch_avatars,
-    config::{create_configuration, create_configuration_for_login, set_raw_cookies_into_jar},
+    config::{create_configuration, create_configuration_for_login},
+    cookie_jar::{extract_cookies_from_jar, set_raw_cookies_into_jar},
 };
-
-fn extract_cookies_from_jar<C>(jar: &Arc<C>) -> (String, String)
-where
-    C: cookie::CookieStore + 'static,
-{
-    let cookies = jar
-        .cookies(&url::Url::parse("https://api.vrchat.cloud").expect("Invalid URL"))
-        .unwrap_or(HeaderValue::from_str("").unwrap());
-
-    let auth_cookie = cookies
-        .to_str()
-        .unwrap_or("")
-        .split(';')
-        .find(|cookie| cookie.trim().starts_with("auth="))
-        .map(|cookie| cookie.trim().to_string())
-        .unwrap_or_default();
-
-    let two_factor_cookie = cookies
-        .to_str()
-        .unwrap_or("")
-        .split(';')
-        .find(|cookie| cookie.trim().starts_with("twoFactorAuth="))
-        .map(|cookie| cookie.trim().to_string())
-        .unwrap_or_default();
-
-    (auth_cookie, two_factor_cookie)
-}
 
 #[tauri::command]
 async fn command_fetch_avatars(

@@ -1,24 +1,7 @@
-use std::{str::FromStr, sync::Arc};
+use std::sync::Arc;
 
-use reqwest::cookie::{CookieStore, Jar};
-use tauri::http::HeaderValue;
+use reqwest::cookie::Jar;
 use vrchatapi::apis::configuration::Configuration;
-
-pub fn set_raw_cookies_into_jar(
-    jar: &Arc<Jar>,
-    raw_auth_cookie: &str,
-    raw_2fa_cookie: &str,
-) -> Result<(), String> {
-    jar.set_cookies(
-        &mut [
-            HeaderValue::from_str(&format!("{raw_auth_cookie}; {raw_2fa_cookie}"))
-                .map_err(|e| e.to_string())?,
-        ]
-        .iter(),
-        &url::Url::from_str("https://api.vrchat.cloud").map_err(|e| e.to_string())?,
-    );
-    Ok(())
-}
 
 pub fn create_configuration_for_login(
     jar: &Arc<Jar>,

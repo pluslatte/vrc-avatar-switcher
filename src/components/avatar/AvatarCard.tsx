@@ -1,6 +1,8 @@
 import { Avatar } from '@/lib/models';
-import { BackgroundImage, Badge, Button, Card, Divider, Group, Text } from '@mantine/core';
+import { ActionIcon, BackgroundImage, Badge, Button, Card, Divider, Group, Text } from '@mantine/core';
 import TagManagerButton from './TagManagerButton';
+import { IconX } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
 
 interface AvatarCardProps {
   avatar: Avatar;
@@ -60,7 +62,24 @@ const AvatarCard = (props: AvatarCardProps) => {
       <Card.Section p="sm">
         <Group gap="xs">
           {props.associatedTagNames.map((tag) => (
-            <Badge color={props.tagColors[tag] || 'gray'} key={tag}>{tag}</Badge>
+            <Badge color={props.tagColors[tag] || 'gray'} key={tag}>
+              {tag}
+              <ActionIcon
+                size={13}
+                color="dark"
+                variant="transparent"
+                onClick={() => {
+                  notifications.show({
+                    message: 'タグを削除しています...',
+                    color: 'blue',
+                  });
+                  props.handlerRemoveAvatarTag(props.tags, tag, props.avatar.id);
+                }}
+                style={{ marginLeft: 4, paddingTop: 3 }}
+              >
+                <IconX />
+              </ActionIcon>
+            </Badge>
           ))}
           <TagManagerButton
             avatarId={props.avatar.id}

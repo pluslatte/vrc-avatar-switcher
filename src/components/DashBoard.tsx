@@ -9,6 +9,7 @@ import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector
 import { isAvatarSortOrder } from '@/lib/models';
 import { useQuery } from '@tanstack/react-query';
 import { loadAvatarTagColors, loadAvatarTags, saveAvatarTagColors, saveAvatarTags } from '@/lib/stores';
+import { notifications } from '@mantine/notifications';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -54,6 +55,11 @@ const DashBoard = (props: DashBoardProps) => {
     }
     await saveAvatarTags(newTags);
     await tagStoreQuery.refetch();
+    notifications.show({
+      title: '成功',
+      message: `タグ「${tagName}」を追加しました`,
+      color: 'green',
+    });
   };
 
   const handleRemoveAvatarTag = async (tags: Record<string, string[]>, tagName: string, avatarId: string) => {
@@ -65,6 +71,11 @@ const DashBoard = (props: DashBoardProps) => {
       }
       await saveAvatarTags(newTags);
       await tagStoreQuery.refetch();
+      notifications.show({
+        title: '成功',
+        message: `タグ「${tagName}」を削除しました`,
+        color: 'green',
+      });
     }
   };
 

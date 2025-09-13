@@ -1,4 +1,5 @@
 import { Badge, Box, Button, ColorPicker, DEFAULT_THEME, Divider, Group, Text, TextInput } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { IconTagFilled } from '@tabler/icons-react';
 import { useState } from 'react';
 
@@ -13,7 +14,7 @@ interface TagManagerProps {
 }
 const TagManager = (props: TagManagerProps) => {
   const [newTagName, setNewTagName] = useState('');
-  const [newTagColor, setNewTagColor] = useState('#C1C2C5');
+  const [newTagColor, setNewTagColor] = useState('#2C2E33');
   return (
     <Box>
       <Text size="sm" mb="xs">タグを選択</Text>
@@ -27,6 +28,10 @@ const TagManager = (props: TagManagerProps) => {
               variant="filled"
               style={{ cursor: 'pointer' }}
               onClick={() => {
+                notifications.show({
+                  message: 'タグを追加しています...',
+                  color: 'blue',
+                });
                 props.handlerRegisterAvatarTag(props.tags, tag, props.avatarId);
               }}
             >
@@ -64,6 +69,10 @@ const TagManager = (props: TagManagerProps) => {
             props.associatedTagNames.includes(newTagName.toUpperCase())}
           fullWidth
           onClick={() => {
+            notifications.show({
+              message: 'タグを追加しています...',
+              color: 'blue',
+            });
             props.handlerRegisterAvatarTag(props.tags, newTagName, props.avatarId);
             props.handlerRegisterAvatarTagColor(props.tagColors, newTagName, newTagColor);
           }}

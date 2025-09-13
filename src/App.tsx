@@ -5,6 +5,7 @@ import DashBoard from '@/components/DashBoard';
 import LoginForm from '@/components/LoginForm';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { LoaderFullWindow } from './components/LoaderFullWindow';
 
 
 function App() {
@@ -31,7 +32,7 @@ function App() {
 
   return (
     <main>
-      {query.isPending && <div>Checking authentication...</div>}
+      {query.isPending && <LoaderFullWindow message="Checking authentication..." />}
       {query.isError && <div>Error: {(query.error as Error).message}</div>}
       {isLoggedIn === 'yes' && <DashBoard onLogoutSuccess={onLogoutSuccess} />}
       {isLoggedIn === 'no' && <LoginForm onLoginSuccess={onLoginSuccess} />}

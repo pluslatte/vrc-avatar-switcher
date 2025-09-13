@@ -2,6 +2,7 @@ import AvatarList from '@/components/avatar/AvatarList';
 import { useAvatarSwitcher } from '@/hooks/useAvatarSwitcher';
 import { AppShell, Select } from '@mantine/core';
 import HeaderContents from './HeaderContents';
+import { LoaderFullWindow } from './LoaderFullWindow';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -13,7 +14,7 @@ const DashBoard = (props: DashBoardProps) => {
     switchAvatarMutation.mutate(avatarId);
   };
 
-  if (avatarListQuery.isPending) return <div>Loading...</div>;
+  if (avatarListQuery.isPending) return <LoaderFullWindow message="Loading avatars..." />;
   if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;
 
   return (

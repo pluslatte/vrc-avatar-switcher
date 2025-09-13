@@ -1,4 +1,4 @@
-import { Button, Input } from '@mantine/core';
+import { Button, Input, InputLabel } from '@mantine/core';
 import { useState } from 'react';
 import { command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/commands';
 import { saveCookies } from '@/lib/stores';
@@ -7,82 +7,116 @@ interface LoginFormProps {
   onLoginSuccess: () => void;
 }
 const LoginForm = (props: LoginFormProps) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [code, setCode] = useState('');
   const [step, setStep] = useState<'login' | '2fa' | 'email2fa' | 'done'>('login');
-  const [authCookie, setAuthCookie] = useState('');
-  const [twofaCookie, setTwofaCookie] = useState('');
+  const [loginFormData, setLoginFormData] = useState({
+    username: '',
+    password: '',
+    code: '',
+    authCookie: '',
+    twofaCookie: ''
+  });
 
-  const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginFormData({ ...loginFormData, [field]: e.target.value });
+  };
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+    action: Promise<void>
+  ) => {
     e.preventDefault();
     try {
-      const result = await command_new_auth(username, password);
-      if (result.status === 'Success') {
-        setStep('done');
-        await saveCookies(result.auth_cookie, result.two_fa_cookie);
-        props.onLoginSuccess();
-      } else if (result.status === 'Requires2FA') {
-        setAuthCookie(result.auth_cookie);
-        setTwofaCookie(result.two_fa_cookie || '');
-        setStep('2fa');
-      } else if (result.status === 'RequiresEmail2FA') {
-        setAuthCookie(result.auth_cookie);
-        setTwofaCookie(result.two_fa_cookie || '');
-        setStep('email2fa');
-      } else {
-        console.error('Unknown login status:', result.status);
-      }
+      await action;
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Submission failed:', error);
     }
   };
 
-  const handle2FASubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const result = await command_submit_2fa(
-        authCookie, twofaCookie, username, password, code
-      );
+  const handleLoginSubmit = async () => {
+    const result = await command_new_auth(loginFormData.username, loginFormData.password);
+    if (result.status === 'Success') {
       setStep('done');
       await saveCookies(result.auth_cookie, result.two_fa_cookie);
       props.onLoginSuccess();
-    } catch (error) {
-      console.error('2FA submission failed:', error);
+    } else if (result.status === 'Requires2FA') {
+      setLoginFormData({ ...loginFormData, authCookie: result.auth_cookie, twofaCookie: result.two_fa_cookie || '' });
+      setStep('2fa');
+    } else if (result.status === 'RequiresEmail2FA') {
+      setLoginFormData({ ...loginFormData, authCookie: result.auth_cookie, twofaCookie: result.two_fa_cookie || '' });
+      setStep('email2fa');
+    } else {
+      console.error('Unknown login status:', result.status);
     }
   };
-  const handleEmail2FASubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const result = await command_submit_email_2fa(
-        authCookie, twofaCookie, username, password, code
-      );
-      setStep('done');
-      await saveCookies(result.auth_cookie, result.two_fa_cookie);
-      props.onLoginSuccess();
-    } catch (error) {
-      console.error('Email 2FA submission failed:', error);
-    }
+
+  const handle2FASubmit = async () => {
+    const result = await command_submit_2fa(
+      loginFormData.authCookie,
+      loginFormData.twofaCookie,
+      loginFormData.username,
+      loginFormData.password,
+      loginFormData.code
+    );
+    setStep('done');
+    await saveCookies(result.auth_cookie, result.two_fa_cookie);
+    props.onLoginSuccess();
+  };
+  const handleEmail2FASubmit = async () => {
+    const result = await command_submit_email_2fa(
+      loginFormData.authCookie,
+      loginFormData.twofaCookie,
+      loginFormData.username,
+      loginFormData.password,
+      loginFormData.code
+    );
+    setStep('done');
+    await saveCookies(result.auth_cookie, result.two_fa_cookie);
+    props.onLoginSuccess();
   };
 
   return (
     <div>
       {step === 'login' && (
-        <form onSubmit={handleLoginSubmit}>
-          <Input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-          <Input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <form onSubmit={e => handleSubmit(e, handleLoginSubmit())}>
+          <InputLabel htmlFor="username">Username</InputLabel>
+          <Input
+            id="username"
+            name="username"
+            value={loginFormData.username}
+            onChange={handleChange('username')}
+          />
+          <InputLabel htmlFor="password">Password</InputLabel>
+          <Input
+            type="password"
+            id="password"
+            name="password"
+            value={loginFormData.password}
+            onChange={handleChange('password')}
+          />
           <Button type="submit">Login</Button>
         </form>
       )}
       {step === '2fa' && (
-        <form onSubmit={handle2FASubmit}>
-          <Input placeholder="2FA Code" value={code} onChange={(e) => setCode(e.target.value)} />
+        <form onSubmit={e => handleSubmit(e, handle2FASubmit())}>
+          <InputLabel htmlFor="2fa-code">2FA Code</InputLabel>
+          <Input
+            id="2fa-code"
+            name="2fa-code"
+            value={loginFormData.code}
+            onChange={handleChange('code')}
+          />
           <Button type="submit">Submit 2FA</Button>
         </form>
       )}
       {step === 'email2fa' && (
-        <form onSubmit={handleEmail2FASubmit}>
-          <Input placeholder="Email 2FA Code" value={code} onChange={(e) => setCode(e.target.value)} />
+        <form onSubmit={e => handleSubmit(e, handleEmail2FASubmit())}>
+          <InputLabel htmlFor="email-2fa-code">Email 2FA Code</InputLabel>
+          <Input
+            id="email-2fa-code"
+            name="email-2fa-code"
+            value={loginFormData.code}
+            onChange={handleChange('code')}
+          />
           <Button type="submit">Submit Email 2FA</Button>
         </form>
       )}

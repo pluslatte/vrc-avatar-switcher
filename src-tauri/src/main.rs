@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    avatar_switcher_lib::run()
+    vrc_avatar_switcher_lib::run()
 }

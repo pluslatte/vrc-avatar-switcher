@@ -25,7 +25,8 @@ const AvatarList = (props: AvatarListProps) => {
             <AvatarCard
               avatar={avatar}
               isActive={isActive}
-              tags={props.tags[avatar.id] || []}
+              tags={props.tags}
+              associatedTagNames={Object.keys(props.tags).filter(tagName => props.tags[tagName].includes(avatar.id))}
               tagColors={props.tagColors}
               pendingSwitch={props.pendingSwitch}
               imageSize={props.cardImageSize}

@@ -3,7 +3,7 @@ import { IconPlus } from '@tabler/icons-react';
 import TagManager from './TagManager';
 
 interface TagManagerButtonProps {
-  tags: Array<string>;
+  tags: Record<string, string[]>;
   tagColors: Record<string, string>;
   handlerRegisterAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
   handlerRemoveAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;

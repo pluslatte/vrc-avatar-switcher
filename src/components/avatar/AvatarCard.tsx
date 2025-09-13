@@ -4,7 +4,8 @@ import TagManagerButton from './TagManagerButton';
 
 interface AvatarCardProps {
   avatar: Avatar;
-  tags: Array<string>;
+  tags: Record<string, string[]>;
+  associatedTagNames: string[];
   tagColors: Record<string, string>;
   isActive: boolean;
   pendingSwitch: boolean;
@@ -58,7 +59,7 @@ const AvatarCard = (props: AvatarCardProps) => {
       <Divider />
       <Card.Section p="sm">
         <Group gap="xs">
-          {props.tags.map((tag) => (
+          {props.associatedTagNames.map((tag) => (
             <Badge color={props.tagColors[tag] || 'gray'} key={tag}>{tag}</Badge>
           ))}
           <TagManagerButton

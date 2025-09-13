@@ -11,9 +11,7 @@ pub enum AuthCookieOk {
     RequiresEmail2FA,
     Requires2FA,
 }
-pub async fn get_new_auth_cookie_without_2fa(
-    config: &Configuration,
-) -> Result<AuthCookieOk, String> {
+pub async fn try_login_without_2fa(config: &Configuration) -> Result<AuthCookieOk, String> {
     match get_current_user(config).await.map_err(|e| e.to_string())? {
         CurrentUser(_) => Ok(AuthCookieOk::Success),
         RequiresTwoFactorAuth(auth_required) => {

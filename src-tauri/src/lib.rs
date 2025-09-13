@@ -13,7 +13,7 @@ use vrchatapi::{
 };
 
 use crate::{
-    auth::{get_new_auth_cookie_without_2fa, is_auth_cookie_valid, AuthCookieOk},
+    auth::{is_auth_cookie_valid, try_login_without_2fa, AuthCookieOk},
     avatars::fetch_avatars,
     config::{create_configuration, create_configuration_for_login},
     cookie_jar::{extract_cookies_from_jar, set_raw_cookies_into_jar},
@@ -46,7 +46,7 @@ struct CommandLoginOk {
 async fn command_new_auth(username: &str, password: &str) -> Result<CommandLoginOk, String> {
     let jar = Arc::new(Jar::default());
     let config = create_configuration_for_login(&jar, username, password)?;
-    match get_new_auth_cookie_without_2fa(&config).await? {
+    match try_login_without_2fa(&config).await? {
         AuthCookieOk::Success => {
             let extract = extract_cookies_from_jar(&jar);
             Ok(CommandLoginOk {
@@ -96,7 +96,7 @@ async fn command_2fa(
         .map_err(|e| e.to_string())?;
 
     let config = create_configuration_for_login(&jar, username, password)?;
-    match get_new_auth_cookie_without_2fa(&config).await? {
+    match try_login_without_2fa(&config).await? {
         AuthCookieOk::Success => {
             let extract = extract_cookies_from_jar(&jar);
             Ok(Command2FAOk {
@@ -125,7 +125,7 @@ async fn command_email_2fa(
         .map_err(|e| e.to_string())?;
 
     let config = create_configuration_for_login(&jar, username, password)?;
-    match get_new_auth_cookie_without_2fa(&config).await? {
+    match try_login_without_2fa(&config).await? {
         AuthCookieOk::Success => {
             let extract = extract_cookies_from_jar(&jar);
             Ok(Command2FAOk {

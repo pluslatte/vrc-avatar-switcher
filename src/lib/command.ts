@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from '@tauri-apps/api/core';
 
 export interface Avatar {
   id: string;
@@ -11,7 +11,7 @@ export const command_fetch_avatars = async (
   rawAuthCookie: string,
   raw2faCookie: string
 ): Promise<Avatar[]> => {
-  return await invoke<Avatar[]>("command_fetch_avatars", {
+  return await invoke<Avatar[]>('command_fetch_avatars', {
     rawAuthCookie,
     raw2faCookie,
   });
@@ -27,7 +27,7 @@ export const command_new_auth = async (
   username: string,
   password: string
 ): Promise<CommandLoginOk> => {
-  return await invoke<CommandLoginOk>("command_new_auth", {
+  return await invoke<CommandLoginOk>('command_new_auth', {
     username,
     password,
   });
@@ -45,7 +45,7 @@ export const command_submit_2fa = async (
   password: string,
   twoFaCode: string
 ): Promise<Command2FAOk> => {
-  return await invoke<Command2FAOk>("command_submit_2fa", {
+  return await invoke<Command2FAOk>('command_submit_2fa', {
     rawAuthCookie,
     raw2faCookie,
     username,
@@ -60,7 +60,7 @@ export const command_submit_email_2fa = async (
   password: string,
   email2FaCode: string
 ): Promise<Command2FAOk> => {
-  return await invoke<Command2FAOk>("command_submit_email_2fa", {
+  return await invoke<Command2FAOk>('command_submit_email_2fa', {
     rawAuthCookie,
     raw2faCookie,
     username,

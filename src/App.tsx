@@ -1,10 +1,10 @@
-import { Button, Input, MantineProvider } from "@mantine/core";
+import { Button, Input, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { invoke } from "@tauri-apps/api/core";
-import { load } from "@tauri-apps/plugin-store";
-import { useEffect, useState } from "react";
-import { Avatar, command_new_auth, command_submit_2fa, command_submit_email_2fa } from "@/lib/command";
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import { invoke } from '@tauri-apps/api/core';
+import { load } from '@tauri-apps/plugin-store';
+import { useEffect, useState } from 'react';
+import { Avatar, command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/command';
 
 const queryClient = new QueryClient();
 
@@ -16,7 +16,7 @@ const AvatarList = (props: AvatarListProps) => {
   const query = useQuery({
     queryKey: ['avatars', props.rawAuthCookie, props.raw2faCookie], queryFn: async () => (
       await invoke<Avatar[]>(
-        "command_fetch_avatars",
+        'command_fetch_avatars',
         {
           rawAuthCookie: props.rawAuthCookie,
           raw2faCookie: props.raw2faCookie
@@ -65,36 +65,36 @@ const AvatarListStoreWrapper = () => {
 };
 
 const LoginForm = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [code, setCode] = useState("");
-  const [step, setStep] = useState<"login" | "2fa" | "email2fa" | "done">("login");
-  const [authCookie, setAuthCookie] = useState("");
-  const [twofaCookie, setTwofaCookie] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const [step, setStep] = useState<'login' | '2fa' | 'email2fa' | 'done'>('login');
+  const [authCookie, setAuthCookie] = useState('');
+  const [twofaCookie, setTwofaCookie] = useState('');
 
   const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const result = await command_new_auth(username, password);
       if (result.status === 'Success') {
-        setStep("done");
+        setStep('done');
         const store = await load('auth.json');
         await store.set('auth_cookie', result.auth_cookie);
         await store.set('two_fa_cookie', result.two_fa_cookie);
         await store.save();
       } else if (result.status === 'Requires2FA') {
         setAuthCookie(result.auth_cookie);
-        setTwofaCookie(result.two_fa_cookie || "");
-        setStep("2fa");
+        setTwofaCookie(result.two_fa_cookie || '');
+        setStep('2fa');
       } else if (result.status === 'RequiresEmail2FA') {
         setAuthCookie(result.auth_cookie);
-        setTwofaCookie(result.two_fa_cookie || "");
-        setStep("email2fa");
+        setTwofaCookie(result.two_fa_cookie || '');
+        setStep('email2fa');
       } else {
-        console.error("Unknown login status:", result.status);
+        console.error('Unknown login status:', result.status);
       }
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error('Login failed:', error);
     }
   };
 
@@ -104,13 +104,13 @@ const LoginForm = () => {
       const result = await command_submit_2fa(
         authCookie, twofaCookie, username, password, code
       );
-      setStep("done");
+      setStep('done');
       const store = await load('auth.json');
       await store.set('auth_cookie', result.auth_cookie);
       await store.set('two_fa_cookie', result.two_fa_cookie);
       await store.save();
     } catch (error) {
-      console.error("2FA submission failed:", error);
+      console.error('2FA submission failed:', error);
     }
   };
   const handleEmail2FASubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -119,13 +119,13 @@ const LoginForm = () => {
       const result = await command_submit_email_2fa(
         authCookie, twofaCookie, username, password, code
       );
-      setStep("done");
+      setStep('done');
       const store = await load('auth.json');
       await store.set('auth_cookie', result.auth_cookie);
       await store.set('two_fa_cookie', result.two_fa_cookie);
       await store.save();
     } catch (error) {
-      console.error("Email 2FA submission failed:", error);
+      console.error('Email 2FA submission failed:', error);
     }
   };
 
@@ -135,7 +135,7 @@ const LoginForm = () => {
     const storedTwofaCookie = await store.get('two_fa_cookie') as string | undefined;
 
     if (storedAuthCookie && storedTwofaCookie) {
-      setStep("done");
+      setStep('done');
     }
   };
   useEffect(() => {
@@ -144,26 +144,26 @@ const LoginForm = () => {
 
   return (
     <div>
-      {step === "login" && (
+      {step === 'login' && (
         <form onSubmit={handleLoginSubmit}>
           <Input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
           <Input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           <Button type="submit">Login</Button>
         </form>
       )}
-      {step === "2fa" && (
+      {step === '2fa' && (
         <form onSubmit={handle2FASubmit}>
           <Input placeholder="2FA Code" value={code} onChange={(e) => setCode(e.target.value)} />
           <Button type="submit">Submit 2FA</Button>
         </form>
       )}
-      {step === "email2fa" && (
+      {step === 'email2fa' && (
         <form onSubmit={handleEmail2FASubmit}>
           <Input placeholder="Email 2FA Code" value={code} onChange={(e) => setCode(e.target.value)} />
           <Button type="submit">Submit Email 2FA</Button>
         </form>
       )}
-      {step === "done" && (
+      {step === 'done' && (
         <div>
           <div>Login successful!</div>
           <AvatarListStoreWrapper />

@@ -1,6 +1,6 @@
 import { Button, Input, InputLabel } from '@mantine/core';
 import { useState } from 'react';
-import { command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/commands';
+import { command_new_auth, command_2fa, command_email_2fa } from '@/lib/commands';
 import { saveCookies } from '@/lib/stores';
 
 interface LoginFormProps {
@@ -50,7 +50,7 @@ const LoginForm = (props: LoginFormProps) => {
   };
 
   const handle2FASubmit = async () => {
-    const result = await command_submit_2fa(
+    const result = await command_2fa(
       loginFormData.authCookie,
       loginFormData.twofaCookie,
       loginFormData.username,
@@ -62,7 +62,7 @@ const LoginForm = (props: LoginFormProps) => {
     props.onLoginSuccess();
   };
   const handleEmail2FASubmit = async () => {
-    const result = await command_submit_email_2fa(
+    const result = await command_email_2fa(
       loginFormData.authCookie,
       loginFormData.twofaCookie,
       loginFormData.username,

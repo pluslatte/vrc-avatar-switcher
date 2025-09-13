@@ -38,14 +38,14 @@ interface Command2FAOk {
   two_fa_cookie: string | null;
 }
 
-export const command_submit_2fa = async (
+export const command_2fa = async (
   rawAuthCookie: string,
   raw2faCookie: string,
   username: string,
   password: string,
   twoFaCode: string
 ): Promise<Command2FAOk> => {
-  return await invoke<Command2FAOk>('command_submit_2fa', {
+  return await invoke<Command2FAOk>('command_2fa', {
     rawAuthCookie,
     raw2faCookie,
     username,
@@ -54,14 +54,14 @@ export const command_submit_2fa = async (
   });
 };
 
-export const command_submit_email_2fa = async (
+export const command_email_2fa = async (
   rawAuthCookie: string,
   raw2faCookie: string,
   username: string,
   password: string,
   email2FaCode: string
 ): Promise<Command2FAOk> => {
-  return await invoke<Command2FAOk>('command_submit_email_2fa', {
+  return await invoke<Command2FAOk>('command_email_2fa', {
     rawAuthCookie,
     raw2faCookie,
     username,

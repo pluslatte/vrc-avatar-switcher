@@ -15,7 +15,7 @@ interface FooterContentsProps {
 const FooterContents = (props: FooterContentsProps) => {
   return (
     <Group px="md" mt="8">
-      <Text>ソート設定:</Text>
+      <Text>ソート:</Text>
       <Select
         data={[{ value: 'Name', label: '名前' }, { value: 'Updated', label: '更新日' }]}
         style={{ width: 200 }}

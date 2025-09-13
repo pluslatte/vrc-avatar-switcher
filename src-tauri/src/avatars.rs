@@ -40,7 +40,7 @@ pub async fn fetch_avatars(config: &Configuration) -> Result<Vec<Avatar>, String
                 });
 
                 // To avoid hitting rate limits
-                sleep(Duration::from_millis(1000));
+                sleep(Duration::from_millis(100));
             }
             Err(e) => {
                 return Err(format!("Error fetching avatars: {e}"));

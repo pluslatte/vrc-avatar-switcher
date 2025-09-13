@@ -125,7 +125,7 @@ async fn command_check_auth(raw_auth_cookie: &str, raw_2fa_cookie: &str) -> Resu
 }
 
 #[tauri::command]
-async fn command_fetch_user_data_me(
+async fn command_fetch_current_user(
     raw_auth_cookie: &str,
     raw_2fa_cookie: &str,
 ) -> Result<CurrentUser, String> {
@@ -146,7 +146,7 @@ pub fn run() {
             command_2fa,
             command_email_2fa,
             command_check_auth,
-            command_fetch_user_data_me
+            command_fetch_current_user
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

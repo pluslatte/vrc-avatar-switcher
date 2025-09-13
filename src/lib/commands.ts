@@ -74,11 +74,11 @@ export const command_check_auth = async (
   });
 };
 
-export const command_fetch_user_data_me = async (
+export const command_fetch_current_user = async (
   rawAuthCookie: string,
   raw2faCookie: string
 ): Promise<CurrentUser> => {
-  return await invoke<CurrentUser>('command_fetch_user_data_me', {
+  return await invoke<CurrentUser>('command_fetch_current_user', {
     rawAuthCookie,
     raw2faCookie
   });

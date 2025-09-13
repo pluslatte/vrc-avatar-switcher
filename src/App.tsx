@@ -1,55 +1,12 @@
 import { Button, Input, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { command_fetch_avatars, command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/command';
+import { command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/command';
 import { loadCookies, saveCookies } from '@/lib/stores';
+import AvatarList from '@/components/AvatarList';
 
 const queryClient = new QueryClient();
-
-interface AvatarListProps {
-  rawAuthCookie: string;
-  raw2faCookie: string;
-}
-const AvatarList = (props: AvatarListProps) => {
-  const query = useQuery({
-    queryKey: ['avatars', props.rawAuthCookie, props.raw2faCookie], queryFn: async () => (
-      await command_fetch_avatars(props.rawAuthCookie, props.raw2faCookie)
-    )
-  });
-
-  return (<div>
-    {query.isPending && <div>Loading...</div>}
-    {query.isError && <div>Error: {(query.error as Error).message}</div>}
-    {query.data && (
-      <ul>
-        {query.data.map(avatar => (
-          <li key={avatar.id}>
-            <img src={avatar.thumbnailImageUrl} alt={avatar.name} />
-            <p>{avatar.name}</p>
-          </li>
-        ))}
-      </ul>
-    )}
-  </div>
-  );
-};
-
-const AvatarListStoreWrapper = () => {
-  const storeQuery = useQuery({
-    queryKey: ['storedAuth'], queryFn: loadCookies
-  });
-
-  return (<div>
-    {storeQuery.isPending && <div>Loading stored auth...</div>}
-    {storeQuery.isError && <div>Error loading stored auth: {(storeQuery.error as Error).message}</div>}
-
-    {storeQuery.data && storeQuery.data.authCookie && storeQuery.data.twofaCookie && (
-      <AvatarList rawAuthCookie={storeQuery.data.authCookie} raw2faCookie={storeQuery.data.twofaCookie} />
-    )}
-  </div>
-  );
-};
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
@@ -142,7 +99,7 @@ const LoginForm = () => {
       {step === 'done' && (
         <div>
           <div>Login successful!</div>
-          <AvatarListStoreWrapper />
+          <AvatarList />
         </div>
       )}
     </div>
@@ -150,26 +107,12 @@ const LoginForm = () => {
 };
 
 function App() {
-  // const [flag, setFlag] = useState(false);
-  // const [authCookie, setAuthCookie] = useState("");
-  // const [twofaCookie, setTwofaCookie] = useState("");
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   setFlag(true);
-  // };
-
   return (
     <main>
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
           <h1>Hello World!</h1>
-          {/* <form onSubmit={handleSubmit}>
-            <Input placeholder="Auth Cookie" onInput={(e) => setAuthCookie(e.currentTarget.value)} />
-            <Input placeholder="2FA Cookie" onInput={(e) => setTwofaCookie(e.currentTarget.value)} />
-            <Button type="submit">Fetch</Button>
-          </form> */}
           <LoginForm />
-          {/* {flag && <AvatarList rawAuthCookie={authCookie} raw2faCookie={twofaCookie} />} */}
         </MantineProvider>
       </QueryClientProvider>
     </main>

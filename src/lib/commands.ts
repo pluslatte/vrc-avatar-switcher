@@ -83,3 +83,15 @@ export const command_fetch_current_user = async (
     raw2faCookie
   });
 };
+
+export const command_switch_avatar = async (
+  rawAuthCookie: string,
+  raw2faCookie: string,
+  avatarId: string
+): Promise<CurrentUser> => {
+  return await invoke<CurrentUser>('command_switch_avatar', {
+    rawAuthCookie,
+    raw2faCookie,
+    avatarId
+  });
+};

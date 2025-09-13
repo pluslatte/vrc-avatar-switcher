@@ -135,6 +135,18 @@ async fn command_fetch_current_user(
     users::fetch_user_data(&config).await
 }
 
+#[tauri::command]
+async fn command_switch_avatar(
+    raw_auth_cookie: &str,
+    raw_2fa_cookie: &str,
+    avatar_id: &str,
+) -> Result<CurrentUser, String> {
+    let jar = Arc::new(Jar::default());
+    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
+    let config = create_configuration(&jar)?;
+    avatars::switch_avatar(&config, avatar_id).await
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -146,7 +158,8 @@ pub fn run() {
             command_2fa,
             command_email_2fa,
             command_check_auth,
-            command_fetch_current_user
+            command_fetch_current_user,
+            command_switch_avatar
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

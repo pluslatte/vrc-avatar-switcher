@@ -1,6 +1,9 @@
 use std::{thread::sleep, time::Duration};
 
-use vrchatapi::{apis::configuration::Configuration, models::Avatar};
+use vrchatapi::{
+    apis::configuration::Configuration,
+    models::{Avatar, CurrentUser},
+};
 
 pub async fn fetch_avatars(config: &Configuration) -> Result<Vec<Avatar>, String> {
     let mut out = Vec::new();
@@ -44,5 +47,12 @@ pub async fn fetch_avatars(config: &Configuration) -> Result<Vec<Avatar>, String
                 return Err(format!("Error fetching avatars: {e}"));
             }
         }
+    }
+}
+
+pub async fn switch_avatar(config: &Configuration, avatar_id: &str) -> Result<CurrentUser, String> {
+    match vrchatapi::apis::avatars_api::select_avatar(config, avatar_id).await {
+        Ok(current_user) => Ok(current_user),
+        Err(e) => Err(format!("Error switching avatar: {e}")),
     }
 }

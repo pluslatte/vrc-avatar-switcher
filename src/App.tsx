@@ -2,7 +2,7 @@ import { Button, Input, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/command';
+import { command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/commands';
 import { loadCookies, saveCookies } from '@/lib/stores';
 import AvatarList from '@/components/AvatarList';
 

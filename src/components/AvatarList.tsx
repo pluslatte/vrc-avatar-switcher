@@ -1,4 +1,4 @@
-import { command_fetch_avatars } from '@/lib/command';
+import { command_fetch_avatars } from '@/lib/commands';
 import { loadCookies } from '@/lib/stores';
 import { useQuery } from '@tanstack/react-query';
 

@@ -18,6 +18,7 @@ const AvatarList = () => {
               color="green"
               size={16}
               offset={16}
+              withBorder
               position="top-start"
             >
               <AvatarCard

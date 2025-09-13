@@ -2,13 +2,13 @@
 import { Avatar, Divider, Group, Text } from "@mantine/core";
 import LogoutButton from '@/components/LogoutButton';
 
-interface StatusBarProps {
+interface HeaderContentsProps {
   currentUserDisplayName: string;
   currentUserThumbnailImageUrl: string;
   currentUserAvatarName: string;
   onLogoutSuccess: () => void;
 }
-const StatusLine = (props: StatusBarProps) => {
+const HeaderContents = (props: HeaderContentsProps) => {
   return (
     <Group h="100%" px="md">
       <Avatar src={props.currentUserThumbnailImageUrl} alt="Current User Avatar" />
@@ -31,4 +31,4 @@ const StatusLine = (props: StatusBarProps) => {
   );
 };
 
-export default StatusLine;
+export default HeaderContents;

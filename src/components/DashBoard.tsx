@@ -1,7 +1,7 @@
 import AvatarList from '@/components/avatar/AvatarList';
 import { useAvatarSwitcher } from '@/hooks/useAvatarSwitcher';
 import { AppShell } from '@mantine/core';
-import StatusLine from './StatusLine';
+import HeaderContents from './HeaderContents';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -22,7 +22,7 @@ const DashBoard = (props: DashBoardProps) => {
       header={{ height: 60 }}
     >
       <AppShell.Header>
-        <StatusLine
+        <HeaderContents
           currentUserDisplayName={avatarListQuery.data.currentUser.displayName}
           currentUserThumbnailImageUrl={avatarListQuery.data.currentUser.currentAvatarThumbnailImageUrl}
           currentUserAvatarName={avatarListQuery.data.avatars.find(avatar => avatar.id === avatarListQuery.data.currentUser.currentAvatar)?.name || 'No Avatar'}

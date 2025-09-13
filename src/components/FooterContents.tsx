@@ -1,4 +1,4 @@
-import { ActionIcon, Group, SegmentedControl, Select, Text, Tooltip } from '@mantine/core';
+import { ActionIcon, Box, Group, LoadingOverlay, SegmentedControl, Select, Text, Tooltip } from '@mantine/core';
 import { IconImageInPicture, IconReload, IconTableColumn } from '@tabler/icons-react';
 
 interface FooterContentsProps {
@@ -22,17 +22,20 @@ const FooterContents = (props: FooterContentsProps) => {
         onChange={props.onSortSettingChange}
       />
       <IconImageInPicture />
-      <SegmentedControl
-        disabled={!props.cardImageSize || props.cardImageSizeLoading}
-        value={props.cardImageSize?.toString()}
-        onChange={props.setCardImageSize}
-        data={[
-          { label: '小', value: '80' },
-          { label: '中', value: '120' },
-          { label: '大', value: '160' },
-          { label: '特大', value: '220' },
-        ]}
-      />
+      <Box pos="relative">
+        <LoadingOverlay visible={props.cardImageSizeLoading} overlayProps={{ radius: 'md', blur: 2 }} />
+        <SegmentedControl
+          disabled={!props.cardImageSize || props.cardImageSizeLoading}
+          value={props.cardImageSize?.toString()}
+          onChange={props.setCardImageSize}
+          data={[
+            { label: '小', value: '80' },
+            { label: '中', value: '120' },
+            { label: '大', value: '160' },
+            { label: '特大', value: '220' },
+          ]}
+        />
+      </Box>
       <IconTableColumn />
       <SegmentedControl
         value={props.cardNumberPerRow.toString()}

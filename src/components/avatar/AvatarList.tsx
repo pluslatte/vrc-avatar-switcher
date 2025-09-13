@@ -19,7 +19,7 @@ const AvatarList = () => {
       <Grid>
         {query.data.map(avatar => (
           <Grid.Col span={3} key={avatar.id}>
-            <AvatarCard avatar={avatar} />
+            <AvatarCard avatar={avatar} isActive={true} />
           </Grid.Col>
         ))}
       </Grid>

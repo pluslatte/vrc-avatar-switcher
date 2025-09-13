@@ -1,4 +1,4 @@
-import { Button, Input, InputLabel } from '@mantine/core';
+import { Button, Divider, Input, InputLabel, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { command_new_auth, command_2fa, command_email_2fa } from '@/lib/commands';
 import { saveCookies } from '@/lib/stores';
@@ -75,7 +75,17 @@ const LoginForm = (props: LoginFormProps) => {
   };
 
   return (
-    <div>
+    <Stack align="center" justify="center" style={{ height: '100vh' }}>
+      {step === '2fa' && (
+        <Text size="xl" fw={700}>2FAコードを入力してください</Text>
+      )}
+      {step === 'email2fa' && (
+        <Text size="xl" fw={700}>メールで送信された2FAコードを入力してください</Text>
+      )}
+      {step === 'login' && (
+        <Text size="xl" fw={700}>ログインしてください</Text>
+      )}
+
       {step === 'login' && (
         <form onSubmit={e => handleSubmit(e, handleLoginSubmit())}>
           <InputLabel htmlFor="username">Username</InputLabel>
@@ -93,7 +103,8 @@ const LoginForm = (props: LoginFormProps) => {
             value={loginFormData.password}
             onChange={handleChange('password')}
           />
-          <Button type="submit">Login</Button>
+          <Divider my="sm" />
+          <Button type="submit" fullWidth>Login</Button>
         </form>
       )}
       {step === '2fa' && (
@@ -105,7 +116,8 @@ const LoginForm = (props: LoginFormProps) => {
             value={loginFormData.code}
             onChange={handleChange('code')}
           />
-          <Button type="submit">Submit 2FA</Button>
+          <Divider my="sm" />
+          <Button type="submit" fullWidth>Submit 2FA</Button>
         </form>
       )}
       {step === 'email2fa' && (
@@ -117,7 +129,8 @@ const LoginForm = (props: LoginFormProps) => {
             value={loginFormData.code}
             onChange={handleChange('code')}
           />
-          <Button type="submit">Submit Email 2FA</Button>
+          <Divider my="sm" />
+          <Button type="submit" fullWidth>Submit Email 2FA</Button>
         </form>
       )}
       {step === 'done' && (
@@ -125,7 +138,7 @@ const LoginForm = (props: LoginFormProps) => {
           <div>Login successful!</div>
         </div>
       )}
-    </div>
+    </Stack>
   );
 };
 

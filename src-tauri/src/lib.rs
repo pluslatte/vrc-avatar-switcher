@@ -2,11 +2,11 @@ mod api_config;
 mod auth;
 mod avatars;
 mod cookie_jar;
+mod models;
 
 use std::sync::Arc;
 
 use reqwest::cookie::Jar;
-use serde::{Deserialize, Serialize};
 use vrchatapi::{
     apis::authentication_api::{verify2_fa, verify2_fa_email_code},
     models::{Avatar, TwoFactorAuthCode, TwoFactorEmailCode},
@@ -17,6 +17,7 @@ use crate::{
     auth::{is_auth_cookie_valid, try_login_without_2fa, AuthCookieOk},
     avatars::fetch_avatars,
     cookie_jar::{extract_cookies_from_jar, set_raw_cookies_into_jar},
+    models::{Command2FAOk, CommandLoginOk, CommandLoginStatus},
 };
 
 #[tauri::command]
@@ -30,55 +31,38 @@ async fn command_fetch_avatars(
     fetch_avatars(&config).await
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-enum CommandLoginStatus {
-    Success = 0,
-    Requires2FA = 1,
-    RequiresEmail2FA = 2,
-}
-#[derive(Debug, Serialize, Deserialize)]
-struct CommandLoginOk {
-    status: CommandLoginStatus,
-    auth_cookie: String,
-    two_fa_cookie: Option<String>,
-}
 #[tauri::command]
 async fn command_new_auth(username: &str, password: &str) -> Result<CommandLoginOk, String> {
     let jar = Arc::new(Jar::default());
     let config = create_configuration_for_login(&jar, username, password)?;
     match try_login_without_2fa(&config).await? {
         AuthCookieOk::Success => {
-            let extract = extract_cookies_from_jar(&jar);
-            Ok(CommandLoginOk {
-                status: CommandLoginStatus::Success,
-                auth_cookie: extract.0,
-                two_fa_cookie: Some(extract.1),
-            })
+            let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);
+            Ok(CommandLoginOk::new(
+                CommandLoginStatus::Success,
+                auth_cookie,
+                Some(two_fa_cookie),
+            ))
         }
         AuthCookieOk::RequiresEmail2FA => {
-            let extract = extract_cookies_from_jar(&jar);
-            Ok(CommandLoginOk {
-                status: CommandLoginStatus::RequiresEmail2FA,
-                auth_cookie: extract.0,
-                two_fa_cookie: Some(extract.1),
-            })
+            let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);
+            Ok(CommandLoginOk::new(
+                CommandLoginStatus::RequiresEmail2FA,
+                auth_cookie,
+                Some(two_fa_cookie),
+            ))
         }
         AuthCookieOk::Requires2FA => {
-            let extract = extract_cookies_from_jar(&jar);
-            Ok(CommandLoginOk {
-                status: CommandLoginStatus::Requires2FA,
-                auth_cookie: extract.0,
-                two_fa_cookie: Some(extract.1),
-            })
+            let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);
+            Ok(CommandLoginOk::new(
+                CommandLoginStatus::Requires2FA,
+                auth_cookie,
+                Some(two_fa_cookie),
+            ))
         }
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-struct Command2FAOk {
-    auth_cookie: String,
-    two_fa_cookie: String,
-}
 #[tauri::command]
 async fn command_2fa(
     raw_auth_cookie: &str,
@@ -98,11 +82,8 @@ async fn command_2fa(
     let config = create_configuration_for_login(&jar, username, password)?;
     match try_login_without_2fa(&config).await? {
         AuthCookieOk::Success => {
-            let extract = extract_cookies_from_jar(&jar);
-            Ok(Command2FAOk {
-                auth_cookie: extract.0,
-                two_fa_cookie: extract.1,
-            })
+            let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);
+            Ok(Command2FAOk::new(auth_cookie, two_fa_cookie))
         }
         _ => Err("2FA verification failed.".to_string()),
     }
@@ -127,11 +108,8 @@ async fn command_email_2fa(
     let config = create_configuration_for_login(&jar, username, password)?;
     match try_login_without_2fa(&config).await? {
         AuthCookieOk::Success => {
-            let extract = extract_cookies_from_jar(&jar);
-            Ok(Command2FAOk {
-                auth_cookie: extract.0,
-                two_fa_cookie: extract.1,
-            })
+            let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);
+            Ok(Command2FAOk::new(auth_cookie, two_fa_cookie))
         }
         _ => Err("2FA verification failed.".to_string()),
     }

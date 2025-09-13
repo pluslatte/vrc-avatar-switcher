@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import { Avatar } from '@/lib/models';
+import { Avatar, CurrentUser } from '@/lib/models';
 
 export const command_fetch_avatars = async (
   rawAuthCookie: string,
@@ -69,6 +69,16 @@ export const command_check_auth = async (
   raw2faCookie: string
 ): Promise<boolean> => {
   return await invoke<boolean>('command_check_auth', {
+    rawAuthCookie,
+    raw2faCookie
+  });
+};
+
+export const command_fetch_user_data_me = async (
+  rawAuthCookie: string,
+  raw2faCookie: string
+): Promise<CurrentUser> => {
+  return await invoke<CurrentUser>('command_fetch_user_data_me', {
     rawAuthCookie,
     raw2faCookie
   });

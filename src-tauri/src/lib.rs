@@ -3,13 +3,14 @@ mod auth;
 mod avatars;
 mod cookie_jar;
 mod models;
+mod users;
 
 use std::sync::Arc;
 
 use reqwest::cookie::Jar;
 use vrchatapi::{
     apis::authentication_api::{verify2_fa, verify2_fa_email_code},
-    models::{Avatar, TwoFactorAuthCode, TwoFactorEmailCode},
+    models::{Avatar, CurrentUser, TwoFactorAuthCode, TwoFactorEmailCode},
 };
 
 use crate::{
@@ -123,6 +124,17 @@ async fn command_check_auth(raw_auth_cookie: &str, raw_2fa_cookie: &str) -> Resu
     is_auth_cookie_valid(&config).await
 }
 
+#[tauri::command]
+async fn command_fetch_user_data_me(
+    raw_auth_cookie: &str,
+    raw_2fa_cookie: &str,
+) -> Result<CurrentUser, String> {
+    let jar = Arc::new(Jar::default());
+    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
+    let config = create_configuration(&jar)?;
+    users::fetch_user_data(&config).await
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -133,7 +145,8 @@ pub fn run() {
             command_new_auth,
             command_2fa,
             command_email_2fa,
-            command_check_auth
+            command_check_auth,
+            command_fetch_user_data_me
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

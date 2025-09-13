@@ -4,7 +4,7 @@ import { AppShell } from '@mantine/core';
 import HeaderContents from '@/components/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
 import FooterContents from '@/components/FooterContents';
-import { useCardImageSizeSlider } from '@/hooks/useCardImageSizeSlider';
+import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowControl } from '@/hooks/useCardNumberPerRowControl';
 
 interface DashBoardProps {
@@ -12,7 +12,7 @@ interface DashBoardProps {
 }
 const DashBoard = (props: DashBoardProps) => {
   const { avatarListQuery, switchAvatarMutation, selectedSort, setSelectedSort } = useAvatarSwitcher();
-  const { cardImageSize, handleCardImageSizeChange } = useCardImageSizeSlider();
+  const { loading: cardImageSizeLoading, cardImageSize, handleCardImageSizeChange } = useCardImageSizeSelector();
   const { cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowControl();
 
   const handlerAvatarSwitch = (avatarId: string) => {
@@ -48,20 +48,22 @@ const DashBoard = (props: DashBoardProps) => {
       </AppShell.Header>
 
       <AppShell.Main>
-        <AvatarList
+        {cardImageSize === undefined && <LoaderFullWindow message="Loading settings..." />}
+        {cardImageSize !== undefined && <AvatarList
           avatars={avatarListQuery.data.avatars}
           currentUser={avatarListQuery.data.currentUser}
           pendingSwitch={switchAvatarMutation.isPending}
           cardImageSize={cardImageSize}
           cardNumberPerRow={cardNumberPerRow}
           handlerAvatarSwitch={handlerAvatarSwitch}
-        />
+        />}
       </AppShell.Main>
 
       <AppShell.Footer>
         <FooterContents
           selectedSort={selectedSort}
           cardImageSize={cardImageSize}
+          cardImageSizeLoading={cardImageSizeLoading}
           cardNumberPerRow={cardNumberPerRow}
           setCardImageSize={handleCardImageSizeChange}
           setCardNumberPerRow={handleCardNumberPerRow}

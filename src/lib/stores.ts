@@ -29,17 +29,18 @@ export const dropCookies = async (): Promise<void> => {
   store.close();
 };
 
-const cardImageSizeFileName = 'card_image_size.json';
+const avatarListConfigFileName = 'avatar_list_config.json';
+
 export const saveCardImageSize = async (size: number | null): Promise<void> => {
-  const store = await load(cardImageSizeFileName);
+  const store = await load(avatarListConfigFileName);
   await store.set('card_image_size', size);
   await store.save();
   store.close();
 };
 
-export const loadCardImageSize = async (): Promise<number | null> => {
-  const store = await load(cardImageSizeFileName);
+export const loadCardImageSize = async (): Promise<number> => {
+  const store = await load(avatarListConfigFileName);
   const size = (await store.get('card_image_size')) as number | null | undefined;
   store.close();
-  return size || null;
+  return size || 120;
 };

@@ -3,7 +3,8 @@ import { IconImageInPicture, IconReload, IconTableColumn } from '@tabler/icons-r
 
 interface FooterContentsProps {
   selectedSort: 'Name' | 'Updated';
-  cardImageSize: number;
+  cardImageSize: number | undefined;
+  cardImageSizeLoading: boolean;
   cardNumberPerRow: number;
   setCardImageSize: (size: string | null) => void;
   onSortSettingChange: (option: string | null) => void;
@@ -22,7 +23,8 @@ const FooterContents = (props: FooterContentsProps) => {
       />
       <IconImageInPicture />
       <SegmentedControl
-        value={props.cardImageSize.toString()}
+        disabled={!props.cardImageSize || props.cardImageSizeLoading}
+        value={props.cardImageSize?.toString()}
         onChange={props.setCardImageSize}
         data={[
           { label: '小', value: '80' },

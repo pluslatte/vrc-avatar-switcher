@@ -6,7 +6,7 @@ interface AvatarListProps {
   avatars: Array<Avatar>;
   currentUser: CurrentUser;
   pendingSwitch: boolean;
-  cardImageSize: number | null;
+  cardImageSize: number;
   cardNumberPerRow: number;
   handlerAvatarSwitch: (avatarId: string) => void;
 }

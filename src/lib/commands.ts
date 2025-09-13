@@ -3,11 +3,13 @@ import { Avatar, CurrentUser } from '@/lib/models';
 
 export const command_fetch_avatars = async (
   rawAuthCookie: string,
-  raw2faCookie: string
+  raw2faCookie: string,
+  sortOption: 'Name' | 'Updated'
 ): Promise<Avatar[]> => {
   return await invoke<Avatar[]>('command_fetch_avatars', {
     rawAuthCookie,
     raw2faCookie,
+    sortOption
   });
 };
 

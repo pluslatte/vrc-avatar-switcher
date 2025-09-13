@@ -18,18 +18,25 @@ use crate::{
     auth::{is_auth_cookie_valid, try_login_without_2fa, AuthCookieOk},
     avatars::fetch_avatars,
     cookie_jar::{extract_cookies_from_jar, set_raw_cookies_into_jar},
-    models::{Command2FAOk, CommandLoginOk, CommandLoginStatus},
+    models::{AvatarSortOption, Command2FAOk, CommandLoginOk, CommandLoginStatus},
 };
 
 #[tauri::command]
 async fn command_fetch_avatars(
     raw_auth_cookie: &str,
     raw_2fa_cookie: &str,
+    sort_option: AvatarSortOption,
 ) -> Result<Vec<Avatar>, String> {
     let jar = Arc::new(Jar::default());
     set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
     let config = create_configuration(&jar)?;
-    fetch_avatars(&config).await
+
+    let sort_option = match sort_option {
+        AvatarSortOption::Name => vrchatapi::models::SortOption::Name,
+        AvatarSortOption::Updated => vrchatapi::models::SortOption::Updated,
+    };
+
+    fetch_avatars(&config, sort_option).await
 }
 
 #[tauri::command]

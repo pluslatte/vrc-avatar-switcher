@@ -2,6 +2,7 @@ import { command_fetch_avatars, command_fetch_current_user, command_switch_avata
 import { Avatar, CurrentUser } from '@/lib/models';
 import { loadCookies } from '@/lib/stores';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 interface AvatarListQuery {
   avatars: Array<Avatar>,
@@ -9,12 +10,13 @@ interface AvatarListQuery {
 }
 export const useAvatarSwitcher = () => {
   const queryClient = useQueryClient();
+  const [selectedSort, setSelectedSort] = useState<'Name' | 'Updated'>('Name');
 
   const avatarListQuery = useQuery<AvatarListQuery>({
-    queryKey: ['avatarList'], queryFn: async () => {
+    queryKey: ['avatarList', selectedSort], queryFn: async () => {
       const { authCookie, twofaCookie } = await loadCookies();
       return {
-        avatars: await command_fetch_avatars(authCookie, twofaCookie),
+        avatars: await command_fetch_avatars(authCookie, twofaCookie, selectedSort),
         currentUser: await command_fetch_current_user(authCookie, twofaCookie),
       };
     }
@@ -33,5 +35,5 @@ export const useAvatarSwitcher = () => {
     }
   });
 
-  return { avatarListQuery, switchAvatarMutation };
+  return { avatarListQuery, switchAvatarMutation, selectedSort, setSelectedSort };
 };

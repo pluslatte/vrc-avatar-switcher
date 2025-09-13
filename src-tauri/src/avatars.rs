@@ -2,10 +2,13 @@ use std::{thread::sleep, time::Duration};
 
 use vrchatapi::{
     apis::configuration::Configuration,
-    models::{Avatar, CurrentUser},
+    models::{Avatar, CurrentUser, OrderOption, SortOption},
 };
 
-pub async fn fetch_avatars(config: &Configuration) -> Result<Vec<Avatar>, String> {
+pub async fn fetch_avatars(
+    config: &Configuration,
+    sort_option: SortOption,
+) -> Result<Vec<Avatar>, String> {
     let mut out = Vec::new();
     let mut avatar_count: usize = 0;
 
@@ -13,11 +16,15 @@ pub async fn fetch_avatars(config: &Configuration) -> Result<Vec<Avatar>, String
         let avatars = vrchatapi::apis::avatars_api::search_avatars(
             config,
             Some(false),
-            Some(vrchatapi::models::SortOption::Name),
+            Some(sort_option),
             Some("me"),
             None,
             Some(60),
-            None,
+            if sort_option == SortOption::Updated {
+                Some(OrderOption::Descending)
+            } else {
+                Some(OrderOption::Ascending)
+            },
             Some(avatar_count.try_into().expect("Negative avatar count???")),
             None,
             None,

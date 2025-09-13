@@ -1,13 +1,13 @@
 import AvatarList from '@/components/avatar/AvatarList';
 import { useAvatarSwitcher } from '@/hooks/useAvatarSwitcher';
-import { AppShell } from '@mantine/core';
+import { AppShell, Select } from '@mantine/core';
 import HeaderContents from './HeaderContents';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
 }
 const DashBoard = (props: DashBoardProps) => {
-  const { avatarListQuery, switchAvatarMutation } = useAvatarSwitcher();
+  const { avatarListQuery, switchAvatarMutation, selectedSort, setSelectedSort } = useAvatarSwitcher();
 
   const handlerAvatarSwitch = (avatarId: string) => {
     switchAvatarMutation.mutate(avatarId);
@@ -31,6 +31,18 @@ const DashBoard = (props: DashBoardProps) => {
       </AppShell.Header>
 
       <AppShell.Main>
+        <Select
+          label="Sort Avatars By"
+          data={[{ value: 'Name', label: 'Name' }, { value: 'Updated', label: 'Updated' }]}
+          style={{ marginBottom: 20, width: 200 }}
+          value={selectedSort}
+          onChange={(value) => {
+            if (value === 'Name' || value === 'Updated') {
+              setSelectedSort(value);
+              avatarListQuery.refetch();
+            }
+          }}
+        />
         <AvatarList
           avatars={avatarListQuery.data.avatars}
           currentUser={avatarListQuery.data.currentUser}

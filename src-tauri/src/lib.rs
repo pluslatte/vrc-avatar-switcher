@@ -1,6 +1,6 @@
+mod api_config;
 mod auth;
 mod avatars;
-mod config;
 mod cookie_jar;
 
 use std::sync::Arc;
@@ -13,9 +13,9 @@ use vrchatapi::{
 };
 
 use crate::{
+    api_config::{create_configuration, create_configuration_for_login},
     auth::{is_auth_cookie_valid, try_login_without_2fa, AuthCookieOk},
     avatars::fetch_avatars,
-    config::{create_configuration, create_configuration_for_login},
     cookie_jar::{extract_cookies_from_jar, set_raw_cookies_into_jar},
 };
 

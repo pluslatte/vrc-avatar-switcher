@@ -3,7 +3,10 @@ import { useState } from 'react';
 import { command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/commands';
 import { saveCookies } from '@/lib/stores';
 
-const LoginForm = () => {
+interface LoginFormProps {
+  onLoginSuccess: () => void;
+}
+const LoginForm = (props: LoginFormProps) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
@@ -18,6 +21,7 @@ const LoginForm = () => {
       if (result.status === 'Success') {
         setStep('done');
         saveCookies(result.auth_cookie, result.two_fa_cookie);
+        props.onLoginSuccess();
       } else if (result.status === 'Requires2FA') {
         setAuthCookie(result.auth_cookie);
         setTwofaCookie(result.two_fa_cookie || '');
@@ -42,6 +46,7 @@ const LoginForm = () => {
       );
       setStep('done');
       saveCookies(result.auth_cookie, result.two_fa_cookie);
+      props.onLoginSuccess();
     } catch (error) {
       console.error('2FA submission failed:', error);
     }
@@ -54,6 +59,7 @@ const LoginForm = () => {
       );
       setStep('done');
       saveCookies(result.auth_cookie, result.two_fa_cookie);
+      props.onLoginSuccess();
     } catch (error) {
       console.error('Email 2FA submission failed:', error);
     }

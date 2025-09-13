@@ -4,15 +4,9 @@ import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-quer
 import { invoke } from "@tauri-apps/api/core";
 import { load } from "@tauri-apps/plugin-store";
 import { useEffect, useState } from "react";
+import { Avatar, command_new_auth, command_submit_2fa, command_submit_email_2fa } from "@/lib/command";
 
 const queryClient = new QueryClient();
-
-interface Avatar {
-  id: string;
-  name: string;
-  imageUrl: string;
-  thumbnailImageUrl: string;
-}
 
 interface AvatarListProps {
   rawAuthCookie: string;
@@ -46,7 +40,7 @@ const AvatarList = (props: AvatarListProps) => {
     )}
   </div>
   );
-}
+};
 
 const AvatarListStoreWrapper = () => {
   const storeQuery = useQuery({
@@ -68,18 +62,7 @@ const AvatarListStoreWrapper = () => {
     )}
   </div>
   );
-}
-
-interface CommandLoginOk {
-  status: 'Success' | 'Requires2FA' | 'RequiresEmail2FA';
-  auth_cookie: string;
-  two_fa_cookie: string | null;
-}
-
-interface Command2FAOk {
-  auth_cookie: string;
-  two_fa_cookie: string | null;
-}
+};
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -92,10 +75,7 @@ const LoginForm = () => {
   const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const result = await invoke<CommandLoginOk>(
-        "command_new_auth",
-        { username, password }
-      );
+      const result = await command_new_auth(username, password);
       if (result.status === 'Success') {
         setStep("done");
         const store = await load('auth.json');
@@ -121,9 +101,8 @@ const LoginForm = () => {
   const handle2FASubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const result = await invoke<Command2FAOk>(
-        "command_2fa",
-        { rawAuthCookie: authCookie, raw2faCookie: twofaCookie, username, password, twoFaCode: code }
+      const result = await command_submit_2fa(
+        authCookie, twofaCookie, username, password, code
       );
       setStep("done");
       const store = await load('auth.json');
@@ -137,9 +116,8 @@ const LoginForm = () => {
   const handleEmail2FASubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const result = await invoke<Command2FAOk>(
-        "command_email_2fa",
-        { rawAuthCookie: authCookie, raw2faCookie: twofaCookie, username, password, twoFaCode: code }
+      const result = await command_submit_email_2fa(
+        authCookie, twofaCookie, username, password, code
       );
       setStep("done");
       const store = await load('auth.json');

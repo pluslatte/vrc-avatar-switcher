@@ -1,6 +1,6 @@
 import { Avatar } from '@/lib/models';
-import { ActionIcon, BackgroundImage, Badge, Button, Card, Divider, Group, Text, Tooltip } from '@mantine/core';
-import { IconPlus, IconTag } from '@tabler/icons-react';
+import { BackgroundImage, Badge, Button, Card, Divider, Group, Text } from '@mantine/core';
+import TagManagerButton from './TagManagerButton';
 
 interface AvatarCardProps {
   avatar: Avatar;
@@ -10,6 +10,9 @@ interface AvatarCardProps {
   pendingSwitch: boolean;
   imageSize: number | null;
   onAvatarSwitchClicked: (avatarId: string) => void;
+  handlerRegisterAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
+  handlerRemoveAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
+  handlerRegisterAvatarTagColor: (tagColors: Record<string, string>, tagName: string, color: string) => void;
 }
 
 const AvatarCard = (props: AvatarCardProps) => {
@@ -58,13 +61,13 @@ const AvatarCard = (props: AvatarCardProps) => {
           {props.tags.map((tag) => (
             <Badge color={props.tagColors[tag] || 'gray'} key={tag}>{tag}</Badge>
           ))}
-          <Tooltip
-            label="タグを追加"
-          >
-            <ActionIcon style={{ marginLeft: 'auto' }} size={20} color="gray" variant="subtle" radius="sm">
-              <IconPlus />
-            </ActionIcon>
-          </Tooltip>
+          <TagManagerButton
+            tags={props.tags}
+            tagColors={props.tagColors}
+            handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
+            handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
+            handlerRegisterAvatarTagColor={props.handlerRegisterAvatarTagColor}
+          />
         </Group>
       </Card.Section>
 

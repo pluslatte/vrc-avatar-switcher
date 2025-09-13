@@ -7,7 +7,7 @@ interface AvatarListQuery {
   avatars: Array<Avatar>,
   currentUser: CurrentUser,
 }
-export const useAvatarList = () => {
+export const useAvatarSwitcher = () => {
   const queryClient = useQueryClient();
 
   const avatarListQuery = useQuery<AvatarListQuery>({

@@ -1,12 +1,12 @@
 import AvatarList from '@/components/avatar/AvatarList';
 import LogoutButton from '@/components/LogoutButton';
-import { useAvatarList } from '@/hooks/useAvatarList';
+import { useAvatarSwitcher } from '@/hooks/useAvatarSwitcher';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
 }
 const DashBoard = (props: DashBoardProps) => {
-  const { avatarListQuery, switchAvatarMutation } = useAvatarList();
+  const { avatarListQuery, switchAvatarMutation } = useAvatarSwitcher();
 
   const handlerAvatarSwitch = (avatarId: string) => {
     switchAvatarMutation.mutate(avatarId);

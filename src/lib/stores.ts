@@ -1,4 +1,5 @@
 import { load } from '@tauri-apps/plugin-store';
+import { AvatarSortOrder } from './models';
 
 const authCredentialsFileName = 'auth.json';
 
@@ -27,6 +28,22 @@ export const dropCookies = async (): Promise<void> => {
   await store.delete('two_fa_cookie');
   await store.save();
   store.close();
+};
+
+const avatarListConfigSortOrder = 'avatar_list_config_sort_order.json';
+
+export const saveSortOrder = async (order: AvatarSortOrder | null): Promise<void> => {
+  const store = await load(avatarListConfigSortOrder);
+  await store.set('sort_order', order);
+  await store.save();
+  store.close();
+};
+
+export const loadSortOrder = async (): Promise<AvatarSortOrder> => {
+  const store = await load(avatarListConfigSortOrder);
+  const order = (await store.get('sort_order')) as AvatarSortOrder | null | undefined;
+  store.close();
+  return order || 'Updated';
 };
 
 const avatarListConfigImageSize = 'avatar_list_config_image_size.json';

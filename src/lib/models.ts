@@ -10,3 +10,5 @@ export interface CurrentUser {
   currentAvatar: string;
   currentAvatarThumbnailImageUrl: string;
 }
+
+export type AvatarSortOrder = 'Name' | 'Updated';

@@ -1,5 +1,5 @@
 import { command_fetch_avatars, command_fetch_current_user, command_switch_avatar } from '@/lib/commands';
-import { Avatar, CurrentUser } from '@/lib/models';
+import { Avatar, AvatarSortOrder, CurrentUser } from '@/lib/models';
 import { loadCookies } from '@/lib/stores';
 import { notifications } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -11,7 +11,7 @@ interface AvatarListQuery {
 }
 export const useAvatarSwitcher = () => {
   const queryClient = useQueryClient();
-  const [selectedSort, setSelectedSort] = useState<'Name' | 'Updated'>('Name');
+  const [selectedSort, setSelectedSort] = useState<AvatarSortOrder>('Name');
 
   const avatarListQuery = useQuery<AvatarListQuery>({
     queryKey: ['avatarList', selectedSort],

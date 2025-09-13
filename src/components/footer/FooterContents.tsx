@@ -4,9 +4,10 @@ import SortOrderSelector from './SortOrderSelector';
 import AvatarCardImageSizeSelector from './AvatarCardImageSizeSelector';
 import AvatarCardColumnSizeSelector from './AvatarCardColumnSizeSelector';
 import AvatarListRefreshButton from './AvatarListRefreshButton';
+import { AvatarSortOrder } from '@/lib/models';
 
 interface FooterContentsProps {
-  selectedSort: 'Name' | 'Updated';
+  selectedSort: AvatarSortOrder;
   cardImageSize: number | undefined;
   cardImageSizeLoading: boolean;
   cardNumberPerRow: number | undefined;

@@ -1,10 +1,10 @@
 import { invoke } from '@tauri-apps/api/core';
-import { Avatar, CurrentUser } from '@/lib/models';
+import { Avatar, AvatarSortOrder, CurrentUser } from '@/lib/models';
 
 export const command_fetch_avatars = async (
   rawAuthCookie: string,
   raw2faCookie: string,
-  sortOption: 'Name' | 'Updated'
+  sortOption: AvatarSortOrder
 ): Promise<Avatar[]> => {
   return await invoke<Avatar[]>('command_fetch_avatars', {
     rawAuthCookie,

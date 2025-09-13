@@ -8,4 +8,5 @@ export interface Avatar {
 export interface CurrentUser {
   displayName: string;
   currentAvatar: string;
+  currentAvatarThumbnailImageUrl: string;
 }

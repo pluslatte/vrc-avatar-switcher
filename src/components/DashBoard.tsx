@@ -1,6 +1,7 @@
 import AvatarList from '@/components/avatar/AvatarList';
-import LogoutButton from '@/components/LogoutButton';
 import { useAvatarSwitcher } from '@/hooks/useAvatarSwitcher';
+import { AppShell } from '@mantine/core';
+import StatusLine from './StatusLine';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -16,15 +17,27 @@ const DashBoard = (props: DashBoardProps) => {
   if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <LogoutButton onLogoutSuccess={props.onLogoutSuccess} />
-      <AvatarList
-        avatars={avatarListQuery.data.avatars}
-        currentUser={avatarListQuery.data.currentUser}
-        handlerAvatarSwitch={handlerAvatarSwitch}
-      />
-    </div>
+    <AppShell
+      padding="md"
+      header={{ height: 60 }}
+    >
+      <AppShell.Header>
+        <StatusLine
+          currentUserDisplayName={avatarListQuery.data.currentUser.displayName}
+          currentUserThumbnailImageUrl={avatarListQuery.data.currentUser.currentAvatarThumbnailImageUrl}
+          currentUserAvatarName={avatarListQuery.data.avatars.find(avatar => avatar.id === avatarListQuery.data.currentUser.currentAvatar)?.name || 'No Avatar'}
+          onLogoutSuccess={props.onLogoutSuccess}
+        />
+      </AppShell.Header>
+
+      <AppShell.Main>
+        <AvatarList
+          avatars={avatarListQuery.data.avatars}
+          currentUser={avatarListQuery.data.currentUser}
+          handlerAvatarSwitch={handlerAvatarSwitch}
+        />
+      </AppShell.Main>
+    </AppShell>
   );
 };
 

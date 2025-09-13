@@ -42,7 +42,7 @@ export const loadCardImageSize = async (): Promise<number> => {
   const store = await load(avatarListConfigImageSize);
   const size = (await store.get('card_image_size')) as number | null | undefined;
   store.close();
-  return size || 120;
+  return size || 160;
 };
 
 const avatarListConfigNumberPerRow = 'avatar_list_config_number_per_row.json';

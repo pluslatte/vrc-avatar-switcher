@@ -39,7 +39,6 @@ const DashBoard = (props: DashBoardProps) => {
           onChange={(value) => {
             if (value === 'Name' || value === 'Updated') {
               setSelectedSort(value);
-              avatarListQuery.refetch();
             }
           }}
         />

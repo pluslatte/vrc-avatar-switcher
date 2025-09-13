@@ -1,5 +1,6 @@
 // eslint-disable-next-line quotes
-import { Avatar, Text } from "@mantine/core";
+import { Avatar, Divider, Group, Text } from "@mantine/core";
+import LogoutButton from '@/components/LogoutButton';
 
 interface StatusBarProps {
   currentUserDisplayName: string;
@@ -9,11 +10,24 @@ interface StatusBarProps {
 }
 const StatusLine = (props: StatusBarProps) => {
   return (
-    <div>
-      <Text>{props.currentUserDisplayName}</Text>
-      <Text>{props.currentUserAvatarName}</Text>
+    <Group h="100%" px="md">
       <Avatar src={props.currentUserThumbnailImageUrl} alt="Current User Avatar" />
-    </div>
+      <Text
+        size="lg"
+        fw={500}
+      >
+        {props.currentUserDisplayName}
+      </Text>
+      <Divider orientation="vertical" />
+      <Text
+        size="md"
+        c="dimmed"
+        fw={400}
+      >
+        現在のアバター: {props.currentUserAvatarName}
+      </Text>
+      <LogoutButton onLogoutSuccess={props.onLogoutSuccess} />
+    </Group>
   );
 };
 

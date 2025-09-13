@@ -10,7 +10,16 @@ const LogoutButton = (props: LogoutButtonProps) => {
     props.onLogoutSuccess();
   };
 
-  return <Button onClick={handleLogout} color="red">Logout</Button>;
+  return (
+    <Button
+      onClick={handleLogout}
+      variant="outline"
+      color="red"
+      style={{ marginLeft: 'auto' }}
+    >
+      Logout
+    </Button>
+  );
 };
 
 export default LogoutButton;

@@ -4,6 +4,7 @@ import { IconReload } from '@tabler/icons-react';
 interface FooterContentsProps {
   selectedSort: 'Name' | 'Updated';
   onSelectorChange: (option: string | null) => void;
+  onRefreshButtonClick: () => void;
 }
 const FooterContents = (props: FooterContentsProps) => {
   return (
@@ -19,6 +20,10 @@ const FooterContents = (props: FooterContentsProps) => {
         variant="filled"
         style={{ marginLeft: 'auto' }}
         size="xl"
+        onClick={(e) => {
+          e.preventDefault();
+          props.onRefreshButtonClick();
+        }}
       >
         <IconReload />
       </ActionIcon>

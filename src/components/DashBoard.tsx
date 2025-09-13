@@ -21,7 +21,11 @@ const DashBoard = (props: DashBoardProps) => {
     }
   };
 
-  if (avatarListQuery.isPending) return <LoaderFullWindow message="Loading avatars..." />;
+  const handlerRefetchAvatar = () => {
+    avatarListQuery.refetch();
+  };
+
+  if (avatarListQuery.isPending || avatarListQuery.isFetching) return <LoaderFullWindow message="Loading avatars..." />;
   if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;
 
   return (
@@ -48,7 +52,11 @@ const DashBoard = (props: DashBoardProps) => {
       </AppShell.Main>
 
       <AppShell.Footer>
-        <FooterContents selectedSort={selectedSort} onSelectorChange={handlerSortOptSwitch} />
+        <FooterContents
+          selectedSort={selectedSort}
+          onSelectorChange={handlerSortOptSwitch}
+          onRefreshButtonClick={handlerRefetchAvatar}
+        />
       </AppShell.Footer>
 
     </AppShell>

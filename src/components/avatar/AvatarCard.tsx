@@ -1,5 +1,5 @@
 import { Avatar } from '@/lib/models';
-import { Card, Group, Image, Text } from '@mantine/core';
+import { Button, Card, Group, Image, Text } from '@mantine/core';
 
 interface AvatarCardProps {
   avatar: Avatar;
@@ -14,6 +14,10 @@ const AvatarCard = (props: AvatarCardProps) => (
     <Group justify="space-between" mt="md" mb="xs">
       <Text fw={500}>{props.avatar.name}</Text>
     </Group>
+
+    <Button color="cyan" fullWidth size="lg" mt="md" radius="md">
+      Select
+    </Button>
   </Card>
 );
 

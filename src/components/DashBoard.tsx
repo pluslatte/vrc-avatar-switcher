@@ -5,7 +5,7 @@ import HeaderContents from '@/components/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
 import FooterContents from '@/components/FooterContents';
 import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
-import { useCardNumberPerRowControl } from '@/hooks/useCardNumberPerRowControl';
+import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -13,7 +13,7 @@ interface DashBoardProps {
 const DashBoard = (props: DashBoardProps) => {
   const { avatarListQuery, switchAvatarMutation, selectedSort, setSelectedSort } = useAvatarSwitcher();
   const { loading: cardImageSizeLoading, cardImageSize, handleCardImageSizeChange } = useCardImageSizeSelector();
-  const { cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowControl();
+  const { loading: cardNumberPerRowLoading, cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowSelector();
 
   const handlerAvatarSwitch = (avatarId: string) => {
     switchAvatarMutation.mutate(avatarId);
@@ -48,8 +48,8 @@ const DashBoard = (props: DashBoardProps) => {
       </AppShell.Header>
 
       <AppShell.Main>
-        {cardImageSize === undefined && <LoaderFullWindow message="Loading settings..." />}
-        {cardImageSize !== undefined && <AvatarList
+        {cardImageSize === undefined || cardNumberPerRow === undefined && <LoaderFullWindow message="Loading settings..." />}
+        {cardImageSize !== undefined && cardNumberPerRow !== undefined && <AvatarList
           avatars={avatarListQuery.data.avatars}
           currentUser={avatarListQuery.data.currentUser}
           pendingSwitch={switchAvatarMutation.isPending}
@@ -65,6 +65,7 @@ const DashBoard = (props: DashBoardProps) => {
           cardImageSize={cardImageSize}
           cardImageSizeLoading={cardImageSizeLoading}
           cardNumberPerRow={cardNumberPerRow}
+          cardNumberPerRowLoading={cardNumberPerRowLoading}
           setCardImageSize={handleCardImageSizeChange}
           setCardNumberPerRow={handleCardNumberPerRow}
           onSortSettingChange={handlerSortOptSwitch}

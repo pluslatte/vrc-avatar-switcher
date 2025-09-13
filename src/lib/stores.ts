@@ -29,18 +29,34 @@ export const dropCookies = async (): Promise<void> => {
   store.close();
 };
 
-const avatarListConfigFileName = 'avatar_list_config.json';
+const avatarListConfigImageSize = 'avatar_list_config_image_size.json';
 
 export const saveCardImageSize = async (size: number | null): Promise<void> => {
-  const store = await load(avatarListConfigFileName);
+  const store = await load(avatarListConfigImageSize);
   await store.set('card_image_size', size);
   await store.save();
   store.close();
 };
 
 export const loadCardImageSize = async (): Promise<number> => {
-  const store = await load(avatarListConfigFileName);
+  const store = await load(avatarListConfigImageSize);
   const size = (await store.get('card_image_size')) as number | null | undefined;
   store.close();
   return size || 120;
+};
+
+const avatarListConfigNumberPerRow = 'avatar_list_config_number_per_row.json';
+
+export const saveCardNumberPerRow = async (number: number | null): Promise<void> => {
+  const store = await load(avatarListConfigNumberPerRow);
+  await store.set('card_number_per_row', number);
+  await store.save();
+  store.close();
+};
+
+export const loadCardNumberPerRow = async (): Promise<number> => {
+  const store = await load(avatarListConfigNumberPerRow);
+  const number = (await store.get('card_number_per_row')) as number | null | undefined;
+  store.close();
+  return number || 3;
 };

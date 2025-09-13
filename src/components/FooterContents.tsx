@@ -5,7 +5,8 @@ interface FooterContentsProps {
   selectedSort: 'Name' | 'Updated';
   cardImageSize: number | undefined;
   cardImageSizeLoading: boolean;
-  cardNumberPerRow: number;
+  cardNumberPerRow: number | undefined;
+  cardNumberPerRowLoading: boolean;
   setCardImageSize: (size: string | null) => void;
   onSortSettingChange: (option: string | null) => void;
   setCardNumberPerRow: (number: string | null) => void;
@@ -37,15 +38,19 @@ const FooterContents = (props: FooterContentsProps) => {
         />
       </Box>
       <IconTableColumn />
-      <SegmentedControl
-        value={props.cardNumberPerRow.toString()}
-        onChange={props.setCardNumberPerRow}
-        data={[
-          { label: '3列', value: '4' },
-          { label: '4列', value: '3' },
-          { label: '6列', value: '2' },
-        ]}
-      />
+      <Box pos="relative">
+        <LoadingOverlay visible={props.cardNumberPerRowLoading} overlayProps={{ radius: 'md', blur: 2 }} />
+        <SegmentedControl
+          disabled={!props.cardNumberPerRow || props.cardNumberPerRowLoading}
+          value={props.cardNumberPerRow?.toString()}
+          onChange={props.setCardNumberPerRow}
+          data={[
+            { label: '3列', value: '4' },
+            { label: '4列', value: '3' },
+            { label: '6列', value: '2' },
+          ]}
+        />
+      </Box>
       <Tooltip label="アバターリストを更新" withArrow position="top" bg="dark" c="white">
         <ActionIcon
           variant="outline"

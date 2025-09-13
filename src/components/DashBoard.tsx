@@ -53,6 +53,8 @@ const DashBoard = (props: DashBoardProps) => {
         {cardImageSize === undefined || cardNumberPerRow === undefined && <LoaderFullWindow message="Loading settings..." />}
         {cardImageSize !== undefined && cardNumberPerRow !== undefined && <AvatarList
           avatars={avatarListQuery.data.avatars}
+          tags={{}}
+          tagColors={{}}
           currentUser={avatarListQuery.data.currentUser}
           pendingSwitch={switchAvatarMutation.isPending}
           cardImageSize={cardImageSize}

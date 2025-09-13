@@ -94,3 +94,20 @@ export const saveAvatarTags = async (tags: Record<string, string[]>): Promise<vo
   await store.save();
   store.close();
 };
+
+// "Avatar Tag Color" is pairs of tag string and color string.
+const avatarTagColorStoreFileName = 'avatar_tag_colors.json';
+
+export const loadAvatarTagColors = async (): Promise<Record<string, string>> => {
+  const store = await load(avatarTagColorStoreFileName);
+  const colors = (await store.get('colors')) as Record<string, string> | undefined;
+  store.close();
+  return colors || {};
+};
+
+export const saveAvatarTagColors = async (colors: Record<string, string>): Promise<void> => {
+  const store = await load(avatarTagColorStoreFileName);
+  await store.set('colors', colors);
+  await store.save();
+  store.close();
+};

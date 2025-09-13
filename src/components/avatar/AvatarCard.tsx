@@ -1,8 +1,11 @@
 import { Avatar } from '@/lib/models';
-import { BackgroundImage, Badge, Button, Card, Divider, Group, Text } from '@mantine/core';
+import { ActionIcon, BackgroundImage, Badge, Button, Card, Divider, Group, Text, Tooltip } from '@mantine/core';
+import { IconPlus, IconTag } from '@tabler/icons-react';
 
 interface AvatarCardProps {
   avatar: Avatar;
+  tags: Array<string>;
+  tagColors: Record<string, string>;
   isActive: boolean;
   pendingSwitch: boolean;
   imageSize: number | null;
@@ -52,8 +55,16 @@ const AvatarCard = (props: AvatarCardProps) => {
       <Divider />
       <Card.Section p="sm">
         <Group gap="xs">
-          <Badge color="cyan">hoge</Badge>
-          <Badge color="green">huga</Badge>
+          {props.tags.map((tag) => (
+            <Badge color={props.tagColors[tag] || 'gray'} key={tag}>{tag}</Badge>
+          ))}
+          <Tooltip
+            label="タグを追加"
+          >
+            <ActionIcon style={{ marginLeft: 'auto' }} size={20} color="gray" variant="subtle" radius="sm">
+              <IconPlus />
+            </ActionIcon>
+          </Tooltip>
         </Group>
       </Card.Section>
 

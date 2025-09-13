@@ -4,6 +4,8 @@ import { Avatar, CurrentUser } from '@/lib/models';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
+  tags: Record<string, string[]>;
+  tagColors: Record<string, string>;
   currentUser: CurrentUser;
   pendingSwitch: boolean;
   cardImageSize: number;
@@ -19,6 +21,8 @@ const AvatarList = (props: AvatarListProps) => {
           <AvatarCard
             avatar={avatar}
             isActive={isActive}
+            tags={props.tags[avatar.id] || []}
+            tagColors={props.tagColors}
             pendingSwitch={props.pendingSwitch}
             imageSize={props.cardImageSize}
             onAvatarSwitchClicked={props.handlerAvatarSwitch}

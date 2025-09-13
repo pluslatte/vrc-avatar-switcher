@@ -6,6 +6,7 @@ interface AvatarListProps {
   avatars: Array<Avatar>;
   currentUser: CurrentUser;
   pendingSwitch: boolean;
+  cardimageSize: number | null;
   handlerAvatarSwitch: (avatarId: string) => void;
 }
 const AvatarList = (props: AvatarListProps) => {
@@ -18,6 +19,7 @@ const AvatarList = (props: AvatarListProps) => {
             avatar={avatar}
             isActive={isActive}
             pendingSwitch={props.pendingSwitch}
+            imageSize={props.cardimageSize}
             onAvatarSwitchClicked={props.handlerAvatarSwitch}
           />
         );

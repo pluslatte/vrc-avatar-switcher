@@ -48,6 +48,7 @@ const DashBoard = (props: DashBoardProps) => {
           avatars={avatarListQuery.data.avatars}
           currentUser={avatarListQuery.data.currentUser}
           pendingSwitch={switchAvatarMutation.isPending}
+          cardimageSize={120}
           handlerAvatarSwitch={handlerAvatarSwitch}
         />
       </AppShell.Main>

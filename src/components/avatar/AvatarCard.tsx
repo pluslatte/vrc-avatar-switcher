@@ -5,6 +5,7 @@ interface AvatarCardProps {
   avatar: Avatar;
   isActive: boolean;
   pendingSwitch: boolean;
+  imageSize: number | null;
   onAvatarSwitchClicked: (avatarId: string) => void;
 }
 
@@ -22,8 +23,12 @@ const AvatarCard = (props: AvatarCardProps) => {
       withBorder
       bg={props.isActive ? 'darkcyan' : ''}
     >
-      <Card.Section withBorder>
-        <Image src={props.avatar.thumbnailImageUrl} alt={props.avatar.name} style={{ objectFit: 'contain' }} />
+      <Card.Section withBorder h={props.imageSize || 120}>
+        <Image
+          src={props.avatar.thumbnailImageUrl}
+          alt={props.avatar.name}
+          height="100%"
+        />
       </Card.Section>
 
       <Card.Section p="sm" h="48px">

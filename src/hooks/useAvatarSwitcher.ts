@@ -28,7 +28,7 @@ export const useAvatarSwitcher = () => {
       return await command_switch_avatar(authCookie, twofaCookie, avatarId);
     },
     onSuccess: (currentUser) => {
-      queryClient.setQueryData(['avatarList'], (oldData: AvatarListQuery) => ({
+      queryClient.setQueryData(['avatarList', selectedSort], (oldData: AvatarListQuery) => ({
         ...oldData,
         currentUser
       }));

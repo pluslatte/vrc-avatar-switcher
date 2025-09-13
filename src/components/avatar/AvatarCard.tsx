@@ -1,5 +1,5 @@
 import { Avatar } from '@/lib/models';
-import { Button, Card, Group, Image, Text } from '@mantine/core';
+import { Button, Card, Image, Text } from '@mantine/core';
 
 interface AvatarCardProps {
   avatar: Avatar;
@@ -22,19 +22,28 @@ const AvatarCard = (props: AvatarCardProps) => {
       withBorder
       bg={props.isActive ? 'darkcyan' : ''}
     >
-      <Card.Section>
-        <Image src={props.avatar.thumbnailImageUrl} alt={props.avatar.name} />
+      <Card.Section withBorder>
+        <Image src={props.avatar.thumbnailImageUrl} alt={props.avatar.name} style={{ objectFit: 'contain' }} />
       </Card.Section>
 
-      <Group justify="space-between" mt="md" mb="xs">
-        <Text fw={500}>{props.avatar.name}</Text>
-      </Group>
+      <Card.Section p="sm" h="48px">
+        <Text
+          fw={500}
+          size={
+            props.avatar.name.length > 16
+              ? (props.avatar.name.length > 20
+                ? 'xs'
+                : 'sm')
+              : 'md'}
+        >
+          {props.avatar.name}
+        </Text>
+      </Card.Section>
 
       <Button
         color="cyan"
         fullWidth
         size="lg"
-        mt="md"
         radius="md"
         disabled={props.isActive}
         loading={props.pendingSwitch && !props.isActive}

@@ -53,6 +53,7 @@ export const command_submit_2fa = async (
     twoFaCode
   });
 };
+
 export const command_submit_email_2fa = async (
   rawAuthCookie: string,
   raw2faCookie: string,
@@ -66,5 +67,15 @@ export const command_submit_email_2fa = async (
     username,
     password,
     email2FaCode
+  });
+};
+
+export const command_check_auth = async (
+  rawAuthCookie: string,
+  raw2faCookie: string
+): Promise<boolean> => {
+  return await invoke<boolean>('command_check_auth', {
+    rawAuthCookie,
+    raw2faCookie
   });
 };

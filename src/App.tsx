@@ -1,9 +1,10 @@
 import { Button, Input } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { useEffect, useState } from 'react';
-import { command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/commands';
+import { useState } from 'react';
+import { command_check_auth, command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/commands';
 import { loadCookies, saveCookies } from '@/lib/stores';
 import AvatarList from '@/components/AvatarList';
+import { useQuery } from '@tanstack/react-query';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
@@ -61,17 +62,6 @@ const LoginForm = () => {
     }
   };
 
-  const checkStoredAuth = async () => {
-    const { authCookie, twofaCookie } = await loadCookies();
-    if (authCookie && twofaCookie) {
-      setStep('done');
-    }
-  };
-
-  useEffect(() => {
-    checkStoredAuth();
-  }, []);
-
   return (
     <div>
       {step === 'login' && (
@@ -96,7 +86,6 @@ const LoginForm = () => {
       {step === 'done' && (
         <div>
           <div>Login successful!</div>
-          <AvatarList />
         </div>
       )}
     </div>
@@ -104,10 +93,23 @@ const LoginForm = () => {
 };
 
 function App() {
+  const query = useQuery({
+    queryKey: ['auth_check'], queryFn: async () => {
+      const { authCookie, twofaCookie } = await loadCookies();
+      if (authCookie === '' || twofaCookie === '') {
+        return false;
+      }
+
+      return await command_check_auth(authCookie, twofaCookie);
+    }
+  });
+
   return (
     <main>
-      <h1>Hello World!</h1>
-      <LoginForm />
+      {query.isPending && <div>Loading...</div>}
+      {query.isError && <div>Error: {(query.error as Error).message}</div>}
+      {query.data === true && <AvatarList />}
+      {query.data === false && <LoginForm />}
     </main>
   );
 }

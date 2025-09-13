@@ -19,6 +19,9 @@ interface FooterContentsProps {
 const FooterContents = (props: FooterContentsProps) => {
   return (
     <Group px="md" mt="8">
+      <AvatarListRefreshButton
+        onRefreshButtonClick={props.onRefreshButtonClick}
+      />
       <Text>ソート:</Text>
       <SortOrderSelector
         selectedSort={props.selectedSort}
@@ -35,9 +38,6 @@ const FooterContents = (props: FooterContentsProps) => {
         cardNumberPerRow={props.cardNumberPerRow}
         cardNumberPerRowLoading={props.cardNumberPerRowLoading}
         setCardNumberPerRow={props.setCardNumberPerRow}
-      />
-      <AvatarListRefreshButton
-        onRefreshButtonClick={props.onRefreshButtonClick}
       />
     </Group>
   );

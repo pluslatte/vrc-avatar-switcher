@@ -6,7 +6,6 @@ const AvatarListRefreshButton = (props: { onRefreshButtonClick: () => void }) =>
     <Tooltip label="アバターリストを更新" withArrow position="top" bg="dark" c="white">
       <ActionIcon
         variant="outline"
-        style={{ marginLeft: 'auto' }}
         size="xl"
         onClick={(e) => {
           e.preventDefault();

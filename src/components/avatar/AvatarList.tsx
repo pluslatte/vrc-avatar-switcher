@@ -1,4 +1,4 @@
-import { Grid } from '@mantine/core';
+import { Grid, Indicator } from '@mantine/core';
 import AvatarCard from './AvatarCard';
 import { useAvatarList } from '@/hooks/useAvatarList';
 
@@ -12,11 +12,26 @@ const AvatarList = () => {
     <Grid>
       {avatarListQuery.data.avatars.map(avatar => (
         <Grid.Col span={3} key={avatar.id}>
-          <AvatarCard
-            avatar={avatar}
-            isActive={avatarListQuery.data.currentUser.currentAvatar === avatar.id}
-            onAvatarSwitchClicked={handlerAvatarSwitch}
-          />
+          {avatarListQuery.data.currentUser.currentAvatar === avatar.id && (
+            <Indicator
+              processing
+              color="green"
+              size={16}
+              offset={16}
+              position="top-start"
+            >
+              <AvatarCard
+                avatar={avatar}
+                isActive={avatarListQuery.data.currentUser.currentAvatar === avatar.id}
+                onAvatarSwitchClicked={handlerAvatarSwitch}
+              />
+            </Indicator>)}
+          {avatarListQuery.data.currentUser.currentAvatar !== avatar.id && (
+            <AvatarCard
+              avatar={avatar}
+              isActive={avatarListQuery.data.currentUser.currentAvatar === avatar.id}
+              onAvatarSwitchClicked={handlerAvatarSwitch}
+            />)}
         </Grid.Col>
       ))}
     </Grid>

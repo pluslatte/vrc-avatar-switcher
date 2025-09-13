@@ -19,10 +19,7 @@ const AvatarCard = (props: AvatarCardProps) => {
       padding="lg"
       radius="md"
       withBorder
-      style={{
-        borderColor: props.isActive ? '#00bcd4' : '#e0e0e0',
-        backgroundColor: props.isActive ? '#e0f7fa' : 'white',
-      }}
+      bg={props.isActive ? 'darkcyan' : ''}
     >
       <Card.Section>
         <Image src={props.avatar.thumbnailImageUrl} alt={props.avatar.name} />

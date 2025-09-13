@@ -80,7 +80,7 @@ const DashBoard = (props: DashBoardProps) => {
     avatarListQuery.isFetching ||
     tagStoreQuery.isPending ||
     tagColorsStoreQuery.isPending
-  ) return <LoaderFullWindow message="Loading avatars..." />;
+  ) return <LoaderFullWindow message="アバターを読み込んでいます..." />;
   if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;
   if (tagStoreQuery.isError) return <div>Error: {(tagStoreQuery.error as Error).message}</div>;
   if (tagColorsStoreQuery.isError) return <div>Error: {(tagColorsStoreQuery.error as Error).message}</div>;
@@ -102,7 +102,7 @@ const DashBoard = (props: DashBoardProps) => {
       </AppShell.Header>
 
       <AppShell.Main>
-        {cardImageSize === undefined || cardNumberPerRow === undefined && <LoaderFullWindow message="Loading settings..." />}
+        {cardImageSize === undefined || cardNumberPerRow === undefined && <LoaderFullWindow message="設定を読み込んでいます..." />}
         {cardImageSize !== undefined && cardNumberPerRow !== undefined && <AvatarList
           avatars={avatarListQuery.data.avatars}
           tags={tagStoreQuery.data}

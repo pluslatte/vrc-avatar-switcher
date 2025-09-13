@@ -1,11 +1,13 @@
 import { ActionIcon, Group, SegmentedControl, Select, Text } from '@mantine/core';
-import { IconImageInPicture, IconReload } from '@tabler/icons-react';
+import { IconImageInPicture, IconReload, IconTableRow } from '@tabler/icons-react';
 
 interface FooterContentsProps {
   selectedSort: 'Name' | 'Updated';
   cardImageSize: number;
+  cardNumberPerRow: number;
   setCardImageSize: (size: string | null) => void;
-  onSelectorChange: (option: string | null) => void;
+  onSortSettingChange: (option: string | null) => void;
+  setCardNumberPerRow: (number: string | null) => void;
   onRefreshButtonClick: () => void;
 }
 const FooterContents = (props: FooterContentsProps) => {
@@ -16,7 +18,7 @@ const FooterContents = (props: FooterContentsProps) => {
         data={[{ value: 'Name', label: '名前' }, { value: 'Updated', label: '更新日' }]}
         style={{ width: 200 }}
         value={props.selectedSort}
-        onChange={props.onSelectorChange}
+        onChange={props.onSortSettingChange}
       />
       <IconImageInPicture />
       <SegmentedControl
@@ -26,6 +28,17 @@ const FooterContents = (props: FooterContentsProps) => {
           { label: '小', value: '80' },
           { label: '中', value: '120' },
           { label: '大', value: '160' },
+          { label: '特大', value: '220' },
+        ]}
+      />
+      <IconTableRow />
+      <SegmentedControl
+        value={props.cardNumberPerRow.toString()}
+        onChange={props.setCardNumberPerRow}
+        data={[
+          { label: '3列', value: '4' },
+          { label: '4列', value: '3' },
+          { label: '6列', value: '2' },
         ]}
       />
       <ActionIcon

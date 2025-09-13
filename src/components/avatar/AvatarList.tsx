@@ -7,6 +7,7 @@ interface AvatarListProps {
   currentUser: CurrentUser;
   pendingSwitch: boolean;
   cardImageSize: number | null;
+  cardNumberPerRow: number;
   handlerAvatarSwitch: (avatarId: string) => void;
 }
 const AvatarList = (props: AvatarListProps) => {
@@ -24,7 +25,7 @@ const AvatarList = (props: AvatarListProps) => {
           />
         );
         return (
-          <Grid.Col span={3} key={avatar.id}>
+          <Grid.Col span={props.cardNumberPerRow} key={avatar.id}>
             {isActive ? (
               <Indicator
                 processing

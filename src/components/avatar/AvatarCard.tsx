@@ -34,12 +34,7 @@ const AvatarCard = (props: AvatarCardProps) => {
       <Card.Section p="sm" h="48px">
         <Text
           fw={500}
-          size={
-            props.avatar.name.length > 16
-              ? (props.avatar.name.length > 20
-                ? 'xs'
-                : 'sm')
-              : 'md'}
+          size="md"
         >
           {props.avatar.name}
         </Text>

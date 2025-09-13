@@ -5,6 +5,7 @@ import HeaderContents from '@/components/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
 import FooterContents from '@/components/FooterContents';
 import { useCardImageSizeSlider } from '@/hooks/useCardImageSizeSlider';
+import { useCardNumberPerRowControl } from '@/hooks/useCardNumberPerRowControl';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -12,6 +13,7 @@ interface DashBoardProps {
 const DashBoard = (props: DashBoardProps) => {
   const { avatarListQuery, switchAvatarMutation, selectedSort, setSelectedSort } = useAvatarSwitcher();
   const { cardImageSize, handleCardImageSizeChange } = useCardImageSizeSlider();
+  const { cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowControl();
 
   const handlerAvatarSwitch = (avatarId: string) => {
     switchAvatarMutation.mutate(avatarId);
@@ -51,6 +53,7 @@ const DashBoard = (props: DashBoardProps) => {
           currentUser={avatarListQuery.data.currentUser}
           pendingSwitch={switchAvatarMutation.isPending}
           cardImageSize={cardImageSize}
+          cardNumberPerRow={cardNumberPerRow}
           handlerAvatarSwitch={handlerAvatarSwitch}
         />
       </AppShell.Main>
@@ -59,8 +62,10 @@ const DashBoard = (props: DashBoardProps) => {
         <FooterContents
           selectedSort={selectedSort}
           cardImageSize={cardImageSize}
+          cardNumberPerRow={cardNumberPerRow}
           setCardImageSize={handleCardImageSizeChange}
-          onSelectorChange={handlerSortOptSwitch}
+          setCardNumberPerRow={handleCardNumberPerRow}
+          onSortSettingChange={handlerSortOptSwitch}
           onRefreshButtonClick={handlerRefetchAvatar}
         />
       </AppShell.Footer>

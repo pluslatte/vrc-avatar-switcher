@@ -4,38 +4,47 @@ import { Button, Card, Group, Image, Text } from '@mantine/core';
 interface AvatarCardProps {
   avatar: Avatar;
   isActive: boolean;
+  onAvatarSwitchClicked: (avatarId: string) => void;
 }
 
-const AvatarCard = (props: AvatarCardProps) => (
-  <Card
-    shadow={props.isActive ? 'lg' : 'md'}
-    padding="lg"
-    radius="md"
-    withBorder
-    style={{
-      borderColor: props.isActive ? '#00bcd4' : '#e0e0e0',
-      backgroundColor: props.isActive ? '#e0f7fa' : 'white',
-    }}
-  >
-    <Card.Section>
-      <Image src={props.avatar.thumbnailImageUrl} alt={props.avatar.name} />
-    </Card.Section>
+const AvatarCard = (props: AvatarCardProps) => {
+  const handleSwitch = () => {
+    if (props.isActive) return;
+    props.onAvatarSwitchClicked(props.avatar.id);
+  };
 
-    <Group justify="space-between" mt="md" mb="xs">
-      <Text fw={500}>{props.avatar.name}</Text>
-    </Group>
-
-    <Button
-      color="cyan"
-      fullWidth
-      size="lg"
-      mt="md"
+  return (
+    <Card
+      shadow={props.isActive ? 'lg' : 'md'}
+      padding="lg"
       radius="md"
-      disabled={props.isActive}
+      withBorder
+      style={{
+        borderColor: props.isActive ? '#00bcd4' : '#e0e0e0',
+        backgroundColor: props.isActive ? '#e0f7fa' : 'white',
+      }}
     >
-      {props.isActive ? 'Active' : 'Select'}
-    </Button>
-  </Card>
-);
+      <Card.Section>
+        <Image src={props.avatar.thumbnailImageUrl} alt={props.avatar.name} />
+      </Card.Section>
+
+      <Group justify="space-between" mt="md" mb="xs">
+        <Text fw={500}>{props.avatar.name}</Text>
+      </Group>
+
+      <Button
+        color="cyan"
+        fullWidth
+        size="lg"
+        mt="md"
+        radius="md"
+        disabled={props.isActive}
+        onClick={handleSwitch}
+      >
+        {props.isActive ? 'Active' : 'Select'}
+      </Button>
+    </Card>
+  );
+};
 
 export default AvatarCard;

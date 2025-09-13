@@ -1,8 +1,9 @@
 import AvatarList from '@/components/avatar/AvatarList';
 import { useAvatarSwitcher } from '@/hooks/useAvatarSwitcher';
-import { AppShell, Select } from '@mantine/core';
-import HeaderContents from './HeaderContents';
-import { LoaderFullWindow } from './LoaderFullWindow';
+import { AppShell } from '@mantine/core';
+import HeaderContents from '@/components/HeaderContents';
+import { LoaderFullWindow } from '@/components/LoaderFullWindow';
+import FooterContents from '@/components/FooterContents';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -14,6 +15,12 @@ const DashBoard = (props: DashBoardProps) => {
     switchAvatarMutation.mutate(avatarId);
   };
 
+  const handlerSortOptSwitch = (option: string | null) => {
+    if (option === 'Name' || option === 'Updated') {
+      setSelectedSort(option);
+    }
+  };
+
   if (avatarListQuery.isPending) return <LoaderFullWindow message="Loading avatars..." />;
   if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;
 
@@ -21,6 +28,7 @@ const DashBoard = (props: DashBoardProps) => {
     <AppShell
       padding="md"
       header={{ height: 60 }}
+      footer={{ height: 60 }}
     >
       <AppShell.Header>
         <HeaderContents
@@ -32,23 +40,17 @@ const DashBoard = (props: DashBoardProps) => {
       </AppShell.Header>
 
       <AppShell.Main>
-        <Select
-          label="Sort Avatars By"
-          data={[{ value: 'Name', label: 'Name' }, { value: 'Updated', label: 'Updated' }]}
-          style={{ marginBottom: 20, width: 200 }}
-          value={selectedSort}
-          onChange={(value) => {
-            if (value === 'Name' || value === 'Updated') {
-              setSelectedSort(value);
-            }
-          }}
-        />
         <AvatarList
           avatars={avatarListQuery.data.avatars}
           currentUser={avatarListQuery.data.currentUser}
           handlerAvatarSwitch={handlerAvatarSwitch}
         />
       </AppShell.Main>
+
+      <AppShell.Footer>
+        <FooterContents selectedSort={selectedSort} onSelectorChange={handlerSortOptSwitch} />
+      </AppShell.Footer>
+
     </AppShell>
   );
 };

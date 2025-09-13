@@ -15,7 +15,7 @@ use vrchatapi::{
 use crate::{
     auth::{get_new_auth_cookie_without_2fa, is_auth_cookie_valid, AuthCookieOk},
     avatars::fetch_avatars,
-    config::{create_configuration, set_raw_cookies_into_jar},
+    config::{create_configuration, create_configuration_for_login, set_raw_cookies_into_jar},
 };
 
 fn extract_cookies_from_jar<C>(jar: &Arc<C>) -> (String, String)
@@ -71,7 +71,8 @@ struct CommandLoginOk {
 #[tauri::command]
 async fn command_new_auth(username: &str, password: &str) -> Result<CommandLoginOk, String> {
     let jar = Arc::new(Jar::default());
-    match get_new_auth_cookie_without_2fa(&jar, username, password).await? {
+    let config = create_configuration_for_login(&jar, username, password)?;
+    match get_new_auth_cookie_without_2fa(&config).await? {
         AuthCookieOk::Success => {
             let extract = extract_cookies_from_jar(&jar);
             Ok(CommandLoginOk {
@@ -120,7 +121,8 @@ async fn command_2fa(
         .await
         .map_err(|e| e.to_string())?;
 
-    match get_new_auth_cookie_without_2fa(&jar, username, password).await? {
+    let config = create_configuration_for_login(&jar, username, password)?;
+    match get_new_auth_cookie_without_2fa(&config).await? {
         AuthCookieOk::Success => {
             let extract = extract_cookies_from_jar(&jar);
             Ok(Command2FAOk {
@@ -148,7 +150,8 @@ async fn command_email_2fa(
         .await
         .map_err(|e| e.to_string())?;
 
-    match get_new_auth_cookie_without_2fa(&jar, username, password).await? {
+    let config = create_configuration_for_login(&jar, username, password)?;
+    match get_new_auth_cookie_without_2fa(&config).await? {
         AuthCookieOk::Success => {
             let extract = extract_cookies_from_jar(&jar);
             Ok(Command2FAOk {

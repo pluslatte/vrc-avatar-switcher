@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "avatar-switcher",
+  "productName": "vrc-avatar-switcher",
   "version": "0.1.0",
-  "identifier": "com.pluslatte.avatar-switcher",
+  "identifier": "com.pluslatte.vrc-avatar-switcher",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "avatar-switcher",
+        "title": "vrc-avatar-switcher",
         "width": 800,
         "height": 600
       }

@@ -1,7 +1,7 @@
 // @ts-check
 
 import eslint from '@eslint/js';
-import { defineConfig } from 'eslint/config'
+import { defineConfig } from 'eslint/config';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 import tseslint from 'typescript-eslint';
 import pluginReact from 'eslint-plugin-react';
@@ -20,6 +20,16 @@ export default defineConfig(
       plugins: {
         react: pluginReact,
         reactHooks: pluginReactHooks,
+      }
+    },
+    {
+      rules: {
+        "semi": ["error", "always"],
+        "semi-spacing": ["error", { "after": true, "before": false }],
+        "semi-style": ["error", "last"],
+        "no-extra-semi": "error",
+        "no-unexpected-multiline": "error",
+        "no-unreachable": "error"
       }
     }
   ]

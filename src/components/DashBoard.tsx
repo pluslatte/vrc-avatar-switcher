@@ -3,7 +3,7 @@ import { useAvatarSwitcher } from '@/hooks/useAvatarSwitcher';
 import { AppShell } from '@mantine/core';
 import HeaderContents from '@/components/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
-import FooterContents from '@/components/FooterContents';
+import FooterContents from '@/components/footer/FooterContents';
 import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
 

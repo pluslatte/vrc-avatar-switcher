@@ -36,7 +36,6 @@ pub async fn fetch_avatars(config: &Configuration) -> Result<Vec<Avatar>, String
 
                 avatar_count += avatars.len();
                 avatars.iter().for_each(|avatar| {
-                    println!("Fetched: {}", avatar.name);
                     out.push(avatar.clone());
                 });
 

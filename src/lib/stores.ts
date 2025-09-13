@@ -20,3 +20,11 @@ export const saveCookies = async (authCookie: string, twofaCookie: string | null
   await store.save();
   store.close();
 };
+
+export const dropCookies = async (): Promise<void> => {
+  const store = await load(storeFileName);
+  await store.delete('auth_cookie');
+  await store.delete('two_fa_cookie');
+  await store.save();
+  store.close();
+};

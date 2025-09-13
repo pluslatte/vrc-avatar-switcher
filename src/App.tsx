@@ -1,10 +1,9 @@
 import { Button, Input, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { invoke } from '@tauri-apps/api/core';
-import { load } from '@tauri-apps/plugin-store';
 import { useEffect, useState } from 'react';
-import { Avatar, command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/command';
+import { command_fetch_avatars, command_new_auth, command_submit_2fa, command_submit_email_2fa } from '@/lib/command';
+import { loadCookies, saveCookies } from '@/lib/stores';
 
 const queryClient = new QueryClient();
 
@@ -15,13 +14,7 @@ interface AvatarListProps {
 const AvatarList = (props: AvatarListProps) => {
   const query = useQuery({
     queryKey: ['avatars', props.rawAuthCookie, props.raw2faCookie], queryFn: async () => (
-      await invoke<Avatar[]>(
-        'command_fetch_avatars',
-        {
-          rawAuthCookie: props.rawAuthCookie,
-          raw2faCookie: props.raw2faCookie
-        }
-      )
+      await command_fetch_avatars(props.rawAuthCookie, props.raw2faCookie)
     )
   });
 
@@ -44,21 +37,15 @@ const AvatarList = (props: AvatarListProps) => {
 
 const AvatarListStoreWrapper = () => {
   const storeQuery = useQuery({
-    queryKey: ['storedAuth'], queryFn: async () => {
-      const store = await load('auth.json');
-      const storedAuthCookie = await store.get('auth_cookie') as string | undefined;
-      const storedTwofaCookie = await store.get('two_fa_cookie') as string | undefined;
-      store.close();
-      return { storedAuthCookie, storedTwofaCookie };
-    }
+    queryKey: ['storedAuth'], queryFn: loadCookies
   });
 
   return (<div>
     {storeQuery.isPending && <div>Loading stored auth...</div>}
     {storeQuery.isError && <div>Error loading stored auth: {(storeQuery.error as Error).message}</div>}
 
-    {storeQuery.data && storeQuery.data.storedAuthCookie && storeQuery.data.storedTwofaCookie && (
-      <AvatarList rawAuthCookie={storeQuery.data.storedAuthCookie} raw2faCookie={storeQuery.data.storedTwofaCookie} />
+    {storeQuery.data && storeQuery.data.authCookie && storeQuery.data.twofaCookie && (
+      <AvatarList rawAuthCookie={storeQuery.data.authCookie} raw2faCookie={storeQuery.data.twofaCookie} />
     )}
   </div>
   );
@@ -78,10 +65,7 @@ const LoginForm = () => {
       const result = await command_new_auth(username, password);
       if (result.status === 'Success') {
         setStep('done');
-        const store = await load('auth.json');
-        await store.set('auth_cookie', result.auth_cookie);
-        await store.set('two_fa_cookie', result.two_fa_cookie);
-        await store.save();
+        saveCookies(result.auth_cookie, result.two_fa_cookie);
       } else if (result.status === 'Requires2FA') {
         setAuthCookie(result.auth_cookie);
         setTwofaCookie(result.two_fa_cookie || '');
@@ -105,10 +89,7 @@ const LoginForm = () => {
         authCookie, twofaCookie, username, password, code
       );
       setStep('done');
-      const store = await load('auth.json');
-      await store.set('auth_cookie', result.auth_cookie);
-      await store.set('two_fa_cookie', result.two_fa_cookie);
-      await store.save();
+      saveCookies(result.auth_cookie, result.two_fa_cookie);
     } catch (error) {
       console.error('2FA submission failed:', error);
     }
@@ -120,24 +101,19 @@ const LoginForm = () => {
         authCookie, twofaCookie, username, password, code
       );
       setStep('done');
-      const store = await load('auth.json');
-      await store.set('auth_cookie', result.auth_cookie);
-      await store.set('two_fa_cookie', result.two_fa_cookie);
-      await store.save();
+      saveCookies(result.auth_cookie, result.two_fa_cookie);
     } catch (error) {
       console.error('Email 2FA submission failed:', error);
     }
   };
 
   const checkStoredAuth = async () => {
-    const store = await load('auth.json');
-    const storedAuthCookie = await store.get('auth_cookie') as string | undefined;
-    const storedTwofaCookie = await store.get('two_fa_cookie') as string | undefined;
-
-    if (storedAuthCookie && storedTwofaCookie) {
+    const { authCookie, twofaCookie } = await loadCookies();
+    if (authCookie && twofaCookie) {
       setStep('done');
     }
   };
+
   useEffect(() => {
     checkStoredAuth();
   }, []);

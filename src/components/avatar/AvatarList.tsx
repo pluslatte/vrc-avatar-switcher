@@ -1,22 +1,22 @@
 import { Grid, Indicator } from '@mantine/core';
 import AvatarCard from './AvatarCard';
-import { useAvatarList } from '@/hooks/useAvatarList';
+import { Avatar, CurrentUser } from '@/lib/models';
 
-const AvatarList = () => {
-  const { avatarListQuery, handlerAvatarSwitch } = useAvatarList();
-
-  if (avatarListQuery.isPending) return <div>Loading...</div>;
-  if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;
-
+interface AvatarListProps {
+  avatars: Array<Avatar>;
+  currentUser: CurrentUser;
+  handlerAvatarSwitch: (avatarId: string) => void;
+}
+const AvatarList = (props: AvatarListProps) => {
   return (
     <Grid>
-      {avatarListQuery.data.avatars.map(avatar => {
-        const isActive = avatarListQuery.data.currentUser.currentAvatar === avatar.id;
+      {props.avatars.map(avatar => {
+        const isActive = props.currentUser.currentAvatar === avatar.id;
         const card = (
           <AvatarCard
             avatar={avatar}
             isActive={isActive}
-            onAvatarSwitchClicked={handlerAvatarSwitch}
+            onAvatarSwitchClicked={props.handlerAvatarSwitch}
           />
         );
         return (

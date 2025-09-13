@@ -10,31 +10,34 @@ const AvatarList = () => {
 
   return (
     <Grid>
-      {avatarListQuery.data.avatars.map(avatar => (
-        <Grid.Col span={3} key={avatar.id}>
-          {avatarListQuery.data.currentUser.currentAvatar === avatar.id && (
-            <Indicator
-              processing
-              color="green"
-              size={16}
-              offset={16}
-              withBorder
-              position="top-start"
-            >
-              <AvatarCard
-                avatar={avatar}
-                isActive={avatarListQuery.data.currentUser.currentAvatar === avatar.id}
-                onAvatarSwitchClicked={handlerAvatarSwitch}
-              />
-            </Indicator>)}
-          {avatarListQuery.data.currentUser.currentAvatar !== avatar.id && (
-            <AvatarCard
-              avatar={avatar}
-              isActive={avatarListQuery.data.currentUser.currentAvatar === avatar.id}
-              onAvatarSwitchClicked={handlerAvatarSwitch}
-            />)}
-        </Grid.Col>
-      ))}
+      {avatarListQuery.data.avatars.map(avatar => {
+        const isActive = avatarListQuery.data.currentUser.currentAvatar === avatar.id;
+        const card = (
+          <AvatarCard
+            avatar={avatar}
+            isActive={isActive}
+            onAvatarSwitchClicked={handlerAvatarSwitch}
+          />
+        );
+        return (
+          <Grid.Col span={3} key={avatar.id}>
+            {isActive ? (
+              <Indicator
+                processing
+                color="green"
+                size={16}
+                offset={16}
+                withBorder
+                position="top-start"
+              >
+                {card}
+              </Indicator>
+            ) : (
+              card
+            )}
+          </Grid.Col>
+        );
+      })}
     </Grid>
   );
 };

@@ -63,6 +63,7 @@ const AvatarCard = (props: AvatarCardProps) => {
             <Badge color={props.tagColors[tag] || 'gray'} key={tag}>{tag}</Badge>
           ))}
           <TagManagerButton
+            avatarId={props.avatar.id}
             tags={props.tags}
             tagColors={props.tagColors}
             handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}

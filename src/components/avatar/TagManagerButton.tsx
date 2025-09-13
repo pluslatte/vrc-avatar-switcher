@@ -3,6 +3,7 @@ import { IconPlus } from '@tabler/icons-react';
 import TagManager from './TagManager';
 
 interface TagManagerButtonProps {
+  avatarId: string;
   tags: Record<string, string[]>;
   tagColors: Record<string, string>;
   handlerRegisterAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
@@ -29,6 +30,7 @@ const TagManagerButton = (props: TagManagerButtonProps) => {
       </Popover.Target>
       <Popover.Dropdown>
         <TagManager
+          avatarId={props.avatarId}
           tags={props.tags}
           tagColors={props.tagColors}
           handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}

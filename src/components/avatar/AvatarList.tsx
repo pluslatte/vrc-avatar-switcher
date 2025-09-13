@@ -5,6 +5,7 @@ import { Avatar, CurrentUser } from '@/lib/models';
 interface AvatarListProps {
   avatars: Array<Avatar>;
   currentUser: CurrentUser;
+  pendingSwitch: boolean;
   handlerAvatarSwitch: (avatarId: string) => void;
 }
 const AvatarList = (props: AvatarListProps) => {
@@ -16,6 +17,7 @@ const AvatarList = (props: AvatarListProps) => {
           <AvatarCard
             avatar={avatar}
             isActive={isActive}
+            pendingSwitch={props.pendingSwitch}
             onAvatarSwitchClicked={props.handlerAvatarSwitch}
           />
         );

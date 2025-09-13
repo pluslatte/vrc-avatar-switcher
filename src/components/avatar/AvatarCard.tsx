@@ -4,6 +4,7 @@ import { Button, Card, Group, Image, Text } from '@mantine/core';
 interface AvatarCardProps {
   avatar: Avatar;
   isActive: boolean;
+  pendingSwitch: boolean;
   onAvatarSwitchClicked: (avatarId: string) => void;
 }
 
@@ -36,6 +37,7 @@ const AvatarCard = (props: AvatarCardProps) => {
         mt="md"
         radius="md"
         disabled={props.isActive}
+        loading={props.pendingSwitch && !props.isActive}
         onClick={handleSwitch}
       >
         {props.isActive ? 'Active' : 'Select'}

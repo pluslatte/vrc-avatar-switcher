@@ -1,4 +1,4 @@
-import { ActionIcon, Group, SegmentedControl, Select, Text } from '@mantine/core';
+import { ActionIcon, Group, SegmentedControl, Select, Text, Tooltip } from '@mantine/core';
 import { IconImageInPicture, IconReload, IconTableRow } from '@tabler/icons-react';
 
 interface FooterContentsProps {
@@ -41,17 +41,19 @@ const FooterContents = (props: FooterContentsProps) => {
           { label: '6列', value: '2' },
         ]}
       />
-      <ActionIcon
-        variant="filled"
-        style={{ marginLeft: 'auto' }}
-        size="xl"
-        onClick={(e) => {
-          e.preventDefault();
-          props.onRefreshButtonClick();
-        }}
-      >
-        <IconReload />
-      </ActionIcon>
+      <Tooltip label="アバターリストを更新" withArrow position="top" bg="dark" c="white">
+        <ActionIcon
+          variant="outline"
+          style={{ marginLeft: 'auto' }}
+          size="xl"
+          onClick={(e) => {
+            e.preventDefault();
+            props.onRefreshButtonClick();
+          }}
+        >
+          <IconReload />
+        </ActionIcon>
+      </Tooltip>
     </Group>
   );
 };

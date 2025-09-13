@@ -8,9 +8,9 @@ interface FooterContentsProps {
 const FooterContents = (props: FooterContentsProps) => {
   return (
     <Group px="md" mt="8">
-      <Text>Sort by:</Text>
+      <Text>ソート設定:</Text>
       <Select
-        data={[{ value: 'Name', label: 'Name' }, { value: 'Updated', label: 'Updated' }]}
+        data={[{ value: 'Name', label: '名前' }, { value: 'Updated', label: '更新日' }]}
         style={{ width: 200 }}
         value={props.selectedSort}
         onChange={props.onSelectorChange}

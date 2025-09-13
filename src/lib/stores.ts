@@ -32,14 +32,14 @@ export const dropCookies = async (): Promise<void> => {
 
 const avatarListConfigSortOrder = 'avatar_list_config_sort_order.json';
 
-export const saveSortOrder = async (order: AvatarSortOrder | null): Promise<void> => {
+export const saveAvatarSortOrder = async (order: AvatarSortOrder | null): Promise<void> => {
   const store = await load(avatarListConfigSortOrder);
   await store.set('sort_order', order);
   await store.save();
   store.close();
 };
 
-export const loadSortOrder = async (): Promise<AvatarSortOrder> => {
+export const loadAvatarSortOrder = async (): Promise<AvatarSortOrder> => {
   const store = await load(avatarListConfigSortOrder);
   const order = (await store.get('sort_order')) as AvatarSortOrder | null | undefined;
   store.close();

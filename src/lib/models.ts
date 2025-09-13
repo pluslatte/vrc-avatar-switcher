@@ -12,3 +12,6 @@ export interface CurrentUser {
 }
 
 export type AvatarSortOrder = 'Name' | 'Updated';
+export const isAvatarSortOrder = (option: unknown): option is AvatarSortOrder => {
+  return option === 'Name' || option === 'Updated';
+};

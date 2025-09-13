@@ -6,12 +6,13 @@ import { LoaderFullWindow } from '@/components/LoaderFullWindow';
 import FooterContents from '@/components/footer/FooterContents';
 import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
+import { isAvatarSortOrder } from '@/lib/models';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
 }
 const DashBoard = (props: DashBoardProps) => {
-  const { avatarListQuery, switchAvatarMutation, selectedSort, setSelectedSort } = useAvatarSwitcher();
+  const { avatarListQuery, switchAvatarMutation, avatarSortOrder, handleAvatarSortOrderChange } = useAvatarSwitcher();
   const { loading: cardImageSizeLoading, cardImageSize, handleCardImageSizeChange } = useCardImageSizeSelector();
   const { loading: cardNumberPerRowLoading, cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowSelector();
 
@@ -20,8 +21,9 @@ const DashBoard = (props: DashBoardProps) => {
   };
 
   const handlerSortOptSwitch = (option: string | null) => {
-    if (option === 'Name' || option === 'Updated') {
-      setSelectedSort(option);
+    // check if option is AvatarSortOrder
+    if (isAvatarSortOrder(option)) {
+      handleAvatarSortOrderChange(option);
     }
   };
 
@@ -29,7 +31,7 @@ const DashBoard = (props: DashBoardProps) => {
     avatarListQuery.refetch();
   };
 
-  if (avatarListQuery.isPending || avatarListQuery.isFetching) return <LoaderFullWindow message="Loading avatars..." />;
+  if (avatarListQuery.isPending || avatarListQuery.isFetching || avatarSortOrder === undefined) return <LoaderFullWindow message="Loading avatars..." />;
   if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;
 
   return (
@@ -61,7 +63,7 @@ const DashBoard = (props: DashBoardProps) => {
 
       <AppShell.Footer>
         <FooterContents
-          selectedSort={selectedSort}
+          selectedSort={avatarSortOrder}
           cardImageSize={cardImageSize}
           cardImageSizeLoading={cardImageSizeLoading}
           cardNumberPerRow={cardNumberPerRow}

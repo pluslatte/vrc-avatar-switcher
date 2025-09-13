@@ -13,7 +13,7 @@ export const useCardImageSizeSelector = () => {
     const parsedSize = parseInt(newSize, 10);
     if (isNaN(parsedSize)) return;
     await saveCardImageSize(parsedSize);
-    storeQuery.refetch();
+    await storeQuery.refetch();
   };
 
   return {

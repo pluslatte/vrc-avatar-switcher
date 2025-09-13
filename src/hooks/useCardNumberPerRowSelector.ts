@@ -13,7 +13,7 @@ export const useCardNumberPerRowSelector = () => {
     const parsedNumber = parseInt(newNumber, 10);
     if (isNaN(parsedNumber)) return;
     await saveCardNumberPerRow(parsedNumber);
-    storeQuery.refetch();
+    await storeQuery.refetch();
   };
 
   return {

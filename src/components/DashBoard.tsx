@@ -39,8 +39,8 @@ const DashBoard = (props: DashBoardProps) => {
     }
   };
 
-  const handlerRefetchAvatar = () => {
-    avatarListQuery.refetch();
+  const handlerRefetchAvatar = async () => {
+    await avatarListQuery.refetch();
   };
 
   const handleRegisterAvatarTag = async (tags: Record<string, string[]>, tagName: string, avatarId: string) => {
@@ -53,7 +53,7 @@ const DashBoard = (props: DashBoardProps) => {
       newTags[tagName] = [avatarId];
     }
     await saveAvatarTags(newTags);
-    tagStoreQuery.refetch();
+    await tagStoreQuery.refetch();
   };
 
   const handleRemoveAvatarTag = async (tags: Record<string, string[]>, tagName: string, avatarId: string) => {
@@ -64,7 +64,7 @@ const DashBoard = (props: DashBoardProps) => {
         delete newTags[tagName];
       }
       await saveAvatarTags(newTags);
-      tagStoreQuery.refetch();
+      await tagStoreQuery.refetch();
     }
   };
 
@@ -72,7 +72,7 @@ const DashBoard = (props: DashBoardProps) => {
     const newTags = { ...tags };
     newTags[tagName] = color;
     await saveAvatarTagColors(newTags);
-    tagColorsStoreQuery.refetch();
+    await tagColorsStoreQuery.refetch();
   };
 
   if (

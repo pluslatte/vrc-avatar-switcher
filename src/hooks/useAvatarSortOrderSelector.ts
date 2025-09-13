@@ -12,7 +12,7 @@ export const useAvatarSortOrderSelector = () => {
   const handleAvatarSortOrderChange = async (newOrder: AvatarSortOrder | null) => {
     if (!newOrder) return;
     await saveAvatarSortOrder(newOrder);
-    storeQuery.refetch();
+    await storeQuery.refetch();
   };
 
   return {

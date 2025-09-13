@@ -4,12 +4,14 @@ import { AppShell } from '@mantine/core';
 import HeaderContents from '@/components/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
 import FooterContents from '@/components/FooterContents';
+import { useCardImageSizeSlider } from '@/hooks/useCardImageSizeSlider';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
 }
 const DashBoard = (props: DashBoardProps) => {
   const { avatarListQuery, switchAvatarMutation, selectedSort, setSelectedSort } = useAvatarSwitcher();
+  const { cardImageSize, handleCardImageSizeChange } = useCardImageSizeSlider();
 
   const handlerAvatarSwitch = (avatarId: string) => {
     switchAvatarMutation.mutate(avatarId);
@@ -48,7 +50,7 @@ const DashBoard = (props: DashBoardProps) => {
           avatars={avatarListQuery.data.avatars}
           currentUser={avatarListQuery.data.currentUser}
           pendingSwitch={switchAvatarMutation.isPending}
-          cardimageSize={120}
+          cardImageSize={cardImageSize}
           handlerAvatarSwitch={handlerAvatarSwitch}
         />
       </AppShell.Main>
@@ -56,6 +58,8 @@ const DashBoard = (props: DashBoardProps) => {
       <AppShell.Footer>
         <FooterContents
           selectedSort={selectedSort}
+          cardImageSize={cardImageSize}
+          setCardImageSize={handleCardImageSizeChange}
           onSelectorChange={handlerSortOptSwitch}
           onRefreshButtonClick={handlerRefetchAvatar}
         />

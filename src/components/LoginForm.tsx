@@ -20,7 +20,7 @@ const LoginForm = (props: LoginFormProps) => {
       const result = await command_new_auth(username, password);
       if (result.status === 'Success') {
         setStep('done');
-        saveCookies(result.auth_cookie, result.two_fa_cookie);
+        await saveCookies(result.auth_cookie, result.two_fa_cookie);
         props.onLoginSuccess();
       } else if (result.status === 'Requires2FA') {
         setAuthCookie(result.auth_cookie);
@@ -45,7 +45,7 @@ const LoginForm = (props: LoginFormProps) => {
         authCookie, twofaCookie, username, password, code
       );
       setStep('done');
-      saveCookies(result.auth_cookie, result.two_fa_cookie);
+      await saveCookies(result.auth_cookie, result.two_fa_cookie);
       props.onLoginSuccess();
     } catch (error) {
       console.error('2FA submission failed:', error);
@@ -58,7 +58,7 @@ const LoginForm = (props: LoginFormProps) => {
         authCookie, twofaCookie, username, password, code
       );
       setStep('done');
-      saveCookies(result.auth_cookie, result.two_fa_cookie);
+      await saveCookies(result.auth_cookie, result.two_fa_cookie);
       props.onLoginSuccess();
     } catch (error) {
       console.error('Email 2FA submission failed:', error);

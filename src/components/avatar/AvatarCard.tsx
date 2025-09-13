@@ -1,5 +1,5 @@
 import { Avatar } from '@/lib/models';
-import { BackgroundImage, Button, Card, Text } from '@mantine/core';
+import { BackgroundImage, Badge, Button, Card, Divider, Group, Text } from '@mantine/core';
 
 interface AvatarCardProps {
   avatar: Avatar;
@@ -17,13 +17,13 @@ const AvatarCard = (props: AvatarCardProps) => {
 
   return (
     <Card
-      shadow={props.isActive ? 'lg' : 'md'}
+      shadow='lg'
       radius="md"
       withBorder
-      bg={props.isActive ? 'darkcyan' : ''}
+      bg={props.isActive ? 'dark' : ''}
     >
       <BackgroundImage
-        radius={'md'}
+        radius="md"
         src={props.avatar.thumbnailImageUrl}
       >
         <Button
@@ -31,7 +31,7 @@ const AvatarCard = (props: AvatarCardProps) => {
           gradient={{ from: 'transparent', to: 'dark', deg: 180 }}
           fullWidth
           fz="h2"
-          radius="md"
+          radius="sm"
           h={props.imageSize || 120}
           disabled={props.isActive}
           loading={props.pendingSwitch && !props.isActive}
@@ -48,6 +48,13 @@ const AvatarCard = (props: AvatarCardProps) => {
         >
           {props.avatar.name}
         </Text>
+      </Card.Section>
+      <Divider />
+      <Card.Section p="sm">
+        <Group gap="xs">
+          <Badge color="cyan">hoge</Badge>
+          <Badge color="green">huga</Badge>
+        </Group>
       </Card.Section>
 
     </Card>

@@ -23,8 +23,6 @@ const AvatarCard = (props: AvatarCardProps) => {
     props.onAvatarSwitchClicked(props.avatar.id);
   };
 
-  if (props.selectedTags.length > 0) return null;
-
   return (
     <Card
       shadow='lg'

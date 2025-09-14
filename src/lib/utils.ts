@@ -4,8 +4,11 @@ export const avatarTagSearchfilterAvatars = (
   avatars: Array<Avatar>,
   selectedTags: Array<string>,
   tagAvatarRelation: Record<string, Array<{ display_name: string; color: string }>> | undefined
-) => (
-  avatars.filter(avatar => {
+) => {
+  // DEBUG
+  console.log('avatarTagSearchfilterAvatars called with:', { avatars, selectedTags, tagAvatarRelation });
+
+  const result = avatars.filter(avatar => {
       if (selectedTags.length === 0) {
         return true;
       }
@@ -15,5 +18,9 @@ export const avatarTagSearchfilterAvatars = (
       const tags = tagAvatarRelation[avatar.id] || [];
       return selectedTags.every(tag => tags.some(t => t.display_name === tag));
     }
-  )
-);
+  );
+
+  // DEBUG
+  console.log('Filtered avatars:', result);
+  return result;
+};

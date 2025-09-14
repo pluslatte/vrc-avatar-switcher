@@ -19,18 +19,16 @@ interface AvatarListProps {
 }
 const AvatarList = (props: AvatarListProps) => {
 
-  const filteredAvatars = avatarTagSearchfilterAvatars(
-    props.avatars,
-    props.selectedTags,
-    props.tagAvatarRelation
-  );
-
   if (props.tagAvatarRelationLoading) return <LoaderFullWindow message="タグ情報を読み込み中..." withAppShell={true} />;
   if (props.tagAvatarRelation === undefined) return <div>タグ情報の読み込みに失敗しました。</div>;
 
   return (
     <Grid overflow="hidden" gutter="lg">
-      {filteredAvatars.map(avatar => {
+      {avatarTagSearchfilterAvatars(
+        props.avatars,
+        props.selectedTags,
+        props.tagAvatarRelation
+      ).map(avatar => {
         if (props.tagAvatarRelation === undefined) return null;
         const isActive = props.currentUser.currentAvatar === avatar.id;
         const card = (

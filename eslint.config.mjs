@@ -14,7 +14,16 @@ export default defineConfig(
 
   [
     {
-      ignores: ['postcss.config.cjs', 'src-tauri/**'],
+      ignores: [
+        'postcss.config.cjs',
+        'src-tauri/**',
+        'node_modules/**',
+        'dist/**',
+        'out/**',
+        '*.config.*',
+        '!.eslintrc.*',
+        '!.eslint.config.*'
+      ],
     },
     {
       plugins: {

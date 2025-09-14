@@ -1,13 +1,11 @@
-import { ActionIcon, Badge, Box, Divider, Group, LoadingOverlay, MultiSelect, Popover } from '@mantine/core';
+import { ActionIcon, Badge, Box, Divider, Group, MultiSelect, Popover } from '@mantine/core';
 import { IconFilter, IconImageInPicture, IconSettings, IconSortAscendingShapes, IconTableColumn, IconTagMinus, IconX } from '@tabler/icons-react';
 import SortOrderSelector from './SortOrderSelector';
 import AvatarCardImageSizeSelector from './AvatarCardImageSizeSelector';
 import AvatarCardColumnSizeSelector from './AvatarCardColumnSizeSelector';
 import AvatarListRefreshButton from './AvatarListRefreshButton';
 import { AvatarSortOrder, CurrentUser } from '@/lib/models';
-import { useQuery } from '@tanstack/react-query';
-import { dropTag, queryAllTagsAvailable } from '@/lib/db';
-import { notifications } from '@mantine/notifications';
+import { Tag } from '@/lib/db';
 
 interface FooterContentsProps {
   currentUser: CurrentUser;
@@ -16,30 +14,15 @@ interface FooterContentsProps {
   cardImageSizeLoading: boolean;
   cardNumberPerRow: number | undefined;
   cardNumberPerRowLoading: boolean;
+  availableTags: Array<Tag>;
   setCardImageSize: (size: string | null) => void;
   onSortSettingChange: (option: string | null) => void;
   setCardNumberPerRow: (number: string | null) => void;
   onRefreshButtonClick: () => void;
   onTagFilterChange: (tags: Array<string>) => void;
+  handlerDropTag: (tagName: string, currentUserId: string) => void;
 }
 const FooterContents = (props: FooterContentsProps) => {
-  const tagQuery = useQuery({
-    queryKey: ['tags', props.currentUser.id],
-    queryFn: async () => {
-      const tags = await queryAllTagsAvailable(props.currentUser.id);
-      return tags;
-    }
-  });
-
-  const dropTagHandler = async (tagName: string, currentUserId: string) => {
-    await dropTag(tagName, currentUserId);
-    await tagQuery.refetch();
-    notifications.show({
-      title: 'タグ削除',
-      message: `タグ「${tagName}」を削除しました（関連付けられたアバターからも削除されました）`,
-      color: 'green',
-    });
-  };
 
   return (
     <Group px="md" mt="8">
@@ -55,10 +38,9 @@ const FooterContents = (props: FooterContentsProps) => {
       <Divider orientation="vertical" />
       <IconFilter />
       <Box pos="relative">
-        <LoadingOverlay visible={tagQuery.isPending} overlayProps={{ radius: 'md', blur: 2 }} />
         <MultiSelect
           placeholder="タグでフィルター"
-          data={tagQuery.data ? tagQuery.data.map(tag => ({ value: tag.display_name, label: tag.display_name })) : []}
+          data={props.availableTags.map(tag => ({ value: tag.display_name, label: tag.display_name }))}
           searchable
           onChange={props.onTagFilterChange}
         />
@@ -78,8 +60,7 @@ const FooterContents = (props: FooterContentsProps) => {
         <Popover.Dropdown>
           <Box pos="relative">
             <Group gap="xs">
-              <LoadingOverlay visible={tagQuery.isPending} overlayProps={{ radius: 'md', blur: 2 }} />
-              {tagQuery.data?.map((tag) => (
+              {props.availableTags.map((tag) => (
                 <Badge color={tag.color || 'gray'} key={tag.display_name}>
                   {tag.display_name}
                   <ActionIcon
@@ -87,7 +68,7 @@ const FooterContents = (props: FooterContentsProps) => {
                     color="dark"
                     variant="transparent"
                     onClick={() => {
-                      dropTagHandler(tag.display_name, props.currentUser.id);
+                      props.handlerDropTag(tag.display_name, props.currentUser.id);
                     }}
                     style={{ marginLeft: 4, paddingTop: 3 }}
                   >

@@ -1,12 +1,12 @@
 import { Grid, Indicator } from '@mantine/core';
 import AvatarCard from './AvatarCard';
 import { Avatar, CurrentUser } from '@/lib/models';
-import { useQuery } from '@tanstack/react-query';
-import { fetchAvatarsTags } from '@/lib/db';
 import { LoaderFullWindow } from '../LoaderFullWindow';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
+  tagAvatarRelation: Record<string, Array<{ display_name: string; color: string }>> | undefined;
+  tagAvatarRelationLoading: boolean;
   currentUser: CurrentUser;
   pendingSwitch: boolean;
   cardImageSize: number;
@@ -17,52 +17,38 @@ interface AvatarListProps {
   handlerRemoveAvatarTag: (tagName: string, avatarId: string, currentUserId: string) => Promise<void>;
 }
 const AvatarList = (props: AvatarListProps) => {
-  const tagQuery = useQuery({
-    queryKey: ['tags', props.currentUser.id, props.avatars.map(a => a.id)],
-    queryFn: () => fetchAvatarsTags(props.avatars.map(a => a.id), props.currentUser.id),
-  });
-
-  if (tagQuery.isPending) {
-    return <LoaderFullWindow message="タグ情報を読み込み中..." withAppShell={true} />;
-  }
-  if (tagQuery.isError || tagQuery.data === undefined) {
-    return <div>タグ情報の読み込みに失敗しました。</div>;
-  }
 
   const filteredAvatars = props.avatars.filter(avatar => {
     if (props.selectedTags.length === 0) {
       return true;
     }
-    const tags = tagQuery.data[avatar.id] || [];
+    if (!props.tagAvatarRelation) {
+      return false;
+    }
+    const tags = props.tagAvatarRelation[avatar.id] || [];
     return props.selectedTags.every(tag => tags.some(t => t.display_name === tag));
   });
 
-  const handlerRegisterAvatarTag = async (tagName: string, currentUserId: string, avatarId: string, color: string) => {
-    await props.handlerRegisterAvatarTag(tagName, currentUserId, avatarId, color);
-    await tagQuery.refetch();
-  };
-
-  const handlerRemoveAvatarTag = async (tagName: string, avatarId: string, currentUserId: string) => {
-    await props.handlerRemoveAvatarTag(tagName, avatarId, currentUserId);
-    await tagQuery.refetch();
-  };
+  if (props.tagAvatarRelationLoading) return <LoaderFullWindow message="タグ情報を読み込み中..." withAppShell={true} />;
+  if (props.tagAvatarRelation === undefined) return <div>タグ情報の読み込みに失敗しました。</div>;
 
   return (
     <Grid overflow="hidden" gutter="lg">
       {filteredAvatars.map(avatar => {
+        if (props.tagAvatarRelation === undefined) return null;
         const isActive = props.currentUser.currentAvatar === avatar.id;
         const card = (
           <AvatarCard
             avatar={avatar}
-            avatarTags={tagQuery.data[avatar.id] || []}
+            avatarTags={props.tagAvatarRelation[avatar.id] || []}
             currentUser={props.currentUser}
             isActiveAvatar={isActive}
             pendingSwitch={props.pendingSwitch}
             imageSize={props.cardImageSize}
             selectedTags={props.selectedTags}
             onAvatarSwitchClicked={props.handlerAvatarSwitch}
-            handlerRegisterAvatarTag={handlerRegisterAvatarTag}
-            handlerRemoveAvatarTag={handlerRemoveAvatarTag}
+            handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
+            handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
           />
         );
         return (

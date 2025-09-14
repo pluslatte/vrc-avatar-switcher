@@ -19,6 +19,8 @@ const DashBoard = (props: DashBoardProps) => {
     avatarSortOrder,
     tagsLoading,
     availableTags,
+    tagAvatarRelationLoading,
+    tagAvatarRelation,
     handleAvatarSortOrderChange,
     handlerRefetchAvatar,
     handlerAvatarSwitch,
@@ -37,10 +39,7 @@ const DashBoard = (props: DashBoardProps) => {
     }
   };
 
-  if (
-    avatarListQuery.isPending ||
-    avatarListQuery.isFetching
-  ) return <LoaderFullWindow message="アバターを読み込んでいます..." />;
+  if (avatarListQuery.isPending || avatarListQuery.isFetching) return <LoaderFullWindow message="アバターを読み込んでいます..." />;
   if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;
   if (avatarSortOrder === undefined) return <div>Error: avatarSortOrder is undefined</div>;
 
@@ -63,6 +62,8 @@ const DashBoard = (props: DashBoardProps) => {
         {cardImageSize === undefined || cardNumberPerRow === undefined && <LoaderFullWindow message="設定を読み込んでいます..." />}
         {cardImageSize !== undefined && cardNumberPerRow !== undefined && <AvatarList
           avatars={avatarListQuery.data.avatars}
+          tagAvatarRelation={tagAvatarRelation}
+          tagAvatarRelationLoading={tagAvatarRelationLoading}
           currentUser={avatarListQuery.data.currentUser}
           pendingSwitch={switchAvatarMutation.isPending}
           cardImageSize={cardImageSize}

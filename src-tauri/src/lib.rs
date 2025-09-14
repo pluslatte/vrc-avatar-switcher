@@ -170,12 +170,14 @@ pub fn run() {
             );
 
             CREATE TABLE IF NOT EXISTS tag_avatar_relations (
-                tag_identifier NVARCHAR(510) NOT NULL,
+                tag_display_name NVARCHAR(255) NOT NULL,
                 avatar_id NVARCHAR(255) NOT NULL,
                 created_by NVARCHAR(255) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (tag_identifier, avatar_id),
-                FOREIGN KEY (tag_identifier) REFERENCES tags(display_name, created_by) ON DELETE CASCADE
+                PRIMARY KEY (tag_display_name, avatar_id),
+                FOREIGN KEY (tag_display_name, created_by)
+                    REFERENCES tags(display_name, created_by)
+                    ON DELETE CASCADE
         );",
         kind: MigrationKind::Up,
     }];

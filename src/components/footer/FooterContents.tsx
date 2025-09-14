@@ -5,7 +5,7 @@ import AvatarListRefreshButton from './AvatarListRefreshButton';
 import { AvatarSortOrder, CurrentUser } from '@/lib/models';
 import { Tag } from '@/lib/db';
 import TagsRemovalPopover from './TagsRemovalPopover';
-import SettingsPopover from './SettingsPopOver';
+import SettingsPopover from './SettingsPopover';
 
 interface FooterContentsProps {
   currentUser: CurrentUser;

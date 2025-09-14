@@ -3,24 +3,30 @@ import { ActionIcon, BackgroundImage, Badge, Button, Card, Divider, Group, Text,
 import TagManagerButton from './TagManagerButton';
 import { IconX } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
+import { useQuery } from '@tanstack/react-query';
+import { fetchAvatarTags } from '@/lib/db';
 
 interface AvatarCardProps {
   avatar: Avatar;
-  tags: Record<string, string[]>;
-  associatedTagNames: string[];
-  tagColors: Record<string, string>;
-  isActive: boolean;
+  currentUsername: string;
+  isActiveAvatar: boolean;
   pendingSwitch: boolean;
   imageSize: number | null;
   onAvatarSwitchClicked: (avatarId: string) => void;
-  handlerRegisterAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
-  handlerRemoveAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
-  handlerRegisterAvatarTagColor: (tagColors: Record<string, string>, tagName: string, color: string) => void;
+  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => void;
+  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => void;
 }
 
 const AvatarCard = (props: AvatarCardProps) => {
+  const tagQuery = useQuery({
+    queryKey: ['tags', props.avatar.id, props.currentUsername],
+    queryFn: async () => {
+      return await fetchAvatarTags(props.avatar.id, props.currentUsername);
+    },
+  });
+
   const handleSwitch = () => {
-    if (props.isActive) return;
+    if (props.isActiveAvatar) return;
     props.onAvatarSwitchClicked(props.avatar.id);
   };
 
@@ -29,7 +35,7 @@ const AvatarCard = (props: AvatarCardProps) => {
       shadow='lg'
       radius="md"
       withBorder
-      bg={props.isActive ? 'dark' : ''}
+      bg={props.isActiveAvatar ? 'dark' : ''}
     >
       <BackgroundImage
         radius="md"
@@ -42,11 +48,11 @@ const AvatarCard = (props: AvatarCardProps) => {
           fz="h2"
           radius="sm"
           h={props.imageSize || 120}
-          disabled={props.isActive}
-          loading={props.pendingSwitch && !props.isActive}
+          disabled={props.isActiveAvatar}
+          loading={props.pendingSwitch && !props.isActiveAvatar}
           onClick={handleSwitch}
         >
-          {props.isActive ? 'Active' : 'Select'}
+          {props.isActiveAvatar ? 'Active' : 'Select'}
         </Button>
       </BackgroundImage>
 
@@ -62,37 +68,40 @@ const AvatarCard = (props: AvatarCardProps) => {
       </Card.Section>
       <Divider />
       <Card.Section p="sm">
-        <Group gap="xs">
-          {props.associatedTagNames.map((tag) => (
-            <Badge color={props.tagColors[tag] || 'gray'} key={tag}>
-              {tag}
-              <ActionIcon
-                size={13}
-                color="dark"
-                variant="transparent"
-                onClick={() => {
-                  notifications.show({
-                    message: 'タグを削除しています...',
-                    color: 'blue',
-                  });
-                  props.handlerRemoveAvatarTag(props.tags, tag, props.avatar.id);
-                }}
-                style={{ marginLeft: 4, paddingTop: 3 }}
-              >
-                <IconX />
-              </ActionIcon>
-            </Badge>
-          ))}
-          <TagManagerButton
-            avatarId={props.avatar.id}
-            tags={props.tags}
-            tagColors={props.tagColors}
-            associatedTagNames={props.associatedTagNames}
-            handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
-            handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
-            handlerRegisterAvatarTagColor={props.handlerRegisterAvatarTagColor}
-          />
-        </Group>
+        {tagQuery.isLoading && <Text>タグを読み込み中...</Text>}
+        {tagQuery.isError && <Text c="red">タグの読み込みに失敗しました</Text>}
+        {tagQuery.data && tagQuery.data.length === 0 && <Text c="dimmed">タグが設定されていません</Text>}
+        {tagQuery.data && tagQuery.data.length > 0 && (
+          <Group gap="xs">
+            {tagQuery.data.map((tag) => (
+              <Badge color={tag.color || 'gray'} key={tag.display_name}>
+                {tag.display_name}
+                <ActionIcon
+                  size={13}
+                  color="dark"
+                  variant="transparent"
+                  onClick={() => {
+                    notifications.show({
+                      message: 'タグを削除しています...',
+                      color: 'blue',
+                    });
+                    props.handlerRemoveAvatarTag(tag.display_name, props.avatar.id, props.currentUsername);
+                  }}
+                  style={{ marginLeft: 4, paddingTop: 3 }}
+                >
+                  <IconX />
+                </ActionIcon>
+              </Badge>
+            ))}
+            <TagManagerButton
+              avatarId={props.avatar.id}
+              tags={tagQuery.data}
+              currentUsername={props.currentUsername}
+              handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
+              handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
+            />
+          </Group>
+        )}
       </Card.Section>
 
     </Card>

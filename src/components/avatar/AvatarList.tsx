@@ -4,16 +4,14 @@ import { Avatar, CurrentUser } from '@/lib/models';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
-  tags: Record<string, string[]>;
-  tagColors: Record<string, string>;
+  currentUsername: string;
   currentUser: CurrentUser;
   pendingSwitch: boolean;
   cardImageSize: number;
   cardNumberPerRow: number;
   handlerAvatarSwitch: (avatarId: string) => void;
-  handlerRegisterAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
-  handlerRemoveAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
-  handlerRegisterAvatarTagColor: (tagColors: Record<string, string>, tagName: string, color: string) => void;
+  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => void;
+  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => void;
 }
 const AvatarList = (props: AvatarListProps) => {
   return (
@@ -24,16 +22,13 @@ const AvatarList = (props: AvatarListProps) => {
           <Box>
             <AvatarCard
               avatar={avatar}
-              isActive={isActive}
-              tags={props.tags}
-              associatedTagNames={Object.keys(props.tags).filter(tagName => props.tags[tagName].includes(avatar.id))}
-              tagColors={props.tagColors}
+              currentUsername={props.currentUsername}
+              isActiveAvatar={isActive}
               pendingSwitch={props.pendingSwitch}
               imageSize={props.cardImageSize}
               onAvatarSwitchClicked={props.handlerAvatarSwitch}
               handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
               handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
-              handlerRegisterAvatarTagColor={props.handlerRegisterAvatarTagColor}
             />
           </Box>
         );

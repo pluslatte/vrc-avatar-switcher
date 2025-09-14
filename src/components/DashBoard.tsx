@@ -7,8 +7,6 @@ import FooterContents from '@/components/footer/FooterContents';
 import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
 import { isAvatarSortOrder } from '@/lib/models';
-import { useQuery } from '@tanstack/react-query';
-import { loadAvatarTagColors, loadAvatarTags, saveAvatarTagColors, saveAvatarTags } from '@/lib/stores';
 import { notifications } from '@mantine/notifications';
 
 interface DashBoardProps {
@@ -18,16 +16,6 @@ const DashBoard = (props: DashBoardProps) => {
   const { avatarListQuery, switchAvatarMutation, avatarSortOrder, handleAvatarSortOrderChange } = useAvatarSwitcher();
   const { loading: cardImageSizeLoading, cardImageSize, handleCardImageSizeChange } = useCardImageSizeSelector();
   const { loading: cardNumberPerRowLoading, cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowSelector();
-  const tagStoreQuery = useQuery({
-    queryKey: ['tagStore'],
-    queryFn: loadAvatarTags,
-    staleTime: Infinity,
-  });
-  const tagColorsStoreQuery = useQuery({
-    queryKey: ['tagColorsStore'],
-    queryFn: loadAvatarTagColors,
-    staleTime: Infinity,
-  });
 
   const handlerAvatarSwitch = (avatarId: string) => {
     switchAvatarMutation.mutate(avatarId);

@@ -1,3 +1,4 @@
+import { Tag } from '@/lib/db';
 import { Badge, Box, Button, ColorPicker, DEFAULT_THEME, Divider, Group, Text, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconTagFilled } from '@tabler/icons-react';
@@ -5,12 +6,10 @@ import { useState } from 'react';
 
 interface TagManagerProps {
   avatarId: string;
-  tags: Record<string, string[]>;
-  tagColors: Record<string, string>;
-  associatedTagNames: string[];
-  handlerRegisterAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
-  handlerRemoveAvatarTag: (tags: Record<string, string[]>, tagName: string, avatarId: string) => void;
-  handlerRegisterAvatarTagColor: (tagColors: Record<string, string>, tagName: string, color: string) => void;
+  tags: Array<Tag>;
+  currentUsername: string;
+  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => void;
+  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => void;
 }
 const TagManager = (props: TagManagerProps) => {
   const [newTagName, setNewTagName] = useState('');
@@ -19,25 +18,23 @@ const TagManager = (props: TagManagerProps) => {
     <Box>
       <Text size="sm" mb="xs">タグを選択</Text>
       <Group gap="xs" mb="xs">
-        {Object.keys(props.tags)
-          .filter(tag => !props.associatedTagNames.includes(tag))
-          .map((tag) => (
-            <Badge
-              key={tag}
-              color={props.tagColors[tag] || 'gray'}
-              variant="filled"
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                notifications.show({
-                  message: 'タグを追加しています...',
-                  color: 'blue',
-                });
-                props.handlerRegisterAvatarTag(props.tags, tag, props.avatarId);
-              }}
-            >
-              {tag}
-            </Badge>
-          ))}
+        {props.tags.length > 0 && props.tags.map(tag => (
+          <Badge
+            key={tag.display_name}
+            color={tag.color || 'gray'}
+            variant="filled"
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              notifications.show({
+                message: 'タグを追加しています...',
+                color: 'blue',
+              });
+              props.handlerRegisterAvatarTag(tag.display_name, props.currentUsername, props.avatarId, tag.color);
+            }}
+          >
+            {tag.display_name}
+          </Badge>
+        ))}
       </Group>
       <Divider mb="xs" />
       <Text size="sm" mb="xs">新規タグ</Text>
@@ -66,16 +63,14 @@ const TagManager = (props: TagManagerProps) => {
           variant="gradient"
           gradient={{ from: 'dark', to: newTagColor, deg: 45 }}
           disabled={newTagName.trim() === '' ||
-            Object.keys(props.tags).includes(newTagName) ||
-            props.associatedTagNames.includes(newTagName.toUpperCase())}
+            props.tags.some(tag => tag.display_name.toUpperCase() === newTagName.toUpperCase())}
           fullWidth
           onClick={() => {
             notifications.show({
               message: 'タグを追加しています...',
               color: 'blue',
             });
-            props.handlerRegisterAvatarTag(props.tags, newTagName, props.avatarId);
-            props.handlerRegisterAvatarTagColor(props.tagColors, newTagName, newTagColor);
+            props.handlerRegisterAvatarTag(newTagName, props.currentUsername, props.avatarId, newTagColor);
           }}
         >
           追加

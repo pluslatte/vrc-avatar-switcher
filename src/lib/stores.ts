@@ -77,37 +77,3 @@ export const loadCardNumberPerRow = async (): Promise<number> => {
   store.close();
   return number || 3;
 };
-
-// "Avatar Tag" is pairs of string and array of avatar IDs.
-const avatarTagStoreFileName = 'avatar_tags.json';
-
-export const loadAvatarTags = async (): Promise<Record<string, string[]>> => {
-  const store = await load(avatarTagStoreFileName);
-  const tags = (await store.get('tags')) as Record<string, string[]> | undefined;
-  store.close();
-  return tags || {};
-};
-
-export const saveAvatarTags = async (tags: Record<string, string[]>): Promise<void> => {
-  const store = await load(avatarTagStoreFileName);
-  await store.set('tags', tags);
-  await store.save();
-  store.close();
-};
-
-// "Avatar Tag Color" is pairs of tag string and color string.
-const avatarTagColorStoreFileName = 'avatar_tag_colors.json';
-
-export const loadAvatarTagColors = async (): Promise<Record<string, string>> => {
-  const store = await load(avatarTagColorStoreFileName);
-  const colors = (await store.get('colors')) as Record<string, string> | undefined;
-  store.close();
-  return colors || {};
-};
-
-export const saveAvatarTagColors = async (colors: Record<string, string>): Promise<void> => {
-  const store = await load(avatarTagColorStoreFileName);
-  await store.set('colors', colors);
-  await store.save();
-  store.close();
-};

@@ -58,14 +58,19 @@ export const dropTagRelation = async (
     [tagName, avatarId, username]);
 };
 
+export interface Tag {
+  display_name: string;
+  color: string;
+}
 export const fetchAvatarTags = async (
   avatar_id: string,
   username: string,
-): Promise<Array<string>> => {
+): Promise<Array<Tag>> => {
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
-  const result = await db.select<Array<string>>(
+  const result = await db.select<Array<Tag>>(
     `SELECT
-      tag_display_name
+      tag_display_name,
+      color
     FROM
       tag_avatar_relations
     WHERE

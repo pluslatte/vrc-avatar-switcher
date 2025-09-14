@@ -1,12 +1,13 @@
-import { ActionIcon, Box, Divider, Group, LoadingOverlay, MultiSelect, Popover } from '@mantine/core';
-import { IconImageInPicture, IconSettings, IconSortAscendingShapes, IconTableColumn, IconTags } from '@tabler/icons-react';
+import { ActionIcon, Badge, Box, Divider, Group, LoadingOverlay, MultiSelect, Popover } from '@mantine/core';
+import { IconFilter, IconImageInPicture, IconSettings, IconSortAscendingShapes, IconTableColumn, IconTagMinus, IconX } from '@tabler/icons-react';
 import SortOrderSelector from './SortOrderSelector';
 import AvatarCardImageSizeSelector from './AvatarCardImageSizeSelector';
 import AvatarCardColumnSizeSelector from './AvatarCardColumnSizeSelector';
 import AvatarListRefreshButton from './AvatarListRefreshButton';
 import { AvatarSortOrder, CurrentUser } from '@/lib/models';
 import { useQuery } from '@tanstack/react-query';
-import { queryAllTagsAvailable } from '@/lib/db';
+import { dropTag, queryAllTagsAvailable } from '@/lib/db';
+import { notifications } from '@mantine/notifications';
 
 interface FooterContentsProps {
   currentUser: CurrentUser;
@@ -30,6 +31,16 @@ const FooterContents = (props: FooterContentsProps) => {
     }
   });
 
+  const dropTagHandler = async (tagName: string, currentUserId: string) => {
+    await dropTag(tagName, currentUserId);
+    await tagQuery.refetch();
+    notifications.show({
+      title: 'タグ削除',
+      message: `タグ「${tagName}」を削除しました（関連付けられたアバターからも削除されました）`,
+      color: 'green',
+    });
+  };
+
   return (
     <Group px="md" mt="8">
       <AvatarListRefreshButton
@@ -42,7 +53,7 @@ const FooterContents = (props: FooterContentsProps) => {
         onSortSettingChange={props.onSortSettingChange}
       />
       <Divider orientation="vertical" />
-      <IconTags />
+      <IconFilter />
       <Box pos="relative">
         <LoadingOverlay visible={tagQuery.isPending} overlayProps={{ radius: 'md', blur: 2 }} />
         <MultiSelect
@@ -57,6 +68,41 @@ const FooterContents = (props: FooterContentsProps) => {
         <Popover.Target>
           <ActionIcon
             style={{ marginLeft: 'auto' }}
+            color="gray"
+            variant="subtle"
+            radius="sm"
+          >
+            <IconTagMinus />
+          </ActionIcon>
+        </Popover.Target>
+        <Popover.Dropdown>
+          <Box pos="relative">
+            <Group gap="xs">
+              <LoadingOverlay visible={tagQuery.isPending} overlayProps={{ radius: 'md', blur: 2 }} />
+              {tagQuery.data?.map((tag) => (
+                <Badge color={tag.color || 'gray'} key={tag.display_name}>
+                  {tag.display_name}
+                  <ActionIcon
+                    size={13}
+                    color="dark"
+                    variant="transparent"
+                    onClick={() => {
+                      dropTagHandler(tag.display_name, props.currentUser.id);
+                    }}
+                    style={{ marginLeft: 4, paddingTop: 3 }}
+                  >
+                    <IconX />
+                  </ActionIcon>
+                </Badge>
+              ))}
+            </Group>
+          </Box>
+        </Popover.Dropdown>
+      </Popover>
+      <Divider orientation="vertical" />
+      <Popover width={300} position="top" withArrow shadow="md">
+        <Popover.Target>
+          <ActionIcon
             color="gray"
             variant="subtle"
             radius="sm"

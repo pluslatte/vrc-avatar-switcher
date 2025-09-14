@@ -22,7 +22,7 @@ const AvatarList = (props: AvatarListProps) => {
     queryFn: () => fetchAvatarsTags(props.avatars.map(a => a.id), props.currentUser.id),
   });
 
-  if (tagQuery.isLoading) {
+  if (tagQuery.isPending) {
     return <LoaderFullWindow message="タグ情報を読み込み中..." withAppShell={true} />;
   }
   if (tagQuery.isError || tagQuery.data === undefined) {
@@ -37,6 +37,16 @@ const AvatarList = (props: AvatarListProps) => {
     return props.selectedTags.every(tag => tags.some(t => t.display_name === tag));
   });
 
+  const handlerRegisterAvatarTag = async (tagName: string, currentUserId: string, avatarId: string, color: string) => {
+    await props.handlerRegisterAvatarTag(tagName, currentUserId, avatarId, color);
+    await tagQuery.refetch();
+  };
+
+  const handlerRemoveAvatarTag = async (tagName: string, avatarId: string, currentUserId: string) => {
+    await props.handlerRemoveAvatarTag(tagName, avatarId, currentUserId);
+    await tagQuery.refetch();
+  };
+
   return (
     <Grid overflow="hidden" gutter="lg">
       {filteredAvatars.map(avatar => {
@@ -50,8 +60,8 @@ const AvatarList = (props: AvatarListProps) => {
             imageSize={props.cardImageSize}
             selectedTags={props.selectedTags}
             onAvatarSwitchClicked={props.handlerAvatarSwitch}
-            handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
-            handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
+            handlerRegisterAvatarTag={handlerRegisterAvatarTag}
+            handlerRemoveAvatarTag={handlerRemoveAvatarTag}
           />
         );
         return (

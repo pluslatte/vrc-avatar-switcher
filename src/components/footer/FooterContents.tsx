@@ -1,5 +1,5 @@
-import { Box, Divider, Group, LoadingOverlay, MultiSelect } from '@mantine/core';
-import { IconImageInPicture, IconSortAscendingShapes, IconTableColumn } from '@tabler/icons-react';
+import { ActionIcon, Box, Divider, Group, LoadingOverlay, MultiSelect, Popover } from '@mantine/core';
+import { IconImageInPicture, IconSettings, IconSortAscendingShapes, IconTableColumn, IconTags } from '@tabler/icons-react';
 import SortOrderSelector from './SortOrderSelector';
 import AvatarCardImageSizeSelector from './AvatarCardImageSizeSelector';
 import AvatarCardColumnSizeSelector from './AvatarCardColumnSizeSelector';
@@ -36,6 +36,13 @@ const FooterContents = (props: FooterContentsProps) => {
         onRefreshButtonClick={props.onRefreshButtonClick}
       />
       <Divider orientation="vertical" />
+      <IconSortAscendingShapes />
+      <SortOrderSelector
+        selectedSort={props.selectedSort}
+        onSortSettingChange={props.onSortSettingChange}
+      />
+      <Divider orientation="vertical" />
+      <IconTags />
       <Box pos="relative">
         <LoadingOverlay visible={tagQuery.isPending} overlayProps={{ radius: 'md', blur: 2 }} />
         <MultiSelect
@@ -46,25 +53,37 @@ const FooterContents = (props: FooterContentsProps) => {
         />
       </Box>
       <Divider orientation="vertical" />
-      <IconSortAscendingShapes />
-      <SortOrderSelector
-        selectedSort={props.selectedSort}
-        onSortSettingChange={props.onSortSettingChange}
-      />
-      <Divider orientation="vertical" />
-      <IconImageInPicture />
-      <AvatarCardImageSizeSelector
-        cardImageSize={props.cardImageSize}
-        cardImageSizeLoading={props.cardImageSizeLoading}
-        setCardImageSize={props.setCardImageSize}
-      />
-      <Divider orientation="vertical" />
-      <IconTableColumn />
-      <AvatarCardColumnSizeSelector
-        cardNumberPerRow={props.cardNumberPerRow}
-        cardNumberPerRowLoading={props.cardNumberPerRowLoading}
-        setCardNumberPerRow={props.setCardNumberPerRow}
-      />
+      <Popover width={300} position="top" withArrow shadow="md">
+        <Popover.Target>
+          <ActionIcon
+            style={{ marginLeft: 'auto' }}
+            color="gray"
+            variant="subtle"
+            radius="sm"
+          >
+            <IconSettings />
+          </ActionIcon>
+        </Popover.Target>
+        <Popover.Dropdown>
+          <Group>
+            <IconImageInPicture />
+            <AvatarCardImageSizeSelector
+              cardImageSize={props.cardImageSize}
+              cardImageSizeLoading={props.cardImageSizeLoading}
+              setCardImageSize={props.setCardImageSize}
+            />
+          </Group>
+          <Divider my="xs" />
+          <Group>
+            <IconTableColumn />
+            <AvatarCardColumnSizeSelector
+              cardNumberPerRow={props.cardNumberPerRow}
+              cardNumberPerRowLoading={props.cardNumberPerRowLoading}
+              setCardNumberPerRow={props.setCardNumberPerRow}
+            />
+          </Group>
+        </Popover.Dropdown>
+      </Popover>
     </Group>
   );
 };

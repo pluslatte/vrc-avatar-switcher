@@ -1,6 +1,6 @@
 import AvatarList from '@/components/avatar/AvatarList';
 import { useAvatarSwitcher } from '@/hooks/useAvatarSwitcher';
-import { AppShell } from '@mantine/core';
+import { AppShell, ScrollArea } from '@mantine/core';
 import HeaderContents from '@/components/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
 import FooterContents from '@/components/footer/FooterContents';
@@ -122,19 +122,21 @@ const DashBoard = (props: DashBoardProps) => {
       </AppShell.Main>
 
       <AppShell.Footer>
-        <FooterContents
-          currentUser={avatarListQuery.data.currentUser}
-          selectedSort={avatarSortOrder}
-          cardImageSize={cardImageSize}
-          cardImageSizeLoading={cardImageSizeLoading}
-          cardNumberPerRow={cardNumberPerRow}
-          cardNumberPerRowLoading={cardNumberPerRowLoading}
-          setCardImageSize={handleCardImageSizeChange}
-          setCardNumberPerRow={handleCardNumberPerRow}
-          onSortSettingChange={handlerSortOptSwitch}
-          onRefreshButtonClick={handlerRefetchAvatar}
-          onTagFilterChange={setSelectedTags}
-        />
+        <ScrollArea h="100%">
+          <FooterContents
+            currentUser={avatarListQuery.data.currentUser}
+            selectedSort={avatarSortOrder}
+            cardImageSize={cardImageSize}
+            cardImageSizeLoading={cardImageSizeLoading}
+            cardNumberPerRow={cardNumberPerRow}
+            cardNumberPerRowLoading={cardNumberPerRowLoading}
+            setCardImageSize={handleCardImageSizeChange}
+            setCardNumberPerRow={handleCardNumberPerRow}
+            onSortSettingChange={handlerSortOptSwitch}
+            onRefreshButtonClick={handlerRefetchAvatar}
+            onTagFilterChange={setSelectedTags}
+          />
+        </ScrollArea>
       </AppShell.Footer>
 
     </AppShell>

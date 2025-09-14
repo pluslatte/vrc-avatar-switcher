@@ -1,41 +1,54 @@
-import { Tag } from '@/lib/db';
+import { queryAllTagsAvailable, Tag } from '@/lib/db';
 import { Badge, Box, Button, ColorPicker, DEFAULT_THEME, Divider, Group, Text, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconTagFilled } from '@tabler/icons-react';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 interface TagManagerProps {
   avatarId: string;
   tags: Array<Tag>;
   currentUserId: string;
-  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => void;
-  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => void;
+  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => Promise<void>;
+  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => Promise<void>;
 }
 const TagManager = (props: TagManagerProps) => {
+  const tagsAvailableQuery = useQuery({
+    queryKey: ['availableTags', props.currentUserId, props.avatarId],
+    queryFn: async () => {
+      const tags = await queryAllTagsAvailable(props.currentUserId);
+      return tags;
+    }
+  });
+
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState('#2C2E33');
   return (
     <Box>
       <Text size="sm" mb="xs">タグを選択</Text>
-      <Group gap="xs" mb="xs">
-        {props.tags.length > 0 && props.tags.map(tag => (
-          <Badge
-            key={tag.display_name}
-            color={tag.color || 'gray'}
-            variant="filled"
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              notifications.show({
-                message: 'タグを追加しています...',
-                color: 'blue',
-              });
-              props.handlerRegisterAvatarTag(tag.display_name, props.currentUserId, props.avatarId, tag.color);
-            }}
-          >
-            {tag.display_name}
-          </Badge>
-        ))}
-      </Group>
+      {tagsAvailableQuery.isPending && <Text c="dimmed">タグを読み込み中...</Text>}
+      {tagsAvailableQuery.data && tagsAvailableQuery.data.length === 0 && <Text c="dimmed">利用可能なタグがありません</Text>}
+      {tagsAvailableQuery.data && tagsAvailableQuery.data.length > 0 && (
+        <Group gap="xs" mb="xs">
+          {tagsAvailableQuery.data.length > 0 && tagsAvailableQuery.data.map(tag => (
+            <Badge
+              key={tag.display_name}
+              color={tag.color || 'gray'}
+              variant="filled"
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                notifications.show({
+                  message: 'タグを追加しています...',
+                  color: 'blue',
+                });
+                props.handlerRegisterAvatarTag(tag.display_name, props.currentUserId, props.avatarId, tag.color);
+              }}
+            >
+              {tag.display_name}
+            </Badge>
+          ))}
+        </Group>
+      )}
       <Divider mb="xs" />
       <Text size="sm" mb="xs">新規タグ</Text>
       <Group gap="xs">

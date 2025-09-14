@@ -13,8 +13,8 @@ interface AvatarCardProps {
   pendingSwitch: boolean;
   imageSize: number | null;
   onAvatarSwitchClicked: (avatarId: string) => void;
-  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => void;
-  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => void;
+  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => Promise<void>;
+  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => Promise<void>;
 }
 
 const AvatarCard = (props: AvatarCardProps) => {
@@ -29,6 +29,16 @@ const AvatarCard = (props: AvatarCardProps) => {
   const handleSwitch = () => {
     if (props.isActiveAvatar) return;
     props.onAvatarSwitchClicked(props.avatar.id);
+  };
+
+  const handlerRegisterAvatarTag = async (tagName: string, username: string, avatarId: string, color: string) => {
+    await props.handlerRegisterAvatarTag(tagName, username, avatarId, color);
+    await tagQuery.refetch();
+  };
+
+  const handlerRemoveAvatarTag = async (tagName: string, avatarId: string, username: string) => {
+    await props.handlerRemoveAvatarTag(tagName, avatarId, username);
+    await tagQuery.refetch();
   };
 
   return (
@@ -98,8 +108,8 @@ const AvatarCard = (props: AvatarCardProps) => {
               avatarId={props.avatar.id}
               tags={tagQuery.data}
               currentUserId={props.currentUser.id}
-              handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
-              handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
+              handlerRegisterAvatarTag={handlerRegisterAvatarTag}
+              handlerRemoveAvatarTag={handlerRemoveAvatarTag}
             />
           </Group>
         )}

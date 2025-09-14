@@ -7,8 +7,8 @@ interface TagManagerButtonProps {
   avatarId: string;
   tags: Array<Tag>;
   currentUserId: string;
-  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => void;
-  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => void;
+  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => Promise<void>;
+  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => Promise<void>;
 }
 const TagManagerButton = (props: TagManagerButtonProps) => {
   return (

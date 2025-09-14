@@ -33,9 +33,6 @@ const DashBoard = (props: DashBoardProps) => {
     await avatarListQuery.refetch();
   };
 
-  // handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => void;
-  // handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => void;
-
   const handleRegisterAvatarTag = async (tagName: string, username: string, avatarId: string, color: string) => {
     const tagExists = await queryTagExists(tagName, username);
     if (!tagExists) {

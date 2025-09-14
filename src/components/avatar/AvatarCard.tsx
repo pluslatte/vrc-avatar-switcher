@@ -1,5 +1,5 @@
 import { Avatar } from '@/lib/models';
-import { ActionIcon, BackgroundImage, Badge, Button, Card, Divider, Group, Text } from '@mantine/core';
+import { ActionIcon, BackgroundImage, Badge, Button, Card, Divider, Group, Text, Tooltip } from '@mantine/core';
 import TagManagerButton from './TagManagerButton';
 import { IconX } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
@@ -51,12 +51,14 @@ const AvatarCard = (props: AvatarCardProps) => {
       </BackgroundImage>
 
       <Card.Section p="sm" h="48px">
-        <Text
-          fw={500}
-          size="md"
-        >
-          {props.avatar.name}
-        </Text>
+        <Tooltip label={props.avatar.name}>
+          <Text
+            fw={500}
+            size="md"
+          >
+            {props.avatar.name}
+          </Text>
+        </Tooltip>
       </Card.Section>
       <Divider />
       <Card.Section p="sm">

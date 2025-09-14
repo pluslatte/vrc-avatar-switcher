@@ -136,3 +136,40 @@ export const fetchAvatarTags = async (
 
   return tags;
 };
+
+export const fetchAvatarsTags = async (
+  avatarIds: Array<string>,
+  currentUserId: string,
+): Promise<Record<string, Array<Tag>>> => {
+  if (avatarIds.length === 0) {
+    return {};
+  }
+
+  const db = await Database.load('sqlite:vrc-avatar-switcher.db');
+  const placeholders = avatarIds.map((_, index) => `$${index + 1}`).join(', ');
+  const query = `
+    SELECT
+      tar.avatar_id,
+      tar.tag_display_name AS display_name,
+      t.color
+    FROM
+      tag_avatar_relations AS tar
+    JOIN
+      tags AS t
+    ON
+      tar.tag_display_name = t.display_name
+      AND tar.created_by = t.created_by
+    WHERE
+      tar.avatar_id IN (${placeholders}) AND tar.created_by = $${avatarIds.length + 1}
+  `;
+  const params = [...avatarIds, currentUserId];
+  const rows = await db.select<Array<{ avatar_id: string; display_name: string; color: string }>>(query, params);
+  const result: Record<string, Array<Tag>> = {};
+  rows.forEach(row => {
+    if (!result[row.avatar_id]) {
+      result[row.avatar_id] = [];
+    }
+    result[row.avatar_id].push({ display_name: row.display_name, color: row.color });
+  });
+  return result;
+};

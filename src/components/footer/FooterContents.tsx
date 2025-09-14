@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Box, Divider, Group, MultiSelect, Popover } from '@mantine/core';
+import { ActionIcon, Badge, Box, Divider, Group, MultiSelect, Popover, Text } from '@mantine/core';
 import { IconFilter, IconImageInPicture, IconSettings, IconSortAscendingShapes, IconTableColumn, IconTagMinus, IconX } from '@tabler/icons-react';
 import SortOrderSelector from './SortOrderSelector';
 import AvatarCardImageSizeSelector from './AvatarCardImageSizeSelector';
@@ -109,6 +109,9 @@ const FooterContents = (props: FooterContentsProps) => {
               setCardNumberPerRow={props.setCardNumberPerRow}
             />
           </Group>
+          <Text fz="xs" c="dimmed">
+              {'(c) 2025 pluslatte'}
+          </Text>
         </Popover.Dropdown>
       </Popover>
     </Group>

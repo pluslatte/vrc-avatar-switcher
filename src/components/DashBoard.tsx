@@ -8,7 +8,7 @@ import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
 import { isAvatarSortOrder } from '@/lib/models';
 import { notifications } from '@mantine/notifications';
-import { createTag, createTagRelation, dropTagRelation, queryTagExists } from '@/lib/db';
+import { countTagRelationsOf, createTag, createTagRelation, dropTag, dropTagRelation, queryTagExists } from '@/lib/db';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -41,7 +41,7 @@ const DashBoard = (props: DashBoardProps) => {
     await createTagRelation(tagName, avatarId, username);
     notifications.show({
       title: '成功',
-      message: `タグ「${tagName}」を追加しました`,
+      message: `タグ「${tagName}」を紐づけました`,
       color: 'green',
     });
   };
@@ -50,9 +50,18 @@ const DashBoard = (props: DashBoardProps) => {
     await dropTagRelation(tagName, avatarId, username);
     notifications.show({
       title: '成功',
-      message: `タグ「${tagName}」を削除しました`,
+      message: `タグ「${tagName}」を取り外しました`,
       color: 'green',
     });
+    const remainingTagRelations = await countTagRelationsOf(tagName, username);
+    if (remainingTagRelations === 0) {
+      await dropTag(tagName, username);
+      notifications.show({
+        title: 'タグ削除',
+        message: `タグ「${tagName}」は他に関連付けられたアバターがないため削除されました`,
+        color: 'yellow',
+      });
+    }
   };
 
   if (

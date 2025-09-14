@@ -83,6 +83,23 @@ export const createTagRelation = async (
   );
 };
 
+export const countTagRelationsOf = async (
+  tagName: string,
+  currentUserId: string,
+) => {
+  const db = await Database.load('sqlite:vrc-avatar-switcher.db');
+  const result = await db.select<Array<{ count: number }>>(
+    `SELECT
+      COUNT(*) AS count
+    FROM
+      tag_avatar_relations
+    WHERE
+      tag_display_name = $1 AND created_by = $2`,
+    [tagName, currentUserId]
+  );
+  return result[0].count;
+};
+
 export const dropTagRelation = async (
   tagName: string,
   avatarId: string,

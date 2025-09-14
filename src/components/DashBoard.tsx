@@ -40,29 +40,47 @@ const DashBoard = (props: DashBoardProps) => {
 
   const handleRegisterAvatarTag = async (tagName: string, currentUserId: string, avatarId: string, color: string) => {
     const tagExists = await queryTagExists(tagName, currentUserId);
-    if (!tagExists) {
-      await createTag(tagName, currentUserId, color);
+    try {
+      if (!tagExists) {
+        await createTag(tagName, currentUserId, color);
+        notifications.show({
+          title: 'タグ作成',
+          message: `タグ「${tagName}」を新規作成しました`,
+          color: 'green',
+        });
+        await queryClient.invalidateQueries({ queryKey: ['tags', currentUserId] });
+      }
+      await createTagRelation(tagName, avatarId, currentUserId);
+    } catch (error) {
+      console.error('Error registering avatar tag:', error);
       notifications.show({
-        title: 'タグ作成',
-        message: `タグ「${tagName}」を新規作成しました`,
-        color: 'green',
+        title: 'タグ登録エラー',
+        message: `タグ「${tagName}」の登録中にエラーが発生しました: ${(error as Error).message}`,
+        color: 'red',
       });
-      await queryClient.invalidateQueries({ queryKey: ['tags', currentUserId] });
     }
-    await createTagRelation(tagName, avatarId, currentUserId);
   };
 
   const handleRemoveAvatarTag = async (tagName: string, avatarId: string, currentUserId: string) => {
-    await dropTagRelation(tagName, avatarId, currentUserId);
-    const remainingTagRelations = await countTagRelationsOf(tagName, currentUserId);
-    if (remainingTagRelations === 0) {
-      await dropTag(tagName, currentUserId);
+    try {
+      await dropTagRelation(tagName, avatarId, currentUserId);
+      const remainingTagRelations = await countTagRelationsOf(tagName, currentUserId);
+      if (remainingTagRelations === 0) {
+        await dropTag(tagName, currentUserId);
+        notifications.show({
+          title: 'タグ削除',
+          message: `タグ「${tagName}」は他に関連付けられたアバターがないため削除されました`,
+          color: 'green',
+        });
+        await queryClient.invalidateQueries({ queryKey: ['tags', currentUserId] });
+      }
+    } catch (error) {
+      console.error('Error removing avatar tag:', error);
       notifications.show({
-        title: 'タグ削除',
-        message: `タグ「${tagName}」は他に関連付けられたアバターがないため削除されました`,
-        color: 'green',
+        title: 'タグ削除エラー',
+        message: `タグ「${tagName}」の削除中にエラーが発生しました: ${(error as Error).message}`,
+        color: 'red',
       });
-      await queryClient.invalidateQueries({ queryKey: ['tags', currentUserId] });
     }
   };
 

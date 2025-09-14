@@ -9,8 +9,8 @@ interface AvatarListProps {
   cardImageSize: number;
   cardNumberPerRow: number;
   handlerAvatarSwitch: (avatarId: string) => void;
-  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => Promise<void>;
-  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => Promise<void>;
+  handlerRegisterAvatarTag: (tagName: string, currentUserId: string, avatarId: string, color: string) => Promise<void>;
+  handlerRemoveAvatarTag: (tagName: string, avatarId: string, currentUserId: string) => Promise<void>;
 }
 const AvatarList = (props: AvatarListProps) => {
   return (

@@ -9,8 +9,8 @@ interface TagManagerProps {
   avatarId: string;
   tags: Array<Tag>;
   currentUserId: string;
-  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => Promise<void>;
-  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => Promise<void>;
+  handlerRegisterAvatarTag: (tagName: string, currentUserId: string, avatarId: string, color: string) => Promise<void>;
+  handlerRemoveAvatarTag: (tagName: string, avatarId: string, currentUserId: string) => Promise<void>;
 }
 const TagManager = (props: TagManagerProps) => {
   const tagsAvailableQuery = useQuery({
@@ -26,8 +26,8 @@ const TagManager = (props: TagManagerProps) => {
   return (
     <Box>
       <Text size="sm" mb="xs">タグを選択</Text>
-      {tagsAvailableQuery.isPending && <Text c="dimmed">タグを読み込み中...</Text>}
-      {tagsAvailableQuery.data && tagsAvailableQuery.data.length === 0 && <Text c="dimmed">利用可能なタグがありません</Text>}
+      {tagsAvailableQuery.isPending && <Text c="dimmed" mb="xs">タグを読み込み中...</Text>}
+      {tagsAvailableQuery.data && tagsAvailableQuery.data.length === 0 && <Text c="dimmed" fz="xs" mb="xs">利用可能なタグがありません</Text>}
       {tagsAvailableQuery.data && tagsAvailableQuery.data.length > 0 && (
         <Group gap="xs" mb="xs">
           {tagsAvailableQuery.data.length > 0 && tagsAvailableQuery.data.map(tag => (

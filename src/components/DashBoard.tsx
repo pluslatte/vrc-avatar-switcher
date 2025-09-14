@@ -9,6 +9,7 @@ import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector
 import { isAvatarSortOrder } from '@/lib/models';
 import { notifications } from '@mantine/notifications';
 import { countTagRelationsOf, createTag, createTagRelation, dropTag, dropTagRelation, queryTagExists } from '@/lib/db';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -17,6 +18,8 @@ const DashBoard = (props: DashBoardProps) => {
   const { avatarListQuery, switchAvatarMutation, avatarSortOrder, handleAvatarSortOrderChange } = useAvatarSwitcher();
   const { loading: cardImageSizeLoading, cardImageSize, handleCardImageSizeChange } = useCardImageSizeSelector();
   const { loading: cardNumberPerRowLoading, cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowSelector();
+
+  const queryClient = useQueryClient();
 
   const handlerAvatarSwitch = (avatarId: string) => {
     switchAvatarMutation.mutate(avatarId);
@@ -33,12 +36,18 @@ const DashBoard = (props: DashBoardProps) => {
     await avatarListQuery.refetch();
   };
 
-  const handleRegisterAvatarTag = async (tagName: string, username: string, avatarId: string, color: string) => {
-    const tagExists = await queryTagExists(tagName, username);
+  const handleRegisterAvatarTag = async (tagName: string, currentUserId: string, avatarId: string, color: string) => {
+    const tagExists = await queryTagExists(tagName, currentUserId);
     if (!tagExists) {
-      await createTag(tagName, username, color);
+      await createTag(tagName, currentUserId, color);
+      notifications.show({
+        title: 'タグ作成',
+        message: `タグ「${tagName}」を新規作成しました`,
+        color: 'green',
+      });
+      await queryClient.invalidateQueries({ queryKey: ['tags', currentUserId] });
     }
-    await createTagRelation(tagName, avatarId, username);
+    await createTagRelation(tagName, avatarId, currentUserId);
     notifications.show({
       title: '成功',
       message: `タグ「${tagName}」を紐づけました`,
@@ -46,21 +55,22 @@ const DashBoard = (props: DashBoardProps) => {
     });
   };
 
-  const handleRemoveAvatarTag = async (tagName: string, avatarId: string, username: string) => {
-    await dropTagRelation(tagName, avatarId, username);
+  const handleRemoveAvatarTag = async (tagName: string, avatarId: string, currentUserId: string) => {
+    await dropTagRelation(tagName, avatarId, currentUserId);
     notifications.show({
       title: '成功',
       message: `タグ「${tagName}」を取り外しました`,
       color: 'green',
     });
-    const remainingTagRelations = await countTagRelationsOf(tagName, username);
+    const remainingTagRelations = await countTagRelationsOf(tagName, currentUserId);
     if (remainingTagRelations === 0) {
-      await dropTag(tagName, username);
+      await dropTag(tagName, currentUserId);
       notifications.show({
         title: 'タグ削除',
         message: `タグ「${tagName}」は他に関連付けられたアバターがないため削除されました`,
         color: 'yellow',
       });
+      await queryClient.invalidateQueries({ queryKey: ['tags', currentUserId] });
     }
   };
 

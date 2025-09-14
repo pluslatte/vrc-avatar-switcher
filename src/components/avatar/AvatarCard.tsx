@@ -1,5 +1,5 @@
 import { Avatar, CurrentUser } from '@/lib/models';
-import { ActionIcon, BackgroundImage, Badge, Button, Card, Divider, Group, Text, Tooltip } from '@mantine/core';
+import { ActionIcon, BackgroundImage, Badge, Button, Card, Divider, Group, Loader, Text, Tooltip } from '@mantine/core';
 import TagManagerButton from './TagManagerButton';
 import { IconX } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
@@ -13,8 +13,8 @@ interface AvatarCardProps {
   pendingSwitch: boolean;
   imageSize: number | null;
   onAvatarSwitchClicked: (avatarId: string) => void;
-  handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => Promise<void>;
-  handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => Promise<void>;
+  handlerRegisterAvatarTag: (tagName: string, currentUserId: string, avatarId: string, color: string) => Promise<void>;
+  handlerRemoveAvatarTag: (tagName: string, avatarId: string, currentUserId: string) => Promise<void>;
 }
 
 const AvatarCard = (props: AvatarCardProps) => {
@@ -31,13 +31,13 @@ const AvatarCard = (props: AvatarCardProps) => {
     props.onAvatarSwitchClicked(props.avatar.id);
   };
 
-  const handlerRegisterAvatarTag = async (tagName: string, username: string, avatarId: string, color: string) => {
-    await props.handlerRegisterAvatarTag(tagName, username, avatarId, color);
+  const handlerRegisterAvatarTag = async (tagName: string, currentUserId: string, avatarId: string, color: string) => {
+    await props.handlerRegisterAvatarTag(tagName, currentUserId, avatarId, color);
     await tagQuery.refetch();
   };
 
-  const handlerRemoveAvatarTag = async (tagName: string, avatarId: string, username: string) => {
-    await props.handlerRemoveAvatarTag(tagName, avatarId, username);
+  const handlerRemoveAvatarTag = async (tagName: string, avatarId: string, currentUserId: string) => {
+    await props.handlerRemoveAvatarTag(tagName, avatarId, currentUserId);
     await tagQuery.refetch();
   };
 
@@ -79,8 +79,9 @@ const AvatarCard = (props: AvatarCardProps) => {
       </Card.Section>
       <Divider />
       <Card.Section p="sm">
-        {tagQuery.isLoading && <Text>タグを読み込み中...</Text>}
-        {tagQuery.isError && <Text c="red">タグの読み込みに失敗しました</Text>}
+        {tagQuery.isLoading && <Text fz="sm">
+          <Loader size="xs" mt="sm" />タグを読み込み中...</Text>}
+        {tagQuery.isError && <Text c="red" fz="sm">タグの読み込みに失敗しました</Text>}
         {tagQuery.data && (
           <Group gap="xs">
             {tagQuery.data.map((tag) => (
@@ -103,7 +104,7 @@ const AvatarCard = (props: AvatarCardProps) => {
                 </ActionIcon>
               </Badge>
             ))}
-            {tagQuery.data.length === 0 && <Text c="dimmed">タグが設定されていません</Text>}
+            {tagQuery.data.length === 0 && <Text c="dimmed" fz="sm">タグが設定されていません</Text>}
             <TagManagerButton
               avatarId={props.avatar.id}
               tags={tagQuery.data}

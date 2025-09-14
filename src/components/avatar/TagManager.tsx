@@ -30,7 +30,9 @@ const TagManager = (props: TagManagerProps) => {
       {tagsAvailableQuery.data && tagsAvailableQuery.data.length === 0 && <Text c="dimmed" fz="xs" mb="xs">利用可能なタグがありません</Text>}
       {tagsAvailableQuery.data && tagsAvailableQuery.data.length > 0 && (
         <Group gap="xs" mb="xs">
-          {tagsAvailableQuery.data.length > 0 && tagsAvailableQuery.data.map(tag => (
+          {tagsAvailableQuery.data.length > 0 && tagsAvailableQuery.data
+          .filter(tag => !(props.tags.map(t => t.display_name).includes(tag.display_name)))
+          .map(tag => (
             <Badge
               key={tag.display_name}
               color={tag.color || 'gray'}

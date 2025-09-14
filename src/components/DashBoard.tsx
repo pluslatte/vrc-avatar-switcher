@@ -60,7 +60,7 @@ const DashBoard = (props: DashBoardProps) => {
       notifications.show({
         title: 'タグ削除',
         message: `タグ「${tagName}」は他に関連付けられたアバターがないため削除されました`,
-        color: 'yellow',
+        color: 'green',
       });
       await queryClient.invalidateQueries({ queryKey: ['tags', currentUserId] });
     }

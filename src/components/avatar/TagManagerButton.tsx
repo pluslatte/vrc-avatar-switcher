@@ -6,7 +6,7 @@ import { Tag } from '@/lib/db';
 interface TagManagerButtonProps {
   avatarId: string;
   tags: Array<Tag>;
-  currentUsername: string;
+  currentUserId: string;
   handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => void;
   handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => void;
 }
@@ -32,7 +32,7 @@ const TagManagerButton = (props: TagManagerButtonProps) => {
         <TagManager
           avatarId={props.avatarId}
           tags={props.tags}
-          currentUsername={props.currentUsername}
+          currentUserId={props.currentUserId}
           handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
           handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
         />

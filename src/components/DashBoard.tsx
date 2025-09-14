@@ -8,6 +8,7 @@ import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
 import { isAvatarSortOrder } from '@/lib/models';
 import { notifications } from '@mantine/notifications';
+import { createTag, createTagRelation, dropTagRelation, queryTagExists } from '@/lib/db';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -32,17 +33,15 @@ const DashBoard = (props: DashBoardProps) => {
     await avatarListQuery.refetch();
   };
 
-  const handleRegisterAvatarTag = async (tags: Record<string, string[]>, tagName: string, avatarId: string) => {
-    const newTags = { ...tags };
-    if (newTags[tagName]) {
-      if (!newTags[tagName].includes(avatarId)) {
-        newTags[tagName].push(avatarId);
-      }
-    } else {
-      newTags[tagName] = [avatarId];
+  // handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => void;
+  // handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => void;
+
+  const handleRegisterAvatarTag = async (tagName: string, username: string, avatarId: string, color: string) => {
+    const tagExists = await queryTagExists(tagName, username);
+    if (!tagExists) {
+      await createTag(tagName, username, color);
     }
-    await saveAvatarTags(newTags);
-    await tagStoreQuery.refetch();
+    await createTagRelation(tagName, avatarId, username);
     notifications.show({
       title: '成功',
       message: `タグ「${tagName}」を追加しました`,
@@ -50,39 +49,20 @@ const DashBoard = (props: DashBoardProps) => {
     });
   };
 
-  const handleRemoveAvatarTag = async (tags: Record<string, string[]>, tagName: string, avatarId: string) => {
-    const newTags = { ...tags };
-    if (newTags[tagName]) {
-      newTags[tagName] = newTags[tagName].filter(id => id !== avatarId);
-      if (newTags[tagName].length === 0) {
-        delete newTags[tagName];
-      }
-      await saveAvatarTags(newTags);
-      await tagStoreQuery.refetch();
-      notifications.show({
-        title: '成功',
-        message: `タグ「${tagName}」を削除しました`,
-        color: 'green',
-      });
-    }
-  };
-
-  const handleRegisterAvatarTagColor = async (tags: Record<string, string>, tagName: string, color: string) => {
-    const newTags = { ...tags };
-    newTags[tagName] = color;
-    await saveAvatarTagColors(newTags);
-    await tagColorsStoreQuery.refetch();
+  const handleRemoveAvatarTag = async (tagName: string, avatarId: string, username: string) => {
+    await dropTagRelation(tagName, avatarId, username);
+    notifications.show({
+      title: '成功',
+      message: `タグ「${tagName}」を削除しました`,
+      color: 'green',
+    });
   };
 
   if (
     avatarListQuery.isPending ||
-    avatarListQuery.isFetching ||
-    tagStoreQuery.isPending ||
-    tagColorsStoreQuery.isPending
+    avatarListQuery.isFetching
   ) return <LoaderFullWindow message="アバターを読み込んでいます..." />;
   if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;
-  if (tagStoreQuery.isError) return <div>Error: {(tagStoreQuery.error as Error).message}</div>;
-  if (tagColorsStoreQuery.isError) return <div>Error: {(tagColorsStoreQuery.error as Error).message}</div>;
   if (avatarSortOrder === undefined) return <div>Error: avatarSortOrder is undefined</div>;
 
   return (
@@ -104,8 +84,6 @@ const DashBoard = (props: DashBoardProps) => {
         {cardImageSize === undefined || cardNumberPerRow === undefined && <LoaderFullWindow message="設定を読み込んでいます..." />}
         {cardImageSize !== undefined && cardNumberPerRow !== undefined && <AvatarList
           avatars={avatarListQuery.data.avatars}
-          tags={tagStoreQuery.data}
-          tagColors={tagColorsStoreQuery.data}
           currentUser={avatarListQuery.data.currentUser}
           pendingSwitch={switchAvatarMutation.isPending}
           cardImageSize={cardImageSize}
@@ -113,13 +91,12 @@ const DashBoard = (props: DashBoardProps) => {
           handlerAvatarSwitch={handlerAvatarSwitch}
           handlerRegisterAvatarTag={handleRegisterAvatarTag}
           handlerRemoveAvatarTag={handleRemoveAvatarTag}
-          handlerRegisterAvatarTagColor={handleRegisterAvatarTagColor}
         />}
       </AppShell.Main>
 
       <AppShell.Footer>
         <FooterContents
-          registeredTagNames={Object.keys(tagStoreQuery.data)}
+          currentUser={avatarListQuery.data.currentUser}
           selectedSort={avatarSortOrder}
           cardImageSize={cardImageSize}
           cardImageSizeLoading={cardImageSizeLoading}

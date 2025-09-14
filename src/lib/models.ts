@@ -6,6 +6,7 @@ export interface Avatar {
 }
 
 export interface CurrentUser {
+  id: string;
   displayName: string;
   currentAvatar: string;
   currentAvatarThumbnailImageUrl: string;

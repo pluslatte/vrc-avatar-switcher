@@ -7,7 +7,7 @@ import { useState } from 'react';
 interface TagManagerProps {
   avatarId: string;
   tags: Array<Tag>;
-  currentUsername: string;
+  currentUserId: string;
   handlerRegisterAvatarTag: (tagName: string, username: string, avatarId: string, color: string) => void;
   handlerRemoveAvatarTag: (tagName: string, avatarId: string, username: string) => void;
 }
@@ -20,7 +20,7 @@ const TagManager = (props: TagManagerProps) => {
       <Group gap="xs" mb="xs">
         {props.tags.length > 0 && props.tags.map(tag => (
           <Badge
-            key={tag.display_name}
+            key={tag.tag_display_name}
             color={tag.color || 'gray'}
             variant="filled"
             style={{ cursor: 'pointer' }}
@@ -29,10 +29,10 @@ const TagManager = (props: TagManagerProps) => {
                 message: 'タグを追加しています...',
                 color: 'blue',
               });
-              props.handlerRegisterAvatarTag(tag.display_name, props.currentUsername, props.avatarId, tag.color);
+              props.handlerRegisterAvatarTag(tag.tag_display_name, props.currentUserId, props.avatarId, tag.color);
             }}
           >
-            {tag.display_name}
+            {tag.tag_display_name}
           </Badge>
         ))}
       </Group>
@@ -63,14 +63,14 @@ const TagManager = (props: TagManagerProps) => {
           variant="gradient"
           gradient={{ from: 'dark', to: newTagColor, deg: 45 }}
           disabled={newTagName.trim() === '' ||
-            props.tags.some(tag => tag.display_name.toUpperCase() === newTagName.toUpperCase())}
+            props.tags.some(tag => tag.tag_display_name.toUpperCase() === newTagName.toUpperCase())}
           fullWidth
           onClick={() => {
             notifications.show({
               message: 'タグを追加しています...',
               color: 'blue',
             });
-            props.handlerRegisterAvatarTag(newTagName, props.currentUsername, props.avatarId, newTagColor);
+            props.handlerRegisterAvatarTag(newTagName, props.currentUserId, props.avatarId, newTagColor);
           }}
         >
           追加

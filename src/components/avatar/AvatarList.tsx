@@ -4,7 +4,6 @@ import { Avatar, CurrentUser } from '@/lib/models';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
-  currentUsername: string;
   currentUser: CurrentUser;
   pendingSwitch: boolean;
   cardImageSize: number;
@@ -22,7 +21,7 @@ const AvatarList = (props: AvatarListProps) => {
           <Box>
             <AvatarCard
               avatar={avatar}
-              currentUsername={props.currentUsername}
+              currentUser={props.currentUser}
               isActiveAvatar={isActive}
               pendingSwitch={props.pendingSwitch}
               imageSize={props.cardImageSize}

@@ -1,13 +1,15 @@
-import { Divider, Group, MultiSelect } from '@mantine/core';
+import { Box, Divider, Group, LoadingOverlay, MultiSelect } from '@mantine/core';
 import { IconImageInPicture, IconSortAscendingShapes, IconTableColumn } from '@tabler/icons-react';
 import SortOrderSelector from './SortOrderSelector';
 import AvatarCardImageSizeSelector from './AvatarCardImageSizeSelector';
 import AvatarCardColumnSizeSelector from './AvatarCardColumnSizeSelector';
 import AvatarListRefreshButton from './AvatarListRefreshButton';
-import { AvatarSortOrder } from '@/lib/models';
+import { AvatarSortOrder, CurrentUser } from '@/lib/models';
+import { useQuery } from '@tanstack/react-query';
+import { queryAllTagsAvailable } from '@/lib/db';
 
 interface FooterContentsProps {
-  registeredTagNames: string[];
+  currentUser: CurrentUser;
   selectedSort: AvatarSortOrder;
   cardImageSize: number | undefined;
   cardImageSizeLoading: boolean;
@@ -19,17 +21,28 @@ interface FooterContentsProps {
   onRefreshButtonClick: () => void;
 }
 const FooterContents = (props: FooterContentsProps) => {
+  const tagQuery = useQuery({
+    queryKey: ['tags', props.currentUser.id],
+    queryFn: async () => {
+      const tags = await queryAllTagsAvailable(props.currentUser.id);
+      return tags;
+    }
+  });
+
   return (
     <Group px="md" mt="8">
       <AvatarListRefreshButton
         onRefreshButtonClick={props.onRefreshButtonClick}
       />
       <Divider orientation="vertical" />
-      <MultiSelect
-        placeholder="タグでフィルター"
-        data={props.registeredTagNames}
-        searchable
-      />
+      <Box pos="relative">
+        <LoadingOverlay visible={tagQuery.isPending} overlayProps={{ radius: 'md', blur: 2 }} />
+        <MultiSelect
+          placeholder="タグでフィルター"
+          data={tagQuery.data ? tagQuery.data.map(tag => ({ value: tag.tag_display_name, label: tag.tag_display_name })) : []}
+          searchable
+        />
+      </Box>
       <Divider orientation="vertical" />
       <IconSortAscendingShapes />
       <SortOrderSelector

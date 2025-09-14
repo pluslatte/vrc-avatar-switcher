@@ -1,4 +1,4 @@
-import { Avatar } from '@/lib/models';
+import { Avatar, CurrentUser } from '@/lib/models';
 import { ActionIcon, BackgroundImage, Badge, Button, Card, Divider, Group, Text, Tooltip } from '@mantine/core';
 import TagManagerButton from './TagManagerButton';
 import { IconX } from '@tabler/icons-react';
@@ -8,7 +8,7 @@ import { fetchAvatarTags } from '@/lib/db';
 
 interface AvatarCardProps {
   avatar: Avatar;
-  currentUsername: string;
+  currentUser: CurrentUser;
   isActiveAvatar: boolean;
   pendingSwitch: boolean;
   imageSize: number | null;
@@ -19,9 +19,9 @@ interface AvatarCardProps {
 
 const AvatarCard = (props: AvatarCardProps) => {
   const tagQuery = useQuery({
-    queryKey: ['tags', props.avatar.id, props.currentUsername],
+    queryKey: ['tags', props.avatar.id, props.currentUser.id],
     queryFn: async () => {
-      return await fetchAvatarTags(props.avatar.id, props.currentUsername);
+      return await fetchAvatarTags(props.avatar.id, props.currentUser.id);
     },
   });
 
@@ -74,8 +74,8 @@ const AvatarCard = (props: AvatarCardProps) => {
         {tagQuery.data && tagQuery.data.length > 0 && (
           <Group gap="xs">
             {tagQuery.data.map((tag) => (
-              <Badge color={tag.color || 'gray'} key={tag.display_name}>
-                {tag.display_name}
+              <Badge color={tag.color || 'gray'} key={tag.tag_display_name}>
+                {tag.tag_display_name}
                 <ActionIcon
                   size={13}
                   color="dark"
@@ -85,7 +85,7 @@ const AvatarCard = (props: AvatarCardProps) => {
                       message: 'タグを削除しています...',
                       color: 'blue',
                     });
-                    props.handlerRemoveAvatarTag(tag.display_name, props.avatar.id, props.currentUsername);
+                    props.handlerRemoveAvatarTag(tag.tag_display_name, props.avatar.id, props.currentUser.id);
                   }}
                   style={{ marginLeft: 4, paddingTop: 3 }}
                 >
@@ -96,7 +96,7 @@ const AvatarCard = (props: AvatarCardProps) => {
             <TagManagerButton
               avatarId={props.avatar.id}
               tags={tagQuery.data}
-              currentUsername={props.currentUsername}
+              currentUserId={props.currentUser.id}
               handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
               handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
             />

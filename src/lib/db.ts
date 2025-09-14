@@ -1,8 +1,13 @@
 import Database from '@tauri-apps/plugin-sql';
 
+export interface Tag {
+  tag_display_name: string;
+  color: string;
+}
+
 export const createTag = async (
   tagName: string,
-  username: string,
+  currentUserId: string,
   color: string,
 ) => {
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
@@ -12,13 +17,47 @@ export const createTag = async (
       (display_name, color, created_by)
     VALUES
       ($1, $2, $3)`,
-    [tagName, color, username]
+    [tagName, color, currentUserId]
   );
+};
+
+export const queryTagExists = async (
+  tagName: string,
+  currentUserId: string
+) => {
+  const db = await Database.load('sqlite:vrc-avatar-switcher.db');
+  const result = await db.select<Array<{ count: number }>>(
+    `SELECT
+      COUNT(*) AS count
+    FROM
+      tags
+    WHERE
+      display_name = $1 AND created_by = $2`,
+    [tagName, currentUserId]
+  );
+  return result[0].count > 0;
+};
+
+export const queryAllTagsAvailable = async (
+  currentUserId: string
+) => {
+  const db = await Database.load('sqlite:vrc-avatar-switcher.db');
+  const result = await db.select<Array<Tag>>(
+    `SELECT
+      tag_display_name,
+      color
+    FROM
+      tags
+    WHERE
+      created_by = $1`,
+    [currentUserId]
+  );
+  return result;
 };
 
 export const dropTag = async (
   tagName: string,
-  username: string
+  currentUserId: string
 ) => {
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
   await db.execute(`
@@ -26,13 +65,13 @@ export const dropTag = async (
       tags
     WHERE
       display_name = $1 AND created_by = $2
-  `, [tagName, username]);
+  `, [tagName, currentUserId]);
 };
 
 export const createTagRelation = async (
   tagName: string,
   avatarId: string,
-  username: string,
+  currentUserId: string,
 ) => {
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
   await db.execute(`
@@ -40,14 +79,14 @@ export const createTagRelation = async (
       (tag_display_name, avatar_id, created_by)
     VALUES
       ($1, $2, $3)`,
-    [tagName, avatarId, username]
+    [tagName, avatarId, currentUserId]
   );
 };
 
 export const dropTagRelation = async (
   tagName: string,
   avatarId: string,
-  username: string,
+  currentUserId: string,
 ) => {
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
   await db.execute(`
@@ -55,16 +94,12 @@ export const dropTagRelation = async (
       tag_avatar_relations
     WHERE
       tag_display_name = $1 AND avatar_id = $2 AND created_by = $3`,
-    [tagName, avatarId, username]);
+    [tagName, avatarId, currentUserId]);
 };
 
-export interface Tag {
-  display_name: string;
-  color: string;
-}
 export const fetchAvatarTags = async (
   avatar_id: string,
-  username: string,
+  currentUserId: string,
 ): Promise<Array<Tag>> => {
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
   const result = await db.select<Array<Tag>>(
@@ -75,7 +110,7 @@ export const fetchAvatarTags = async (
       tag_avatar_relations
     WHERE
       avatar_id = $1 AND created_by = $2`,
-    [avatar_id, username]);
+    [avatar_id, currentUserId]);
 
   return result;
 };

@@ -39,7 +39,7 @@ const FooterContents = (props: FooterContentsProps) => {
         <LoadingOverlay visible={tagQuery.isPending} overlayProps={{ radius: 'md', blur: 2 }} />
         <MultiSelect
           placeholder="タグでフィルター"
-          data={tagQuery.data ? tagQuery.data.map(tag => ({ value: tag.tag_display_name, label: tag.tag_display_name })) : []}
+          data={tagQuery.data ? tagQuery.data.map(tag => ({ value: tag.display_name, label: tag.display_name })) : []}
           searchable
         />
       </Box>

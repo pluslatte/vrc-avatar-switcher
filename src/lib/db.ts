@@ -1,7 +1,7 @@
 import Database from '@tauri-apps/plugin-sql';
 
 export interface Tag {
-  tag_display_name: string;
+  display_name: string;
   color: string;
 }
 
@@ -44,7 +44,7 @@ export const queryAllTagsAvailable = async (
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
   const result = await db.select<Array<Tag>>(
     `SELECT
-      tag_display_name,
+      display_name,
       color
     FROM
       tags
@@ -102,15 +102,20 @@ export const fetchAvatarTags = async (
   currentUserId: string,
 ): Promise<Array<Tag>> => {
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
-  const result = await db.select<Array<Tag>>(
+  const tags = await db.select<Array<Tag>>(
     `SELECT
-      tag_display_name,
-      color
+      tar.tag_display_name AS display_name,
+      t.color
     FROM
-      tag_avatar_relations
+      tag_avatar_relations AS tar
+    JOIN
+      tags AS t
+    ON
+      tar.tag_display_name = t.display_name
+      AND tar.created_by = t.created_by
     WHERE
-      avatar_id = $1 AND created_by = $2`,
+      tar.avatar_id = $1 AND tar.created_by = $2`,
     [avatar_id, currentUserId]);
 
-  return result;
+  return tags;
 };

@@ -21,7 +21,8 @@ const AvatarCard = (props: AvatarCardProps) => {
   const tagQuery = useQuery({
     queryKey: ['tags', props.avatar.id, props.currentUser.id],
     queryFn: async () => {
-      return await fetchAvatarTags(props.avatar.id, props.currentUser.id);
+      const tags = await fetchAvatarTags(props.avatar.id, props.currentUser.id);
+      return tags;
     },
   });
 
@@ -70,12 +71,11 @@ const AvatarCard = (props: AvatarCardProps) => {
       <Card.Section p="sm">
         {tagQuery.isLoading && <Text>タグを読み込み中...</Text>}
         {tagQuery.isError && <Text c="red">タグの読み込みに失敗しました</Text>}
-        {tagQuery.data && tagQuery.data.length === 0 && <Text c="dimmed">タグが設定されていません</Text>}
-        {tagQuery.data && tagQuery.data.length > 0 && (
+        {tagQuery.data && (
           <Group gap="xs">
             {tagQuery.data.map((tag) => (
-              <Badge color={tag.color || 'gray'} key={tag.tag_display_name}>
-                {tag.tag_display_name}
+              <Badge color={tag.color || 'gray'} key={tag.display_name}>
+                {tag.display_name}
                 <ActionIcon
                   size={13}
                   color="dark"
@@ -85,7 +85,7 @@ const AvatarCard = (props: AvatarCardProps) => {
                       message: 'タグを削除しています...',
                       color: 'blue',
                     });
-                    props.handlerRemoveAvatarTag(tag.tag_display_name, props.avatar.id, props.currentUser.id);
+                    props.handlerRemoveAvatarTag(tag.display_name, props.avatar.id, props.currentUser.id);
                   }}
                   style={{ marginLeft: 4, paddingTop: 3 }}
                 >
@@ -93,6 +93,7 @@ const AvatarCard = (props: AvatarCardProps) => {
                 </ActionIcon>
               </Badge>
             ))}
+            {tagQuery.data.length === 0 && <Text c="dimmed">タグが設定されていません</Text>}
             <TagManagerButton
               avatarId={props.avatar.id}
               tags={tagQuery.data}

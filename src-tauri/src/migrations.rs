@@ -32,7 +32,7 @@ pub fn migrations() -> Vec<Migration> {
         sql: "
             CREATE TABLE IF NOT EXISTS new_tag_avatar_relations (
                 tag_display_name NVARCHAR(255) NOT NULL,
-                avatar_id NVARCHAR(255) NOT NULL,,
+                avatar_id NVARCHAR(255) NOT NULL,
                 created_by NVARCHAR(255) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (tag_display_name, avatar_id, created_by),

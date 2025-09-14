@@ -54,6 +54,7 @@ const AvatarList = (props: AvatarListProps) => {
         const card = (
           <AvatarCard
             avatar={avatar}
+            avatarTags={tagQuery.data[avatar.id] || []}
             currentUser={props.currentUser}
             isActiveAvatar={isActive}
             pendingSwitch={props.pendingSwitch}

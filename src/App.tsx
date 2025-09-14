@@ -2,39 +2,35 @@ import { command_check_auth } from '@/lib/commands';
 import { loadCookies } from '@/lib/stores';
 import DashBoard from '@/components/DashBoard';
 import LoginForm from '@/components/LoginForm';
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { LoaderFullWindow } from './components/LoaderFullWindow';
 
-
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState<'unknown' | 'yes' | 'no'>('unknown');
+  const queryClient = useQueryClient();
   const query = useQuery({
-    queryKey: ['auth_check'], queryFn: async () => {
+    queryKey: ['auth_check'],
+    queryFn: async () => {
       const { authCookie, twofaCookie } = await loadCookies();
       if (authCookie === '' || twofaCookie === '') {
-        setIsLoggedIn('no');
         return false;
       }
-
-      const check = await command_check_auth(authCookie, twofaCookie);
-      setIsLoggedIn(check ? 'yes' : 'no');
-      return check;
+      return await command_check_auth(authCookie, twofaCookie);
     }
   });
+
   const onLoginSuccess = () => {
-    setIsLoggedIn('yes');
+    queryClient.invalidateQueries({ queryKey: ['auth_check'] });
   };
   const onLogoutSuccess = () => {
-    setIsLoggedIn('no');
+    queryClient.invalidateQueries({ queryKey: ['auth_check'] });
   };
 
   return (
     <main>
       {query.isPending && <LoaderFullWindow message="認証情報を確認しています..." />}
       {query.isError && <div>Error: {(query.error as Error).message}</div>}
-      {isLoggedIn === 'yes' && <DashBoard onLogoutSuccess={onLogoutSuccess} />}
-      {isLoggedIn === 'no' && <LoginForm onLoginSuccess={onLoginSuccess} />}
+      {query.data === true && <DashBoard onLogoutSuccess={onLogoutSuccess} />}
+      {query.data === false && <LoginForm onLoginSuccess={onLoginSuccess} />}
     </main>
   );
 }

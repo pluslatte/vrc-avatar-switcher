@@ -12,6 +12,7 @@ interface AvatarCardProps {
   isActiveAvatar: boolean;
   pendingSwitch: boolean;
   imageSize: number | null;
+  selectedTags: Array<string>;
   onAvatarSwitchClicked: (avatarId: string) => void;
   handlerRegisterAvatarTag: (tagName: string, currentUserId: string, avatarId: string, color: string) => Promise<void>;
   handlerRemoveAvatarTag: (tagName: string, avatarId: string, currentUserId: string) => Promise<void>;
@@ -40,6 +41,14 @@ const AvatarCard = (props: AvatarCardProps) => {
     await props.handlerRemoveAvatarTag(tagName, avatarId, currentUserId);
     await tagQuery.refetch();
   };
+
+  if (
+    props.selectedTags.length > 0 && 
+    tagQuery.isSuccess &&
+    tagQuery.data.every(tag => !props.selectedTags.includes(tag.display_name))
+  ) {
+    return null;
+  }
 
   return (
     <Card

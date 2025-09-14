@@ -10,6 +10,7 @@ import { isAvatarSortOrder } from '@/lib/models';
 import { notifications } from '@mantine/notifications';
 import { countTagRelationsOf, createTag, createTagRelation, dropTag, dropTagRelation, queryTagExists } from '@/lib/db';
 import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -18,6 +19,7 @@ const DashBoard = (props: DashBoardProps) => {
   const { avatarListQuery, switchAvatarMutation, avatarSortOrder, handleAvatarSortOrderChange } = useAvatarSwitcher();
   const { loading: cardImageSizeLoading, cardImageSize, handleCardImageSizeChange } = useCardImageSizeSelector();
   const { loading: cardNumberPerRowLoading, cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowSelector();
+  const [selectedTags, setSelectedTags] = useState<Array<string>>([]);
 
   const queryClient = useQueryClient();
 
@@ -104,6 +106,7 @@ const DashBoard = (props: DashBoardProps) => {
           pendingSwitch={switchAvatarMutation.isPending}
           cardImageSize={cardImageSize}
           cardNumberPerRow={cardNumberPerRow}
+          selectedTags={selectedTags}
           handlerAvatarSwitch={handlerAvatarSwitch}
           handlerRegisterAvatarTag={handleRegisterAvatarTag}
           handlerRemoveAvatarTag={handleRemoveAvatarTag}
@@ -122,6 +125,7 @@ const DashBoard = (props: DashBoardProps) => {
           setCardNumberPerRow={handleCardNumberPerRow}
           onSortSettingChange={handlerSortOptSwitch}
           onRefreshButtonClick={handlerRefetchAvatar}
+          onTagFilterChange={setSelectedTags}
         />
       </AppShell.Footer>
 

@@ -19,6 +19,7 @@ interface FooterContentsProps {
   onSortSettingChange: (option: string | null) => void;
   setCardNumberPerRow: (number: string | null) => void;
   onRefreshButtonClick: () => void;
+  onTagFilterChange: (tags: Array<string>) => void;
 }
 const FooterContents = (props: FooterContentsProps) => {
   const tagQuery = useQuery({
@@ -41,6 +42,7 @@ const FooterContents = (props: FooterContentsProps) => {
           placeholder="タグでフィルター"
           data={tagQuery.data ? tagQuery.data.map(tag => ({ value: tag.display_name, label: tag.display_name })) : []}
           searchable
+          onChange={props.onTagFilterChange}
         />
       </Box>
       <Divider orientation="vertical" />

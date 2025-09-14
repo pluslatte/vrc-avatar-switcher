@@ -1,4 +1,4 @@
-import { Box, Grid, Indicator } from '@mantine/core';
+import { Grid, Indicator } from '@mantine/core';
 import AvatarCard from './AvatarCard';
 import { Avatar, CurrentUser } from '@/lib/models';
 
@@ -8,6 +8,7 @@ interface AvatarListProps {
   pendingSwitch: boolean;
   cardImageSize: number;
   cardNumberPerRow: number;
+  selectedTags: Array<string>;
   handlerAvatarSwitch: (avatarId: string) => void;
   handlerRegisterAvatarTag: (tagName: string, currentUserId: string, avatarId: string, color: string) => Promise<void>;
   handlerRemoveAvatarTag: (tagName: string, avatarId: string, currentUserId: string) => Promise<void>;
@@ -18,18 +19,17 @@ const AvatarList = (props: AvatarListProps) => {
       {props.avatars.map(avatar => {
         const isActive = props.currentUser.currentAvatar === avatar.id;
         const card = (
-          <Box>
             <AvatarCard
               avatar={avatar}
               currentUser={props.currentUser}
               isActiveAvatar={isActive}
               pendingSwitch={props.pendingSwitch}
               imageSize={props.cardImageSize}
+              selectedTags={props.selectedTags}
               onAvatarSwitchClicked={props.handlerAvatarSwitch}
               handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
               handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
             />
-          </Box>
         );
         return (
           <Grid.Col span={props.cardNumberPerRow} key={avatar.id}>

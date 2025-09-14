@@ -50,20 +50,10 @@ const DashBoard = (props: DashBoardProps) => {
       await queryClient.invalidateQueries({ queryKey: ['tags', currentUserId] });
     }
     await createTagRelation(tagName, avatarId, currentUserId);
-    notifications.show({
-      title: '成功',
-      message: `タグ「${tagName}」を紐づけました`,
-      color: 'green',
-    });
   };
 
   const handleRemoveAvatarTag = async (tagName: string, avatarId: string, currentUserId: string) => {
     await dropTagRelation(tagName, avatarId, currentUserId);
-    notifications.show({
-      title: '成功',
-      message: `タグ「${tagName}」を取り外しました`,
-      color: 'green',
-    });
     const remainingTagRelations = await countTagRelationsOf(tagName, currentUserId);
     if (remainingTagRelations === 0) {
       await dropTag(tagName, currentUserId);

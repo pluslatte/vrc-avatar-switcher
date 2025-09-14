@@ -37,10 +37,6 @@ const TagManager = (props: TagManagerProps) => {
               variant="filled"
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                notifications.show({
-                  message: 'タグを追加しています...',
-                  color: 'blue',
-                });
                 props.handlerRegisterAvatarTag(tag.display_name, props.currentUserId, props.avatarId, tag.color);
               }}
             >
@@ -80,7 +76,7 @@ const TagManager = (props: TagManagerProps) => {
           fullWidth
           onClick={() => {
             notifications.show({
-              message: 'タグを追加しています...',
+              message: 'タグを作成しています...',
               color: 'blue',
             });
             props.handlerRegisterAvatarTag(newTagName, props.currentUserId, props.avatarId, newTagColor);

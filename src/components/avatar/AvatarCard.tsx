@@ -2,7 +2,6 @@ import { Avatar, CurrentUser } from '@/lib/models';
 import { ActionIcon, BackgroundImage, Badge, Button, Card, Divider, Group, Loader, Text, Tooltip } from '@mantine/core';
 import TagManagerButton from './TagManagerButton';
 import { IconX } from '@tabler/icons-react';
-import { notifications } from '@mantine/notifications';
 import { useQuery } from '@tanstack/react-query';
 import { fetchAvatarTags } from '@/lib/db';
 
@@ -43,7 +42,7 @@ const AvatarCard = (props: AvatarCardProps) => {
   };
 
   if (
-    props.selectedTags.length > 0 && 
+    props.selectedTags.length > 0 &&
     tagQuery.isSuccess &&
     tagQuery.data.every(tag => !props.selectedTags.includes(tag.display_name))
   ) {
@@ -101,10 +100,6 @@ const AvatarCard = (props: AvatarCardProps) => {
                   color="dark"
                   variant="transparent"
                   onClick={() => {
-                    notifications.show({
-                      message: 'タグを削除しています...',
-                      color: 'blue',
-                    });
                     handlerRemoveAvatarTag(tag.display_name, props.avatar.id, props.currentUser.id);
                   }}
                   style={{ marginLeft: 4, paddingTop: 3 }}

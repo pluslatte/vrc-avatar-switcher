@@ -95,7 +95,7 @@ const AvatarCard = (props: AvatarCardProps) => {
                       message: 'タグを削除しています...',
                       color: 'blue',
                     });
-                    props.handlerRemoveAvatarTag(tag.display_name, props.avatar.id, props.currentUser.id);
+                    handlerRemoveAvatarTag(tag.display_name, props.avatar.id, props.currentUser.id);
                   }}
                   style={{ marginLeft: 4, paddingTop: 3 }}
                 >

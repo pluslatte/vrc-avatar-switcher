@@ -2,13 +2,13 @@ mod api_config;
 mod auth;
 mod avatars;
 mod cookie_jar;
+mod migrations;
 mod models;
 mod users;
 
 use std::sync::Arc;
 
 use reqwest::cookie::Jar;
-use tauri_plugin_sql::{Migration, MigrationKind};
 use vrchatapi::{
     apis::authentication_api::{verify2_fa, verify2_fa_email_code},
     models::{Avatar, CurrentUser, TwoFactorAuthCode, TwoFactorEmailCode},
@@ -157,35 +157,10 @@ async fn command_switch_avatar(
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let migrations = vec![Migration {
-        version: 1,
-        description: "Create settings table",
-        sql: "
-            CREATE TABLE IF NOT EXISTS tags (
-                display_name NVARCHAR(255) NOT NULL,
-                color VARCHAR(255) NOT NULL,
-                created_by NVARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (display_name, created_by)
-            );
-
-            CREATE TABLE IF NOT EXISTS tag_avatar_relations (
-                tag_display_name NVARCHAR(255) NOT NULL,
-                avatar_id NVARCHAR(255) NOT NULL,
-                created_by NVARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (tag_display_name, avatar_id),
-                FOREIGN KEY (tag_display_name, created_by)
-                    REFERENCES tags(display_name, created_by)
-                    ON DELETE CASCADE
-        );",
-        kind: MigrationKind::Up,
-    }];
-
     tauri::Builder::default()
         .plugin(
             tauri_plugin_sql::Builder::new()
-                .add_migrations("sqlite:vrc-avatar-switcher.db", migrations)
+                .add_migrations("sqlite:vrc-avatar-switcher.db", migrations::migrations())
                 .build(),
         )
         .plugin(tauri_plugin_store::Builder::new().build())

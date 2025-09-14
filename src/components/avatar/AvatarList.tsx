@@ -2,6 +2,7 @@ import { Grid, Indicator } from '@mantine/core';
 import AvatarCard from './AvatarCard';
 import { Avatar, CurrentUser } from '@/lib/models';
 import { LoaderFullWindow } from '../LoaderFullWindow';
+import { avatarTagSearchfilterAvatars } from '@/lib/utils';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
@@ -18,16 +19,11 @@ interface AvatarListProps {
 }
 const AvatarList = (props: AvatarListProps) => {
 
-  const filteredAvatars = props.avatars.filter(avatar => {
-    if (props.selectedTags.length === 0) {
-      return true;
-    }
-    if (!props.tagAvatarRelation) {
-      return false;
-    }
-    const tags = props.tagAvatarRelation[avatar.id] || [];
-    return props.selectedTags.every(tag => tags.some(t => t.display_name === tag));
-  });
+  const filteredAvatars = avatarTagSearchfilterAvatars(
+    props.avatars,
+    props.selectedTags,
+    props.tagAvatarRelation
+  );
 
   if (props.tagAvatarRelationLoading) return <LoaderFullWindow message="タグ情報を読み込み中..." withAppShell={true} />;
   if (props.tagAvatarRelation === undefined) return <div>タグ情報の読み込みに失敗しました。</div>;

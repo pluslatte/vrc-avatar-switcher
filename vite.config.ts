@@ -34,5 +34,9 @@ export default defineConfig(async () => ({
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
   }
 }));

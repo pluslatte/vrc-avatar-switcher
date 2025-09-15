@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - 特殊な文字が含まれたユーザー名、パスワードが URL エンコードされていない問題を修正
+- 電子メールによる二段階認証のコマンド呼び出しで、与えるパラメータの名前に誤りがあったのを修正
 
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.1.1...HEAD
 

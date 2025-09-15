@@ -62,7 +62,7 @@ export const command_email_2fa = async (
     raw2faCookie,
     username,
     password,
-    email2FaCode
+    twoFaCode: email2FaCode
   });
 };
 

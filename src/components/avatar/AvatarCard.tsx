@@ -28,6 +28,9 @@ const AvatarCard = (props: AvatarCardProps) => {
       radius="md"
       withBorder
       bg={props.isActiveAvatar ? 'dark' : ''}
+      style={props.isActiveAvatar
+        ? { border: '2px solid var(--mantine-color-orange-7)' } 
+        : undefined}
     >
       <BackgroundImage
         radius="md"

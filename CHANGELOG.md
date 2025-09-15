@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - ログインフォームの Input を TextInput, PasswordInput へ変更
 
+### Fixed
+- 特殊な文字が含まれたユーザー名、パスワードが URL エンコードされていない問題を修正
+
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.1.1...HEAD
 
 ## [0.1.1]

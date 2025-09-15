@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - ログインに失敗した際の視覚的なフィードバック
 
+### Changed
+- 視認性のため、アバターへのタグの紐づけを解除するボタンの色を白色に変更
+
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.1.0...HEAD
 
 ## [0.1.0] - 2025-09-15

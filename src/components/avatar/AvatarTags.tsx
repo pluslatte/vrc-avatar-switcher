@@ -19,7 +19,7 @@ const AvatarTags = (props: AvatarTagsProps) => {
         {tag.display_name}
         <ActionIcon
           size={13}
-          color="dark"
+          color="white"
           variant="transparent"
           onClick={() => {
             props.handlerRemoveAvatarTag(tag.display_name, props.avatar.id, props.currentUser.id);

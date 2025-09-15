@@ -11,5 +11,6 @@
 pnpm tauri build
 ```
 ## イメージ
-<img width="1199" height="928" alt="image" src="https://github.com/user-attachments/assets/a14ceaae-f700-4554-ac0f-a31a789242d7" />
+<img width="1198" height="924" alt="image" src="https://github.com/user-attachments/assets/1737db2e-afc3-4534-b20d-59bad890f888" />
+
 

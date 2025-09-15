@@ -1,8 +1,7 @@
 import { Avatar, CurrentUser } from '@/lib/models';
-import { ActionIcon, BackgroundImage, Badge, Button, Card, Divider, Group, Text, Tooltip } from '@mantine/core';
-import TagManagerButton from './TagManagerButton';
-import { IconX } from '@tabler/icons-react';
+import { BackgroundImage, Button, Card, Divider, Text, Tooltip } from '@mantine/core';
 import { Tag } from '@/lib/db';
+import AvatarTags from './AvatarTags';
 
 interface AvatarCardProps {
   avatar: Avatar;
@@ -61,32 +60,13 @@ const AvatarCard = (props: AvatarCardProps) => {
       </Card.Section>
       <Divider />
       <Card.Section p="sm">
-          <Group gap="xs">
-            {props.avatarTags.map((tag) => (
-              <Badge color={tag.color || 'gray'} key={tag.display_name}>
-                {tag.display_name}
-                <ActionIcon
-                  size={13}
-                  color="dark"
-                  variant="transparent"
-                  onClick={() => {
-                    props.handlerRemoveAvatarTag(tag.display_name, props.avatar.id, props.currentUser.id);
-                  }}
-                  style={{ marginLeft: 4, paddingTop: 3 }}
-                >
-                  <IconX />
-                </ActionIcon>
-              </Badge>
-            ))}
-            {props.avatarTags.length === 0 && <Text c="dimmed" fz="sm">タグが設定されていません</Text>}
-            <TagManagerButton
-              avatarId={props.avatar.id}
-              tags={props.avatarTags}
-              currentUserId={props.currentUser.id}
-              handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
-              handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
-            />
-          </Group>
+        <AvatarTags
+          avatar={props.avatar}
+          avatarTags={props.avatarTags}
+          currentUser={props.currentUser}
+          handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
+          handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
+        />
       </Card.Section>
     </Card>
   );

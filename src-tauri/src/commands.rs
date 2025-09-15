@@ -36,7 +36,7 @@ pub async fn command_fetch_avatars(
 #[tauri::command]
 pub async fn command_new_auth(username: &str, password: &str) -> Result<CommandLoginOk, String> {
     let jar = Arc::new(Jar::default());
-    let config = create_configuration_for_login(&jar, &username, &password)?;
+    let config = create_configuration_for_login(&jar, username, password)?;
     match try_login_without_2fa(&config).await? {
         AuthCookieOk::Success => {
             let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);

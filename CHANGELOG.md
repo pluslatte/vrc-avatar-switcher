@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - ログインに失敗した際の視覚的なフィードバック
 
+[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.1.0...HEAD
+
 ## [0.1.0] - 2025-09-15
 ### Added
 - 使用可能なアバターの取得および表示
@@ -20,3 +22,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - タグ削除
 - アバター一覧の表示サイズの調整
 - ログイン/ログアウト
+
+[0.1.0]: https://github.com/pluslatte/vrc-avatar-switcher/releases/tag/v0.1.0

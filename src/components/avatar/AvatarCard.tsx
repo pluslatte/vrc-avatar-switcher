@@ -53,6 +53,7 @@ const AvatarCard = (props: AvatarCardProps) => {
           <Text
             fw={500}
             size="md"
+            lineClamp={1}
           >
             {props.avatar.name}
           </Text>

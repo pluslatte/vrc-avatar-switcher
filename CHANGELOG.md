@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - 視認性のため、アバターへのタグの紐づけを解除するボタンの色を白色に変更
+- アバター一覧でアバター名がはみ出した場合、省略するように変更
 
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.1.0...HEAD
 

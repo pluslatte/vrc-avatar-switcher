@@ -12,18 +12,26 @@ pub enum AuthCookieOk {
     Requires2FA,
 }
 pub async fn try_login_without_2fa(config: &Configuration) -> Result<AuthCookieOk, String> {
-    match get_current_user(config).await.map_err(|e| e.to_string())? {
-        CurrentUser(_) => Ok(AuthCookieOk::Success),
-        RequiresTwoFactorAuth(auth_required) => {
-            if auth_required
-                .requires_two_factor_auth
-                .contains(&String::from("emailOtp"))
-            {
-                Ok(AuthCookieOk::RequiresEmail2FA)
-            } else {
-                Ok(AuthCookieOk::Requires2FA)
+    match get_current_user(config).await {
+        Ok(ok) => match ok {
+            CurrentUser(_) => Ok(AuthCookieOk::Success),
+            RequiresTwoFactorAuth(auth_required) => {
+                if auth_required
+                    .requires_two_factor_auth
+                    .contains(&String::from("emailOtp"))
+                {
+                    Ok(AuthCookieOk::RequiresEmail2FA)
+                } else {
+                    Ok(AuthCookieOk::Requires2FA)
+                }
             }
-        }
+        },
+        Err(e) => match e {
+            vrchatapi::apis::Error::ResponseError(resp) if resp.status == 401 => {
+                Err(String::from("Invalid username or password"))
+            }
+            _ => Err(format!("Error during login: {e}")),
+        },
     }
 }
 

@@ -2,6 +2,7 @@ import { Button, Divider, Input, InputLabel, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { command_new_auth, command_2fa, command_email_2fa } from '@/lib/commands';
 import { saveCookies } from '@/lib/stores';
+import { notifications } from '@mantine/notifications';
 
 interface LoginFormProps {
   onLoginSuccess: () => void;
@@ -33,45 +34,74 @@ const LoginForm = (props: LoginFormProps) => {
   };
 
   const handleLoginSubmit = async () => {
-    const result = await command_new_auth(loginFormData.username, loginFormData.password);
-    if (result.status === 'Success') {
-      setStep('done');
-      await saveCookies(result.auth_cookie, result.two_fa_cookie);
-      props.onLoginSuccess();
-    } else if (result.status === 'Requires2FA') {
-      setLoginFormData({ ...loginFormData, authCookie: result.auth_cookie, twofaCookie: result.two_fa_cookie || '' });
-      setStep('2fa');
-    } else if (result.status === 'RequiresEmail2FA') {
-      setLoginFormData({ ...loginFormData, authCookie: result.auth_cookie, twofaCookie: result.two_fa_cookie || '' });
-      setStep('email2fa');
-    } else {
-      console.error('Unknown login status:', result.status);
+    try {
+      const result = await command_new_auth(loginFormData.username, loginFormData.password);
+      if (result.status === 'Success') {
+        setStep('done');
+        await saveCookies(result.auth_cookie, result.two_fa_cookie);
+        props.onLoginSuccess();
+      } else if (result.status === 'Requires2FA') {
+        setLoginFormData({ ...loginFormData, authCookie: result.auth_cookie, twofaCookie: result.two_fa_cookie || '' });
+        setStep('2fa');
+      } else if (result.status === 'RequiresEmail2FA') {
+        setLoginFormData({ ...loginFormData, authCookie: result.auth_cookie, twofaCookie: result.two_fa_cookie || '' });
+        setStep('email2fa');
+      } else {
+        console.error('Unknown login status:', result.status);
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      notifications.show({
+        title: 'ログインに失敗しました',
+        message: error as string,
+        color: 'red',
+      });
+      return;
     }
   };
 
   const handle2FASubmit = async () => {
-    const result = await command_2fa(
-      loginFormData.authCookie,
-      loginFormData.twofaCookie,
-      loginFormData.username,
-      loginFormData.password,
-      loginFormData.code
-    );
-    setStep('done');
-    await saveCookies(result.auth_cookie, result.two_fa_cookie);
-    props.onLoginSuccess();
+    try {
+      const result = await command_2fa(
+        loginFormData.authCookie,
+        loginFormData.twofaCookie,
+        loginFormData.username,
+        loginFormData.password,
+        loginFormData.code
+      );
+      setStep('done');
+      await saveCookies(result.auth_cookie, result.two_fa_cookie);
+      props.onLoginSuccess();
+    } catch (error) {
+      console.error('2FA login failed:', error);
+      notifications.show({
+        title: '二段階認証に失敗しました。コードが間違っている可能性があります',
+        message: error as string,
+        color: 'red',
+      });
+    }
   };
+
   const handleEmail2FASubmit = async () => {
-    const result = await command_email_2fa(
-      loginFormData.authCookie,
-      loginFormData.twofaCookie,
-      loginFormData.username,
-      loginFormData.password,
-      loginFormData.code
-    );
-    setStep('done');
-    await saveCookies(result.auth_cookie, result.two_fa_cookie);
-    props.onLoginSuccess();
+    try {
+      const result = await command_email_2fa(
+        loginFormData.authCookie,
+        loginFormData.twofaCookie,
+        loginFormData.username,
+        loginFormData.password,
+        loginFormData.code
+      );
+      setStep('done');
+      await saveCookies(result.auth_cookie, result.two_fa_cookie);
+      props.onLoginSuccess();
+    } catch (error) {
+      console.error('2FA login failed:', error);
+      notifications.show({
+        title: '二段階認証に失敗しました。コードが間違っている可能性があります',
+        message: error as string,
+        color: 'red',
+      });
+    }
   };
 
   return (

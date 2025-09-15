@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- ログインフォームの Input を TextInput へ変更
+- ログインフォームの Input を TextInput, PasswordInput へ変更
 
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.1.1...HEAD
 

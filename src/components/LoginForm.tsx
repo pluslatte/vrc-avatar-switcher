@@ -1,4 +1,4 @@
-import { Button, Divider, Stack, Text, TextInput } from '@mantine/core';
+import { Button, Divider, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
 import { useState } from 'react';
 import { command_new_auth, command_2fa, command_email_2fa } from '@/lib/commands';
 import { saveCookies } from '@/lib/stores';
@@ -126,8 +126,7 @@ const LoginForm = (props: LoginFormProps) => {
             value={loginFormData.username}
             onChange={handleChange('username')}
           />
-          <TextInput
-            type="password"
+          <PasswordInput
             id="password"
             name="password"
             label="Password"

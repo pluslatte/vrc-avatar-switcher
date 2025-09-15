@@ -11,7 +11,8 @@ use crate::{
     auth::{is_auth_cookie_valid, try_login_without_2fa, AuthCookieOk},
     avatars::{self, fetch_avatars},
     cookie_jar::{extract_cookies_from_jar, set_raw_cookies_into_jar},
-    models::{AvatarSortOption, Command2FAOk, CommandLoginOk, CommandLoginStatus}, users,
+    models::{AvatarSortOption, Command2FAOk, CommandLoginOk, CommandLoginStatus},
+    users,
 };
 
 #[tauri::command]
@@ -117,7 +118,10 @@ pub async fn command_email_2fa(
 }
 
 #[tauri::command]
-pub async fn command_check_auth(raw_auth_cookie: &str, raw_2fa_cookie: &str) -> Result<bool, String> {
+pub async fn command_check_auth(
+    raw_auth_cookie: &str,
+    raw_2fa_cookie: &str,
+) -> Result<bool, String> {
     let jar = Arc::new(Jar::default());
     set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
     let config = create_configuration(&jar)?;

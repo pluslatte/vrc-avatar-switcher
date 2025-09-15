@@ -54,7 +54,6 @@ const DashBoard = (props: DashBoardProps) => {
           currentUserDisplayName={avatarListQuery.data.currentUser.displayName}
           currentUserThumbnailImageUrl={avatarListQuery.data.currentUser.currentAvatarThumbnailImageUrl}
           currentUserAvatarName={avatarListQuery.data.avatars.find(avatar => avatar.id === avatarListQuery.data.currentUser.currentAvatar)?.name || 'No Avatar'}
-          onLogoutSuccess={props.onLogoutSuccess}
         />
       </AppShell.Header>
 
@@ -93,6 +92,7 @@ const DashBoard = (props: DashBoardProps) => {
             onRefreshButtonClick={handlerRefetchAvatar}
             onTagFilterChange={setSelectedTags}
             handlerDropTag={handlerDropTag}
+            onLogoutSuccess={props.onLogoutSuccess}
           />
           )}
         </ScrollArea>

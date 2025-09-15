@@ -2,6 +2,7 @@ import { Popover, ActionIcon, Group, Divider, Text } from '@mantine/core';
 import { IconSettings, IconImageInPicture, IconTableColumn } from '@tabler/icons-react';
 import AvatarCardColumnSizeSelector from './AvatarCardColumnSizeSelector';
 import AvatarCardImageSizeSelector from './AvatarCardImageSizeSelector';
+import LogoutButton from '@/components/LogoutButton';
 
 interface SettingsPopoverProps {
   cardImageSize: number | undefined;
@@ -10,6 +11,7 @@ interface SettingsPopoverProps {
   cardNumberPerRowLoading: boolean;
   setCardImageSize: (size: string | null) => void;
   setCardNumberPerRow: (number: string | null) => void;
+  onLogoutSuccess: () => void;
 }
 const SettingsPopover = (props: SettingsPopoverProps) => {
   return (
@@ -24,6 +26,13 @@ const SettingsPopover = (props: SettingsPopoverProps) => {
         </ActionIcon>
       </Popover.Target>
       <Popover.Dropdown>
+        <Group>
+          <Text fz="xs" c="dimmed">
+            {'(c) 2025 pluslatte'}
+          </Text>
+          <LogoutButton onLogoutSuccess={props.onLogoutSuccess} />
+        </Group>
+        <Divider my="xs" />
         <Group>
           <IconImageInPicture />
           <AvatarCardImageSizeSelector
@@ -41,9 +50,6 @@ const SettingsPopover = (props: SettingsPopoverProps) => {
             setCardNumberPerRow={props.setCardNumberPerRow}
           />
         </Group>
-        <Text fz="xs" c="dimmed">
-            {'(c) 2025 pluslatte'}
-        </Text>
       </Popover.Dropdown>
     </Popover>
   );

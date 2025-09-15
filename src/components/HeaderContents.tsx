@@ -1,12 +1,10 @@
 // eslint-disable-next-line quotes
 import { Avatar, Divider, Group, Text } from "@mantine/core";
-import LogoutButton from '@/components/LogoutButton';
 
 interface HeaderContentsProps {
   currentUserDisplayName: string;
   currentUserThumbnailImageUrl: string;
   currentUserAvatarName: string;
-  onLogoutSuccess: () => void;
 }
 const HeaderContents = (props: HeaderContentsProps) => {
   return (
@@ -26,7 +24,6 @@ const HeaderContents = (props: HeaderContentsProps) => {
       >
         現在のアバター: {props.currentUserAvatarName}
       </Text>
-      <LogoutButton onLogoutSuccess={props.onLogoutSuccess} />
     </Group>
   );
 };

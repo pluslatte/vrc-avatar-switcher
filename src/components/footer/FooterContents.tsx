@@ -21,6 +21,7 @@ interface FooterContentsProps {
   onRefreshButtonClick: () => void;
   onTagFilterChange: (tags: Array<string>) => void;
   handlerDropTag: (tagName: string, currentUserId: string) => void;
+  onLogoutSuccess: () => void;
 }
 const FooterContents = (props: FooterContentsProps) => {
 
@@ -59,6 +60,7 @@ const FooterContents = (props: FooterContentsProps) => {
         cardNumberPerRowLoading={props.cardNumberPerRowLoading}
         setCardImageSize={props.setCardImageSize}
         setCardNumberPerRow={props.setCardNumberPerRow}
+        onLogoutSuccess={props.onLogoutSuccess}
       />
     </Group>
   );

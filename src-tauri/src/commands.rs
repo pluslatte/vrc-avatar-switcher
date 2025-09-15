@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use reqwest::cookie::Jar;
-use urlencoding::encode;
 use vrchatapi::{
     apis::authentication_api::{verify2_fa, verify2_fa_email_code},
     models::{Avatar, CurrentUser, TwoFactorAuthCode, TwoFactorEmailCode},
@@ -36,9 +35,6 @@ pub async fn command_fetch_avatars(
 
 #[tauri::command]
 pub async fn command_new_auth(username: &str, password: &str) -> Result<CommandLoginOk, String> {
-    // VRChat API expects URL-encoded username and password
-    let username = encode(username);
-    let password = encode(password);
     let jar = Arc::new(Jar::default());
     let config = create_configuration_for_login(&jar, &username, &password)?;
     match try_login_without_2fa(&config).await? {

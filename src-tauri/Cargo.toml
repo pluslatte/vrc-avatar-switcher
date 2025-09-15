@@ -27,4 +27,3 @@ reqwest = "0.12.23"
 url = "2.5.7"
 tauri-plugin-store = "2"
 tauri-plugin-sql = { version = "2", features = ["sqlite"] }
-urlencoding = "2.1.3"

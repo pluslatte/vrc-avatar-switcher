@@ -29,7 +29,7 @@ const AvatarCard = (props: AvatarCardProps) => {
       withBorder
       bg={props.isActiveAvatar ? 'dark' : ''}
       style={props.isActiveAvatar
-        ? { border: '2px solid var(--mantine-color-orange-7)' } 
+        ? { border: '2px solid var(--mantine-color-orange-7)' }
         : undefined}
     >
       <BackgroundImage
@@ -46,6 +46,15 @@ const AvatarCard = (props: AvatarCardProps) => {
           disabled={props.isActiveAvatar}
           loading={props.pendingSwitch && !props.isActiveAvatar}
           onClick={handleSwitch}
+          style={{
+            color: props.isActiveAvatar
+              ? 'var(--mantine-color-orange-7)'
+              : undefined,
+            textShadow: '0 0 10px rgba(63, 63, 63, 0.8)',
+            backgroundColor: props.isActiveAvatar
+              ? '#111111AA'
+              : undefined,
+          }}
         >
           {props.isActiveAvatar ? 'Active' : 'Select'}
         </Button>

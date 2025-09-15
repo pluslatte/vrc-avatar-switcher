@@ -1,4 +1,4 @@
-import { Button, Divider, Input, InputLabel, Stack, Text } from '@mantine/core';
+import { Button, Divider, Stack, Text, TextInput } from '@mantine/core';
 import { useState } from 'react';
 import { command_new_auth, command_2fa, command_email_2fa } from '@/lib/commands';
 import { saveCookies } from '@/lib/stores';
@@ -118,18 +118,19 @@ const LoginForm = (props: LoginFormProps) => {
 
       {step === 'login' && (
         <form onSubmit={e => handleSubmit(e, handleLoginSubmit())}>
-          <InputLabel htmlFor="username">Username</InputLabel>
-          <Input
+          <TextInput
+            type="text"
             id="username"
             name="username"
+            label="Username"
             value={loginFormData.username}
             onChange={handleChange('username')}
           />
-          <InputLabel htmlFor="password">Password</InputLabel>
-          <Input
+          <TextInput
             type="password"
             id="password"
             name="password"
+            label="Password"
             value={loginFormData.password}
             onChange={handleChange('password')}
           />
@@ -139,11 +140,11 @@ const LoginForm = (props: LoginFormProps) => {
       )}
       {step === '2fa' && (
         <form onSubmit={e => handleSubmit(e, handle2FASubmit())}>
-          <InputLabel htmlFor="2fa-code">2FA Code</InputLabel>
-          <Input
+          <TextInput
             id="2fa-code"
             name="2fa-code"
             value={loginFormData.code}
+            label="2FA Code"
             onChange={handleChange('code')}
           />
           <Divider my="sm" />
@@ -152,11 +153,11 @@ const LoginForm = (props: LoginFormProps) => {
       )}
       {step === 'email2fa' && (
         <form onSubmit={e => handleSubmit(e, handleEmail2FASubmit())}>
-          <InputLabel htmlFor="email-2fa-code">Email 2FA Code</InputLabel>
-          <Input
+          <TextInput
             id="email-2fa-code"
             name="email-2fa-code"
             value={loginFormData.code}
+            label="Email 2FA Code"
             onChange={handleChange('code')}
           />
           <Divider my="sm" />

@@ -6,13 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.1.2...HEAD
+
+## [0.1.2]
 ### Changed
 - ログインフォームの Input を TextInput, PasswordInput へ変更
 
 ### Fixed
 - 電子メールによる二段階認証のコマンド呼び出しで、与えるパラメータの名前に誤りがあったのを修正
 
-[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.1.1...HEAD
+[0.1.2]: https://github.com/pluslatte/vrc-avatar-switcher/releases/tag/v0.1.2
 
 ## [0.1.1]
 ### Added

@@ -54,6 +54,7 @@ const DashBoard = (props: DashBoardProps) => {
           currentUserDisplayName={avatarListQuery.data.currentUser.displayName}
           currentUserThumbnailImageUrl={avatarListQuery.data.currentUser.currentAvatarThumbnailImageUrl}
           currentUserAvatarName={avatarListQuery.data.avatars.find(avatar => avatar.id === avatarListQuery.data.currentUser.currentAvatar)?.name || 'No Avatar'}
+          onRefreshButtonClick={handlerRefetchAvatar}
         />
       </AppShell.Header>
 
@@ -89,7 +90,6 @@ const DashBoard = (props: DashBoardProps) => {
             setCardImageSize={handleCardImageSizeChange}
             setCardNumberPerRow={handleCardNumberPerRow}
             onSortSettingChange={handlerSortOptSwitch}
-            onRefreshButtonClick={handlerRefetchAvatar}
             onTagFilterChange={setSelectedTags}
             handlerDropTag={handlerDropTag}
             onLogoutSuccess={props.onLogoutSuccess}

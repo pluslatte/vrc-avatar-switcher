@@ -1,10 +1,11 @@
-// eslint-disable-next-line quotes
-import { Avatar, Divider, Group, Text } from "@mantine/core";
+import { Avatar, Box, Divider, Group, Text } from '@mantine/core';
+import AvatarListRefreshButton from '@/components/AvatarListRefreshButton';
 
 interface HeaderContentsProps {
   currentUserDisplayName: string;
   currentUserThumbnailImageUrl: string;
   currentUserAvatarName: string;
+  onRefreshButtonClick: () => void;
 }
 const HeaderContents = (props: HeaderContentsProps) => {
   return (
@@ -24,6 +25,11 @@ const HeaderContents = (props: HeaderContentsProps) => {
       >
         現在のアバター: {props.currentUserAvatarName}
       </Text>
+      <Box style={{ marginLeft: 'auto' }} >
+        <AvatarListRefreshButton
+          onRefreshButtonClick={props.onRefreshButtonClick}
+        />
+      </Box>
     </Group>
   );
 };

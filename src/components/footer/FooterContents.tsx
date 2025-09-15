@@ -1,7 +1,6 @@
 import { Box, Divider, Group, MultiSelect } from '@mantine/core';
 import { IconFilter, IconSortAscendingShapes } from '@tabler/icons-react';
 import SortOrderSelector from './SortOrderSelector';
-import AvatarListRefreshButton from './AvatarListRefreshButton';
 import { AvatarSortOrder, CurrentUser } from '@/lib/models';
 import { Tag } from '@/lib/db';
 import TagsRemovalPopover from './TagsRemovalPopover';
@@ -18,7 +17,6 @@ interface FooterContentsProps {
   setCardImageSize: (size: string | null) => void;
   onSortSettingChange: (option: string | null) => void;
   setCardNumberPerRow: (number: string | null) => void;
-  onRefreshButtonClick: () => void;
   onTagFilterChange: (tags: Array<string>) => void;
   handlerDropTag: (tagName: string, currentUserId: string) => void;
   onLogoutSuccess: () => void;
@@ -27,10 +25,6 @@ const FooterContents = (props: FooterContentsProps) => {
 
   return (
     <Group px="md" mt="8">
-      <AvatarListRefreshButton
-        onRefreshButtonClick={props.onRefreshButtonClick}
-      />
-      <Divider orientation="vertical" />
       <IconSortAscendingShapes />
       <SortOrderSelector
         selectedSort={props.selectedSort}

@@ -1,4 +1,4 @@
-import { dropCookies } from '@/lib/stores';
+import { dropCookies } from '@/lib/db';
 import { Button } from '@mantine/core';
 
 interface LogoutButtonProps {

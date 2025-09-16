@@ -1,7 +1,7 @@
 import { Button, Divider, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
 import { useState } from 'react';
 import { command_new_auth, command_2fa, command_email_2fa } from '@/lib/commands';
-import { saveCookies } from '@/lib/stores';
+import { saveCookies } from '@/lib/db';
 import { notifications } from '@mantine/notifications';
 
 interface LoginFormProps {

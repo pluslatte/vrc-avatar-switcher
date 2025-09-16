@@ -1,6 +1,6 @@
 import { command_fetch_avatars, command_fetch_current_user, command_switch_avatar } from '@/lib/commands';
 import { Avatar, CurrentUser } from '@/lib/models';
-import { loadCookies } from '@/lib/stores';
+import { loadCookies } from '@/lib/db';
 import { notifications } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAvatarSortOrderSelector } from './useAvatarSortOrderSelector';

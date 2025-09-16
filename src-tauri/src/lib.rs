@@ -1,15 +1,16 @@
 mod api_config;
 mod auth;
 mod avatars;
+mod commands;
 mod cookie_jar;
 mod migrations;
 mod models;
 mod users;
-mod commands;
 
-use crate::
-    commands::{command_2fa, command_check_auth, command_email_2fa, command_fetch_avatars, command_fetch_current_user, command_new_auth, command_switch_avatar}
-;
+use crate::commands::{
+    command_2fa, command_check_auth, command_email_2fa, command_fetch_avatars,
+    command_fetch_current_user, command_new_auth, command_switch_avatar,
+};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -19,7 +20,6 @@ pub fn run() {
                 .add_migrations("sqlite:vrc-avatar-switcher.db", migrations::migrations())
                 .build(),
         )
-        .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             command_fetch_avatars,

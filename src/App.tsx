@@ -1,5 +1,5 @@
 import { command_check_auth } from '@/lib/commands';
-import { loadCookies } from '@/lib/stores';
+import { loadCookies } from '@/lib/db';
 import DashBoard from '@/components/DashBoard';
 import LoginForm from '@/components/LoginForm';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

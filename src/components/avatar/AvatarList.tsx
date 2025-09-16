@@ -14,8 +14,6 @@ interface AvatarListProps {
   cardNumberPerRow: number;
   selectedTags: Array<string>;
   handlerAvatarSwitch: (avatarId: string) => void;
-  handlerRegisterAvatarTag: (tagName: string, currentUserId: string, avatarId: string, color: string) => Promise<void>;
-  handlerRemoveAvatarTag: (tagName: string, avatarId: string, currentUserId: string) => Promise<void>;
 }
 const AvatarList = (props: AvatarListProps) => {
 
@@ -34,6 +32,7 @@ const AvatarList = (props: AvatarListProps) => {
         const card = (
           <AvatarCard
             avatar={avatar}
+            avatars={props.avatars}
             avatarTags={props.tagAvatarRelation[avatar.id] || []}
             currentUser={props.currentUser}
             isActiveAvatar={isActive}
@@ -41,8 +40,6 @@ const AvatarList = (props: AvatarListProps) => {
             imageSize={props.cardImageSize}
             selectedTags={props.selectedTags}
             onAvatarSwitchClicked={props.handlerAvatarSwitch}
-            handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
-            handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
           />
         );
         return (

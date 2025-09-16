@@ -23,9 +23,6 @@ const DashBoard = (props: DashBoardProps) => {
     tagAvatarRelation,
     handleAvatarSortOrderChange,
     handlerAvatarSwitch,
-    handleRegisterAvatarTag,
-    handleRemoveAvatarTag,
-    handlerDropTag,
   } = useAvatarSwitcher();
   const { loading: cardImageSizeLoading, cardImageSize, handleCardImageSizeChange } = useCardImageSizeSelector();
   const { loading: cardNumberPerRowLoading, cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowSelector();
@@ -69,8 +66,6 @@ const DashBoard = (props: DashBoardProps) => {
           cardNumberPerRow={cardNumberPerRow}
           selectedTags={selectedTags}
           handlerAvatarSwitch={handlerAvatarSwitch}
-          handlerRegisterAvatarTag={handleRegisterAvatarTag}
-          handlerRemoveAvatarTag={handleRemoveAvatarTag}
         />}
       </AppShell.Main>
 
@@ -79,6 +74,7 @@ const DashBoard = (props: DashBoardProps) => {
           {<LoadingOverlay visible={tagsLoading} overlayProps={{ radius: 'md', blur: 2 }} />}
           {availableTags !== undefined && (
             <FooterContents
+              avatars={avatarListQuery.data.avatars}
               currentUser={avatarListQuery.data.currentUser}
               selectedSort={avatarSortOrder}
               cardImageSize={cardImageSize}
@@ -90,7 +86,6 @@ const DashBoard = (props: DashBoardProps) => {
               setCardNumberPerRow={handleCardNumberPerRow}
               onSortSettingChange={handlerSortOptSwitch}
               onTagFilterChange={setSelectedTags}
-              handlerDropTag={handlerDropTag}
               onLogoutSuccess={props.onLogoutSuccess}
             />
           )}

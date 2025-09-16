@@ -5,6 +5,7 @@ import AvatarTags from './AvatarTags';
 
 interface AvatarCardProps {
   avatar: Avatar;
+  avatars: Array<Avatar>;
   avatarTags: Array<Tag>
   currentUser: CurrentUser;
   isActiveAvatar: boolean;
@@ -12,8 +13,6 @@ interface AvatarCardProps {
   imageSize: number | null;
   selectedTags: Array<string>;
   onAvatarSwitchClicked: (avatarId: string) => void;
-  handlerRegisterAvatarTag: (tagName: string, currentUserId: string, avatarId: string, color: string) => Promise<void>;
-  handlerRemoveAvatarTag: (tagName: string, avatarId: string, currentUserId: string) => Promise<void>;
 }
 
 const AvatarCard = (props: AvatarCardProps) => {
@@ -75,10 +74,9 @@ const AvatarCard = (props: AvatarCardProps) => {
       <Card.Section p="sm">
         <AvatarTags
           avatar={props.avatar}
+          avatars={props.avatars}
           avatarTags={props.avatarTags}
           currentUser={props.currentUser}
-          handlerRegisterAvatarTag={props.handlerRegisterAvatarTag}
-          handlerRemoveAvatarTag={props.handlerRemoveAvatarTag}
         />
       </Card.Section>
     </Card>

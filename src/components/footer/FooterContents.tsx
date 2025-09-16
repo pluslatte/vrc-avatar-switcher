@@ -1,12 +1,13 @@
 import { Box, Divider, Group, MultiSelect } from '@mantine/core';
 import { IconFilter, IconSortAscendingShapes } from '@tabler/icons-react';
 import SortOrderSelector from './SortOrderSelector';
-import { AvatarSortOrder, CurrentUser } from '@/lib/models';
+import { Avatar, AvatarSortOrder, CurrentUser } from '@/lib/models';
 import { Tag } from '@/lib/db';
 import TagsRemovalPopover from './TagsRemovalPopover';
 import SettingsPopover from './SettingsPopover';
 
 interface FooterContentsProps {
+  avatars: Array<Avatar>;
   currentUser: CurrentUser;
   selectedSort: AvatarSortOrder;
   cardImageSize: number | undefined;
@@ -18,7 +19,6 @@ interface FooterContentsProps {
   onSortSettingChange: (option: string | null) => void;
   setCardNumberPerRow: (number: string | null) => void;
   onTagFilterChange: (tags: Array<string>) => void;
-  handlerDropTag: (tagName: string, currentUserId: string) => void;
   onLogoutSuccess: () => void;
 }
 const FooterContents = (props: FooterContentsProps) => {
@@ -42,9 +42,9 @@ const FooterContents = (props: FooterContentsProps) => {
       </Box>
       <Divider orientation="vertical" />
       <TagsRemovalPopover
+        avatars={props.avatars}
         currentUser={props.currentUser}
         availableTags={props.availableTags}
-        handlerDropTag={props.handlerDropTag}
       />
       <Divider orientation="vertical" />
       <SettingsPopover

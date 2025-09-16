@@ -1,41 +1,15 @@
-import { command_switch_avatar } from '@/lib/commands';
-import { loadCookies } from '@/lib/db';
 import { notifications } from '@mantine/notifications';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useAvatarSortOrderSelector } from './useAvatarSortOrderSelector';
 import { countTagRelationsOf, createTag, createTagRelation, dropTag, dropTagRelation, fetchAvatarsTags, queryAllTagsAvailable, queryTagExists } from '@/lib/db';
-import { AvatarListQuery, useAvatarListQuery } from './useAvatarListQuery';
+import { useAvatarListQuery } from './useAvatarListQuery';
+import { useSwitchAvatarMutation } from './useSwitchAvatarMutation';
 
 export const useAvatarSwitcher = () => {
-  const queryClient = useQueryClient();
   const { avatarSortOrder, handleAvatarSortOrderChange } = useAvatarSortOrderSelector();
 
   const avatarListQuery = useAvatarListQuery(avatarSortOrder);
-
-  const switchAvatarMutation = useMutation({
-    mutationFn: async (avatarId: string) => {
-      const { authCookie, twofaCookie } = await loadCookies();
-      return await command_switch_avatar(authCookie, twofaCookie, avatarId);
-    },
-    onSuccess: (currentUser) => {
-      queryClient.setQueryData(['avatarList', avatarSortOrder], (oldData: AvatarListQuery) => ({
-        ...oldData,
-        currentUser
-      }));
-      notifications.show({
-        title: '成功',
-        message: 'アバターの切り替えに成功しました',
-        color: 'green',
-      });
-    },
-    onError: (error) => {
-      notifications.show({
-        title: 'エラー',
-        message: `アバターの切り替えに失敗しました: ${error.message}`,
-        color: 'red',
-      });
-    },
-  });
+  const switchAvatarMutation = useSwitchAvatarMutation(avatarSortOrder);
 
   const availableTagsQuery = useQuery({
     queryKey: ['tags', avatarListQuery.data?.currentUser.id],

@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- アプリの設定は Store ではなくデータベースに保存するように変更
+
+### Fixed
+- 起動に失敗することがあるのを修正
 
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.1.2...HEAD
 

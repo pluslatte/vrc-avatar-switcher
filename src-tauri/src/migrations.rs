@@ -49,5 +49,17 @@ pub fn migrations() -> Vec<Migration> {
             ALTER TABLE new_tag_avatar_relations RENAME TO tag_avatar_relations;
         ",
         kind: MigrationKind::Up,
-    }]
+    },
+    Migration {
+        version: 3,
+        description: "Move client settings to a new table",
+        sql: "
+            CREATE TABLE IF NOT EXISTS client_settings (
+                key VARCHAR(255) PRIMARY KEY,
+                value VARCHAR(255) NOT NULL
+            );
+        ",
+        kind: MigrationKind::Up,
+    }
+    ]
 }

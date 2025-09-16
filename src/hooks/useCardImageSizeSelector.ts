@@ -1,4 +1,4 @@
-import { loadCardImageSize, saveCardImageSize } from '@/lib/stores';
+import { loadCardImageSize, saveCardImageSize } from '@/lib/db';
 import { useQuery } from '@tanstack/react-query';
 
 export const useCardImageSizeSelector = () => {

@@ -1,4 +1,5 @@
 import Database from '@tauri-apps/plugin-sql';
+import { AvatarSortOrder } from './models';
 
 export interface Tag {
   display_name: string;
@@ -172,4 +173,67 @@ export const fetchAvatarsTags = async (
     result[row.avatar_id].push({ display_name: row.display_name, color: row.color });
   });
   return result;
+};
+
+const queryClientConfig = async (
+  key: string,
+): Promise<string> => {
+  const db = await Database.load('sqlite:vrc-avatar-switcher.db');
+  const { value } = await db.select<{ value: string }>(
+    `SELECT
+      value
+    FROM
+      client_config
+    WHERE
+      key = $1`,
+    [key]
+  );
+  return value || '';
+};
+
+const updateClientConfig = async (
+  key: string,
+  value: string,
+): Promise<void> => {
+  const db = await Database.load('sqlite:vrc-avatar-switcher.db');
+  await db.execute(`
+    INSERT INTO
+      client_config (key, value)
+    VALUES
+      ($1, $2)
+    ON CONFLICT (key) DO UPDATE SET
+      value = $2
+  `, [key, value]);
+};
+
+export const saveAvatarSortOrder = async (order: AvatarSortOrder | null): Promise<void> => {
+  updateClientConfig('avatar_sort_order', order || 'Updated');
+};
+
+export const loadAvatarSortOrder = async (): Promise<AvatarSortOrder> => {
+  const value = await queryClientConfig('avatar_sort_order');
+  return (
+    value === 'Name' ||
+    value === 'Updated'
+  ) ? value : 'Updated';
+};
+
+export const saveCardImageSize = async (size: number | null): Promise<void> => {
+  updateClientConfig('card_image_size', (size || 160).toString());
+};
+
+export const loadCardImageSize = async (): Promise<number> => {
+  const value = await queryClientConfig('card_image_size');
+  const size = parseInt(value, 10);
+  return isNaN(size) ? 160 : size;
+};
+
+export const saveCardNumberPerRow = async (number: number | null): Promise<void> => {
+  updateClientConfig('card_number_per_row', (number || 3).toString());
+};
+
+export const loadCardNumberPerRow = async (): Promise<number> => {
+  const value = await queryClientConfig('card_number_per_row');
+  const number = parseInt(value, 10);
+  return isNaN(number) ? 3 : number;
 };

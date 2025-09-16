@@ -1,4 +1,4 @@
-import { loadCardNumberPerRow, saveCardNumberPerRow } from '@/lib/stores';
+import { loadCardNumberPerRow, saveCardNumberPerRow } from '@/lib/db';
 import { useQuery } from '@tanstack/react-query';
 
 export const useCardNumberPerRowSelector = () => {

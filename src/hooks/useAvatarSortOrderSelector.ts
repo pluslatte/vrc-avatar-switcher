@@ -1,5 +1,5 @@
+import { loadAvatarSortOrder, saveAvatarSortOrder } from '@/lib/db';
 import { AvatarSortOrder } from '@/lib/models';
-import { loadAvatarSortOrder, saveAvatarSortOrder } from '@/lib/stores';
 import { useQuery } from '@tanstack/react-query';
 
 export const useAvatarSortOrderSelector = () => {

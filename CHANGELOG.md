@@ -11,7 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0]
 ### Changed
+- 認証情報を Store ではなくデータベースに保存するように変更
 - アプリの設定は Store ではなくデータベースに保存するように変更
+
+### Removed
+- Store プラグインの使用を停止
 
 ### Fixed
 - 起動に失敗することがあるのを修正

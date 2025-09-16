@@ -188,6 +188,7 @@ const queryClientConfig = async (
       key = $1`,
     [key]
   );
+  if (rows.length === 0) return '';
   return rows[0].value || '';
 };
 
@@ -239,6 +240,7 @@ export const loadCardNumberPerRow = async (): Promise<number> => {
 };
 
 export const loadCookies = async (): Promise<{ authCookie: string; twofaCookie: string }> => {
+  console.log('loadCookies');
   const auth = await queryClientConfig('auth_cookie');
   const twofa = await queryClientConfig('two_fa_cookie');
   return {

@@ -22,7 +22,6 @@ const DashBoard = (props: DashBoardProps) => {
     tagAvatarRelationLoading,
     tagAvatarRelation,
     handleAvatarSortOrderChange,
-    handlerRefetchAvatar,
     handlerAvatarSwitch,
     handleRegisterAvatarTag,
     handleRemoveAvatarTag,
@@ -51,10 +50,10 @@ const DashBoard = (props: DashBoardProps) => {
     >
       <AppShell.Header>
         <HeaderContents
+          avatarSortOrder={avatarSortOrder}
           currentUserDisplayName={avatarListQuery.data.currentUser.displayName}
           currentUserThumbnailImageUrl={avatarListQuery.data.currentUser.currentAvatarThumbnailImageUrl}
           currentUserAvatarName={avatarListQuery.data.avatars.find(avatar => avatar.id === avatarListQuery.data.currentUser.currentAvatar)?.name || 'No Avatar'}
-          onRefreshButtonClick={handlerRefetchAvatar}
         />
       </AppShell.Header>
 
@@ -78,22 +77,22 @@ const DashBoard = (props: DashBoardProps) => {
       <AppShell.Footer>
         <ScrollArea h="100%">
           {<LoadingOverlay visible={tagsLoading} overlayProps={{ radius: 'md', blur: 2 }} />}
-          {availableTags !== undefined &&(
-          <FooterContents
-            currentUser={avatarListQuery.data.currentUser}
-            selectedSort={avatarSortOrder}
-            cardImageSize={cardImageSize}
-            cardImageSizeLoading={cardImageSizeLoading}
-            cardNumberPerRow={cardNumberPerRow}
-            cardNumberPerRowLoading={cardNumberPerRowLoading}
-            availableTags={availableTags}
-            setCardImageSize={handleCardImageSizeChange}
-            setCardNumberPerRow={handleCardNumberPerRow}
-            onSortSettingChange={handlerSortOptSwitch}
-            onTagFilterChange={setSelectedTags}
-            handlerDropTag={handlerDropTag}
-            onLogoutSuccess={props.onLogoutSuccess}
-          />
+          {availableTags !== undefined && (
+            <FooterContents
+              currentUser={avatarListQuery.data.currentUser}
+              selectedSort={avatarSortOrder}
+              cardImageSize={cardImageSize}
+              cardImageSizeLoading={cardImageSizeLoading}
+              cardNumberPerRow={cardNumberPerRow}
+              cardNumberPerRowLoading={cardNumberPerRowLoading}
+              availableTags={availableTags}
+              setCardImageSize={handleCardImageSizeChange}
+              setCardNumberPerRow={handleCardNumberPerRow}
+              onSortSettingChange={handlerSortOptSwitch}
+              onTagFilterChange={setSelectedTags}
+              handlerDropTag={handlerDropTag}
+              onLogoutSuccess={props.onLogoutSuccess}
+            />
           )}
         </ScrollArea>
       </AppShell.Footer>

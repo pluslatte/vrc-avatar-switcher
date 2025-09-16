@@ -1,31 +1,16 @@
-import { command_fetch_avatars, command_fetch_current_user, command_switch_avatar } from '@/lib/commands';
-import { Avatar, CurrentUser } from '@/lib/models';
+import { command_switch_avatar } from '@/lib/commands';
 import { loadCookies } from '@/lib/db';
 import { notifications } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAvatarSortOrderSelector } from './useAvatarSortOrderSelector';
 import { countTagRelationsOf, createTag, createTagRelation, dropTag, dropTagRelation, fetchAvatarsTags, queryAllTagsAvailable, queryTagExists } from '@/lib/db';
+import { AvatarListQuery, useAvatarListQuery } from './useAvatarListQuery';
 
-interface AvatarListQuery {
-  avatars: Array<Avatar>,
-  currentUser: CurrentUser,
-}
 export const useAvatarSwitcher = () => {
   const queryClient = useQueryClient();
   const { avatarSortOrder, handleAvatarSortOrderChange } = useAvatarSortOrderSelector();
 
-  const avatarListQuery = useQuery<AvatarListQuery>({
-    queryKey: ['avatarList', avatarSortOrder],
-    queryFn: async () => {
-      if (!avatarSortOrder) throw new Error('avatarSortOrder is undefined');
-      const { authCookie, twofaCookie } = await loadCookies();
-      return {
-        avatars: await command_fetch_avatars(authCookie, twofaCookie, avatarSortOrder),
-        currentUser: await command_fetch_current_user(authCookie, twofaCookie),
-      };
-    },
-    enabled: !!avatarSortOrder,
-  });
+  const avatarListQuery = useAvatarListQuery(avatarSortOrder);
 
   const switchAvatarMutation = useMutation({
     mutationFn: async (avatarId: string) => {
@@ -61,10 +46,6 @@ export const useAvatarSwitcher = () => {
     },
     enabled: !!avatarListQuery.data?.currentUser?.id,
   });
-
-  const handlerRefetchAvatar = async () => {
-    await avatarListQuery.refetch();
-  };
 
   const handlerAvatarSwitch = (avatarId: string) => {
     switchAvatarMutation.mutate(avatarId);
@@ -149,7 +130,6 @@ export const useAvatarSwitcher = () => {
     tagAvatarRelation: tagAvatarsRelationQuery.data,
     handleAvatarSortOrderChange,
     handlerAvatarSwitch,
-    handlerRefetchAvatar,
     handleRegisterAvatarTag,
     handleRemoveAvatarTag,
     handlerDropTag,

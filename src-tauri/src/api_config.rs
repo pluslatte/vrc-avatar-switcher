@@ -3,7 +3,7 @@ use std::sync::Arc;
 use reqwest::cookie::Jar;
 use vrchatapi::apis::configuration::Configuration;
 
-const USER_AGENT: &str = "vrc-avatar-switcher/0.1.2";
+const USER_AGENT: &str = "vrc-avatar-switcher/0.2.0";
 
 pub fn create_configuration_for_login(
     jar: &Arc<Jar>,

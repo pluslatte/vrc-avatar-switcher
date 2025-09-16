@@ -179,16 +179,16 @@ const queryClientConfig = async (
   key: string,
 ): Promise<string> => {
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
-  const { value } = await db.select<{ value: string }>(
+  const rows = await db.select<Array<{ value: string }>>(
     `SELECT
       value
     FROM
-      client_config
+      client_settings
     WHERE
       key = $1`,
     [key]
   );
-  return value || '';
+  return rows[0].value || '';
 };
 
 const updateClientConfig = async (
@@ -198,7 +198,7 @@ const updateClientConfig = async (
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
   await db.execute(`
     INSERT INTO
-      client_config (key, value)
+      client_settings (key, value)
     VALUES
       ($1, $2)
     ON CONFLICT (key) DO UPDATE SET
@@ -207,7 +207,7 @@ const updateClientConfig = async (
 };
 
 export const saveAvatarSortOrder = async (order: AvatarSortOrder | null): Promise<void> => {
-  updateClientConfig('avatar_sort_order', order || 'Updated');
+  await updateClientConfig('avatar_sort_order', order || 'Updated');
 };
 
 export const loadAvatarSortOrder = async (): Promise<AvatarSortOrder> => {
@@ -219,7 +219,7 @@ export const loadAvatarSortOrder = async (): Promise<AvatarSortOrder> => {
 };
 
 export const saveCardImageSize = async (size: number | null): Promise<void> => {
-  updateClientConfig('card_image_size', (size || 160).toString());
+  await updateClientConfig('card_image_size', (size || 160).toString());
 };
 
 export const loadCardImageSize = async (): Promise<number> => {
@@ -229,7 +229,7 @@ export const loadCardImageSize = async (): Promise<number> => {
 };
 
 export const saveCardNumberPerRow = async (number: number | null): Promise<void> => {
-  updateClientConfig('card_number_per_row', (number || 3).toString());
+  await updateClientConfig('card_number_per_row', (number || 3).toString());
 };
 
 export const loadCardNumberPerRow = async (): Promise<number> => {

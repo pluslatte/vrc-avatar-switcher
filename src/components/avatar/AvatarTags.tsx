@@ -1,12 +1,9 @@
-import { countTagRelationsOf, dropTag, dropTagRelation, Tag } from '@/lib/db';
+import { Tag } from '@/lib/db';
 import { Avatar, CurrentUser } from '@/lib/models';
 import { Group, Badge, ActionIcon, Text } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import TagManagerButton from './TagManagerButton';
-import { notifications } from '@mantine/notifications';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { availableTagsQueryKey } from '@/hooks/useAvailableTagsQuery';
-import { tagAvatarRelationQueryKey } from '@/hooks/useTagAvatarsRelationQuery';
+import { useTagAvatarsRelationMutation } from '@/hooks/useTagAvatarsRelationMutation';
 
 interface AvatarTagsProps {
   avatar: Avatar;
@@ -15,36 +12,8 @@ interface AvatarTagsProps {
   currentUser: CurrentUser;
 }
 const AvatarTags = (props: AvatarTagsProps) => {
-  const queryClient = useQueryClient();
-  const removeTagMutation = useMutation({
-    mutationFn: async (params: { tagName: string; avatarId: string; currentUserId: string }) => {
-      await dropTagRelation(params.tagName, params.avatarId, params.currentUserId);
-      return { tagName: params.tagName, currentUserId: params.currentUserId };
-    },
-    onSuccess: async (variables) => {
-      const { tagName, currentUserId } = variables;
-      const remainingTagRelations = await countTagRelationsOf(tagName, currentUserId);
-      if (remainingTagRelations === 0) {
-        await dropTag(tagName, currentUserId);
-        notifications.show({
-          title: 'タグ削除',
-          message: `タグ「${tagName}」は他に関連付けられたアバターがないため削除されました`,
-          color: 'green',
-        });
-        queryClient.invalidateQueries({ queryKey: availableTagsQueryKey(currentUserId) });
-      }
-      queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(props.avatars, props.currentUser.id) });
-    },
-    onError: (error, variables) => {
-      const { tagName } = variables;
-      console.error('Error removing avatar tag:', error);
-      notifications.show({
-        title: 'タグ削除エラー',
-        message: `タグ「${tagName}」の削除中にエラーが発生しました: ${(error as Error).message}`,
-        color: 'red',
-      });
-    },
-  });
+
+  const { removeTagAvatarsRelation } = useTagAvatarsRelationMutation(props.avatars);
 
   return (
     <Group gap="xs">
@@ -56,7 +25,7 @@ const AvatarTags = (props: AvatarTagsProps) => {
             color="white"
             variant="transparent"
             onClick={() => {
-              removeTagMutation.mutate({
+              removeTagAvatarsRelation({
                 tagName: tag.display_name,
                 avatarId: props.avatar.id,
                 currentUserId: props.currentUser.id

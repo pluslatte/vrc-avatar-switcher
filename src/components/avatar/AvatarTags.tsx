@@ -4,7 +4,7 @@ import { Group, Badge, ActionIcon, Text } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import TagManagerButton from './TagManagerButton';
 import { notifications } from '@mantine/notifications';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { availableTagsQueryKey } from '@/hooks/useAvailableTagsQuery';
 import { tagAvatarRelationQueryKey } from '@/hooks/useTagAvatarsRelationQuery';
 
@@ -16,9 +16,13 @@ interface AvatarTagsProps {
 }
 const AvatarTags = (props: AvatarTagsProps) => {
   const queryClient = useQueryClient();
-  const RemoveAvatarTag = async (tagName: string, avatarId: string, currentUserId: string) => {
-    try {
-      await dropTagRelation(tagName, avatarId, currentUserId);
+  const removeTagMutation = useMutation({
+    mutationFn: async (params: { tagName: string; avatarId: string; currentUserId: string }) => {
+      await dropTagRelation(params.tagName, params.avatarId, params.currentUserId);
+      return { tagName: params.tagName, currentUserId: params.currentUserId };
+    },
+    onSuccess: async (variables) => {
+      const { tagName, currentUserId } = variables;
       const remainingTagRelations = await countTagRelationsOf(tagName, currentUserId);
       if (remainingTagRelations === 0) {
         await dropTag(tagName, currentUserId);
@@ -30,15 +34,17 @@ const AvatarTags = (props: AvatarTagsProps) => {
         queryClient.invalidateQueries({ queryKey: availableTagsQueryKey(currentUserId) });
       }
       queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(props.avatars, props.currentUser.id) });
-    } catch (error) {
+    },
+    onError: (error, variables) => {
+      const { tagName } = variables;
       console.error('Error removing avatar tag:', error);
       notifications.show({
         title: 'タグ削除エラー',
         message: `タグ「${tagName}」の削除中にエラーが発生しました: ${(error as Error).message}`,
         color: 'red',
       });
-    }
-  };
+    },
+  });
 
   return (
     <Group gap="xs">
@@ -50,7 +56,11 @@ const AvatarTags = (props: AvatarTagsProps) => {
             color="white"
             variant="transparent"
             onClick={() => {
-              RemoveAvatarTag(tag.display_name, props.avatar.id, props.currentUser.id);
+              removeTagMutation.mutate({
+                tagName: tag.display_name,
+                avatarId: props.avatar.id,
+                currentUserId: props.currentUser.id
+              });
             }}
             style={{ marginLeft: 4, paddingTop: 3 }}
           >

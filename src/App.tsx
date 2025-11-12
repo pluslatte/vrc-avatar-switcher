@@ -10,12 +10,17 @@ function App() {
   const query = useQuery({
     queryKey: ['auth_check'],
     queryFn: async () => {
-      const { authCookie, twofaCookie } = await loadCookies();
-      if (authCookie === '' || twofaCookie === '') {
+      try {
+        const { authCookie, twofaCookie } = await loadCookies();
+        if (authCookie === '' || twofaCookie === '') {
+          return false;
+        }
+        return await command_check_auth(authCookie, twofaCookie);
+      } catch (error) {
+        console.error('Error during auth check:', error);
         return false;
       }
-      return await command_check_auth(authCookie, twofaCookie);
-    }
+    },
   });
 
   const onLoginSuccess = () => {

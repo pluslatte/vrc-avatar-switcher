@@ -7,7 +7,7 @@ import FooterContents from '@/components/footer/FooterContents';
 import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
 import { isAvatarSortOrder } from '@/lib/models';
-import { useDeferredValue, useState } from 'react';
+import { useState } from 'react';
 import { useAvatarSearchByName } from '@/hooks/useAvatarSearchByName';
 
 interface DashBoardProps {
@@ -28,7 +28,6 @@ const DashBoard = (props: DashBoardProps) => {
   const { loading: cardImageSizeLoading, cardImageSize, handleCardImageSizeChange } = useCardImageSizeSelector();
   const { loading: cardNumberPerRowLoading, cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowSelector();
   const avatarSearchQuery = useAvatarSearchByName();
-  const deferredSearchQuery = useDeferredValue(avatarSearchQuery.value);
   const [selectedTags, setSelectedTags] = useState<Array<string>>([]);
 
   const handlerSortOptSwitch = (option: string | null) => {
@@ -67,7 +66,7 @@ const DashBoard = (props: DashBoardProps) => {
             tagAvatarRelationLoading={tagAvatarRelationLoading}
             currentUser={avatarListQuery.data.currentUser}
             pendingSwitch={switchAvatarMutation.isPending}
-            searchQuery={deferredSearchQuery}
+            searchQuery={avatarSearchQuery.deferredValue}
             cardImageSize={cardImageSize}
             cardNumberPerRow={cardNumberPerRow}
             selectedTags={selectedTags}
@@ -83,7 +82,8 @@ const DashBoard = (props: DashBoardProps) => {
               avatars={avatarListQuery.data.avatars}
               currentUser={avatarListQuery.data.currentUser}
               selectedSort={avatarSortOrder}
-              avatarSearchQuery={avatarSearchQuery}
+              avatarSearchInputString={avatarSearchQuery.value}
+              updateAvatarSearchInputString={avatarSearchQuery.set}
               cardImageSize={cardImageSize}
               cardImageSizeLoading={cardImageSizeLoading}
               cardNumberPerRow={cardNumberPerRow}

@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useDeferredValue, useState } from 'react';
 
-export interface AvatarSearchQuery {
+interface AvatarSearchQuery {
     value: string;
+    deferredValue: string;
     set: (value: string) => void;
 }
 export const useAvatarSearchByName = (): AvatarSearchQuery => {
     const [queryString, setQueryString] = useState<string>('');
+    const deferredQueryString = useDeferredValue(queryString);
     return {
         value: queryString,
+        deferredValue: deferredQueryString,
         set: setQueryString,
     };
 };

@@ -5,7 +5,6 @@ import { Avatar, AvatarSortOrder, CurrentUser } from '@/lib/models';
 import { Tag } from '@/lib/db';
 import TagsRemovalPopover from './TagsRemovalPopover';
 import SettingsPopover from './SettingsPopover';
-import { AvatarSearchQuery } from '@/hooks/useAvatarSearchByName';
 import AvatarSearchBox from './AvatarSearchBox';
 
 interface FooterContentsProps {
@@ -16,7 +15,8 @@ interface FooterContentsProps {
   cardImageSizeLoading: boolean;
   cardNumberPerRow: number | undefined;
   cardNumberPerRowLoading: boolean;
-  avatarSearchQuery: AvatarSearchQuery;
+  avatarSearchInputString: string;
+  updateAvatarSearchInputString: (input: string) => void;
   availableTags: Array<Tag>;
   setCardImageSize: (size: string | null) => void;
   onSortSettingChange: (option: string | null) => void;
@@ -52,7 +52,8 @@ const FooterContents = (props: FooterContentsProps) => {
       <Divider orientation="vertical" />
       <IconSearch />
       <AvatarSearchBox
-        avatarSearchQuery={props.avatarSearchQuery}
+        inputString={props.avatarSearchInputString}
+        updateInputString={props.updateAvatarSearchInputString}
       />
       <Divider orientation="vertical" />
       <SettingsPopover

@@ -15,7 +15,6 @@ interface FooterContentsProps {
   cardImageSizeLoading: boolean;
   cardNumberPerRow: number | undefined;
   cardNumberPerRowLoading: boolean;
-  avatarSearchInputString: string;
   updateAvatarSearchInputString: (input: string) => void;
   availableTags: Array<Tag>;
   setCardImageSize: (size: string | null) => void;
@@ -52,7 +51,6 @@ const FooterContents = (props: FooterContentsProps) => {
       <Divider orientation="vertical" />
       <IconSearch />
       <AvatarSearchBox
-        inputString={props.avatarSearchInputString}
         updateInputString={props.updateAvatarSearchInputString}
       />
       <Divider orientation="vertical" />

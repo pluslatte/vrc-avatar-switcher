@@ -82,7 +82,6 @@ const DashBoard = (props: DashBoardProps) => {
               avatars={avatarListQuery.data.avatars}
               currentUser={avatarListQuery.data.currentUser}
               selectedSort={avatarSortOrder}
-              avatarSearchInputString={avatarSearchQuery.value}
               updateAvatarSearchInputString={avatarSearchQuery.set}
               cardImageSize={cardImageSize}
               cardImageSizeLoading={cardImageSizeLoading}

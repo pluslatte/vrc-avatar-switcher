@@ -6,17 +6,74 @@ import { Badge, Box, Button, ColorPicker, DEFAULT_THEME, Divider, Group, Text, T
 import { notifications } from '@mantine/notifications';
 import { IconTagFilled } from '@tabler/icons-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 interface TagManagerProps {
   avatars: Array<Avatar>;
-  avatarId: string;
+  avatarIds: Array<string>;
   tags: Array<Tag>;
   currentUserId: string;
+  tagAvatarRelation?: Record<string, Array<Tag>>;
 }
 const TagManager = (props: TagManagerProps) => {
   const queryClient = useQueryClient();
-  const handlerRegisterAvatarTag = async (tagName: string, currentUserId: string, avatarId: string, color: string) => {
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [pendingAssignments, setPendingAssignments] = useState<Record<string, Record<string, string>>>({});
+
+  const resolveTagsOfAvatar = useCallback((avatarId: string) => {
+    const baseSource = props.tagAvatarRelation && props.tagAvatarRelation[avatarId]
+      ? props.tagAvatarRelation[avatarId]
+      : (props.avatarIds.length === 1 && props.avatarIds[0] === avatarId ? props.tags : []);
+    const merged = [...baseSource];
+    const pendingForAvatar = pendingAssignments[avatarId];
+    if (pendingForAvatar) {
+      const existingNames = new Set(merged.map(tag => tag.display_name));
+      Object.entries(pendingForAvatar).forEach(([tagName, color]) => {
+        if (!existingNames.has(tagName)) {
+          merged.push({ display_name: tagName, color });
+        }
+      });
+    }
+    return merged;
+  }, [pendingAssignments, props.avatarIds, props.tagAvatarRelation, props.tags]);
+
+  useEffect(() => {
+    if (!props.tagAvatarRelation) return;
+    setPendingAssignments((prev) => {
+      let updated = false;
+      const next: Record<string, Record<string, string>> = {};
+      Object.entries(prev).forEach(([avatarId, tagMap]) => {
+        const baseNames = new Set(
+          (props.tagAvatarRelation?.[avatarId] ?? [])
+            .map(tag => tag.display_name)
+        );
+        const filteredEntries = Object.entries(tagMap).filter(([name]) => !baseNames.has(name));
+        if (filteredEntries.length > 0) {
+          next[avatarId] = Object.fromEntries(filteredEntries);
+        }
+        if (filteredEntries.length !== Object.keys(tagMap).length) {
+          updated = true;
+        }
+      });
+      return updated ? next : prev;
+    });
+  }, [props.tagAvatarRelation]);
+
+  const handlerRegisterAvatarTag = async (tagName: string, currentUserId: string, avatarIds: Array<string>, color: string) => {
+    if (isRegistering) return;
+    const targetAvatarIds = avatarIds.filter((avatarId) => {
+      const avatarTags = resolveTagsOfAvatar(avatarId);
+      return !avatarTags.some(tag => tag.display_name === tagName);
+    });
+    if (targetAvatarIds.length === 0) {
+      notifications.show({
+        title: 'タグ追加',
+        message: `タグ「${tagName}」は対象のアバターにすでに割り当て済みです。`,
+        color: 'yellow',
+      });
+      return;
+    }
+    setIsRegistering(true);
     const tagExists = await queryTagExists(tagName, currentUserId);
     try {
       if (!tagExists) {
@@ -28,7 +85,22 @@ const TagManager = (props: TagManagerProps) => {
         });
         queryClient.invalidateQueries({ queryKey: availableTagsQueryKey(currentUserId) });
       }
-      await createTagRelation(tagName, avatarId, currentUserId);
+      await Promise.all(targetAvatarIds.map(avatarId => createTagRelation(tagName, avatarId, currentUserId)));
+      setPendingAssignments((prev) => {
+        const next: Record<string, Record<string, string>> = { ...prev };
+        targetAvatarIds.forEach((avatarId) => {
+          const current = { ...(next[avatarId] ?? {}) };
+          current[tagName] = color;
+          next[avatarId] = current;
+        });
+        return next;
+      });
+      setNewTagName('');
+      notifications.show({
+        title: 'タグ追加',
+        message: `タグ「${tagName}」を${targetAvatarIds.length}件のアバターに追加しました。`,
+        color: 'green',
+      });
       queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(props.avatars, props.currentUserId) });
     } catch (error) {
       console.error('Error registering avatar tag:', error);
@@ -37,11 +109,13 @@ const TagManager = (props: TagManagerProps) => {
         message: `タグ「${tagName}」の登録中にエラーが発生しました: ${(error as Error).message}`,
         color: 'red',
       });
+    } finally {
+      setIsRegistering(false);
     }
   };
 
   const tagsAvailableQuery = useQuery({
-    queryKey: ['availableTags', props.currentUserId, props.avatarId],
+    queryKey: availableTagsQueryKey(props.currentUserId),
     queryFn: async () => {
       const tags = await queryAllTagsAvailable(props.currentUserId);
       return tags;
@@ -50,6 +124,19 @@ const TagManager = (props: TagManagerProps) => {
 
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState('#2C2E33');
+  const disabledTagNames = useMemo(() => {
+    if (props.avatarIds.length === 0) return [] as Array<string>;
+    return props.avatarIds.reduce<Array<string>>((common, avatarId, index) => {
+      const names = resolveTagsOfAvatar(avatarId).map(tag => tag.display_name);
+      if (index === 0) return names;
+      const nameSet = new Set(names);
+      return common.filter(name => nameSet.has(name));
+    }, []);
+  }, [props.avatarIds, resolveTagsOfAvatar]);
+  const disabledTagNamesUpper = useMemo(
+    () => disabledTagNames.map(name => name.toUpperCase()),
+    [disabledTagNames]
+  );
   return (
     <Box>
       <Text size="sm" mb="xs">タグを選択</Text>
@@ -58,7 +145,7 @@ const TagManager = (props: TagManagerProps) => {
       {tagsAvailableQuery.data && tagsAvailableQuery.data.length > 0 && (
         <Group gap="xs" mb="xs">
           {tagsAvailableQuery.data.length > 0 && tagsAvailableQuery.data
-            .filter(tag => !(props.tags.map(t => t.display_name).includes(tag.display_name)))
+            .filter(tag => !(disabledTagNames.includes(tag.display_name)))
             .map(tag => (
               <Badge
                 key={tag.display_name}
@@ -66,7 +153,8 @@ const TagManager = (props: TagManagerProps) => {
                 variant="filled"
                 style={{ cursor: 'pointer' }}
                 onClick={() => {
-                  handlerRegisterAvatarTag(tag.display_name, props.currentUserId, props.avatarId, tag.color);
+                  if (isRegistering) return;
+                  handlerRegisterAvatarTag(tag.display_name, props.currentUserId, props.avatarIds, tag.color);
                 }}
               >
                 {tag.display_name}
@@ -101,15 +189,16 @@ const TagManager = (props: TagManagerProps) => {
           variant="gradient"
           gradient={{ from: 'dark', to: newTagColor, deg: 45 }}
           disabled={newTagName.trim() === '' ||
-            props.tags.some(tag => tag.display_name.toUpperCase() === newTagName.toUpperCase())}
+            disabledTagNamesUpper.includes(newTagName.trim().toUpperCase())}
           fullWidth
           onClick={() => {
             notifications.show({
               message: 'タグを作成しています...',
               color: 'blue',
             });
-            handlerRegisterAvatarTag(newTagName, props.currentUserId, props.avatarId, newTagColor);
+            handlerRegisterAvatarTag(newTagName, props.currentUserId, props.avatarIds, newTagColor);
           }}
+          loading={isRegistering}
         >
           追加
           <IconTagFilled style={{ marginLeft: 5 }} />

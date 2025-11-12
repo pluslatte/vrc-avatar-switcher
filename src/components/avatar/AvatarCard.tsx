@@ -1,5 +1,5 @@
 import { Avatar, CurrentUser } from '@/lib/models';
-import { BackgroundImage, Button, Card, Divider, Text, Tooltip } from '@mantine/core';
+import { BackgroundImage, Box, Button, Card, Checkbox, Divider, Text, Tooltip } from '@mantine/core';
 import { Tag } from '@/lib/db';
 import AvatarTags from './AvatarTags';
 
@@ -13,6 +13,8 @@ interface AvatarCardProps {
   imageSize: number | null;
   onAvatarSwitchClicked: (avatarId: string) => void;
   onTagRemove: (params: { tagName: string; avatarId: string; currentUserId: string }) => void;
+  isSelected: boolean;
+  onSelectionChange: (checked: boolean) => void;
 }
 
 const AvatarCard = (props: AvatarCardProps) => {
@@ -31,33 +33,41 @@ const AvatarCard = (props: AvatarCardProps) => {
         ? { border: '2px solid var(--mantine-color-orange-7)' }
         : undefined}
     >
-      <BackgroundImage
-        radius="md"
-        src={props.avatar.thumbnailImageUrl}
-      >
-        <Button
-          variant="gradient"
-          gradient={{ from: 'transparent', to: 'dark', deg: 180 }}
-          fullWidth
-          fz="h2"
-          radius="sm"
-          h={props.imageSize || 120}
-          disabled={props.isActiveAvatar}
-          loading={props.pendingSwitch && !props.isActiveAvatar}
-          onClick={handleSwitch}
-          style={{
-            color: props.isActiveAvatar
-              ? 'var(--mantine-color-orange-7)'
-              : undefined,
-            textShadow: '0 0 10px rgba(63, 63, 63, 0.8)',
-            backgroundColor: props.isActiveAvatar
-              ? '#111111AA'
-              : undefined,
-          }}
+      <Box pos="relative">
+        <Checkbox
+          aria-label="アバターを選択"
+          checked={props.isSelected}
+          onChange={(event) => props.onSelectionChange(event.currentTarget.checked)}
+          style={{ position: 'absolute', top: 12, right: 12, zIndex: 2 }}
+        />
+        <BackgroundImage
+          radius="md"
+          src={props.avatar.thumbnailImageUrl}
         >
-          {props.isActiveAvatar ? 'Active' : 'Select'}
-        </Button>
-      </BackgroundImage>
+          <Button
+            variant="gradient"
+            gradient={{ from: 'transparent', to: 'dark', deg: 180 }}
+            fullWidth
+            fz="h2"
+            radius="sm"
+            h={props.imageSize || 120}
+            disabled={props.isActiveAvatar}
+            loading={props.pendingSwitch && !props.isActiveAvatar}
+            onClick={handleSwitch}
+            style={{
+              color: props.isActiveAvatar
+                ? 'var(--mantine-color-orange-7)'
+                : undefined,
+              textShadow: '0 0 10px rgba(63, 63, 63, 0.8)',
+              backgroundColor: props.isActiveAvatar
+                ? '#111111AA'
+                : undefined,
+            }}
+          >
+            {props.isActiveAvatar ? 'Active' : 'Select'}
+          </Button>
+        </BackgroundImage>
+      </Box>
 
       <Card.Section p="sm" h="48px">
         <Tooltip label={props.avatar.name}>

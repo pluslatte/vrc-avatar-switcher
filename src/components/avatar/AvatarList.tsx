@@ -1,13 +1,12 @@
 import { Button, Checkbox, Grid, Group, Indicator, Stack, Text } from '@mantine/core';
+import { memo, useMemo } from 'react';
 import AvatarCard from './AvatarCard';
+import BulkTagManagerDialog from './BulkTagManagerDialog';
 import { Avatar, CurrentUser } from '@/lib/models';
 import { LoaderFullWindow } from '../LoaderFullWindow';
-import { avatarNameSearchFilterAvatars, avatarTagSearchFilterAvatars } from '@/lib/utils';
-import { useTagAvatarsRelationMutation } from '@/hooks/useTagAvatarsRelationMutation';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { notifications } from '@mantine/notifications';
-import BulkTagManagerDialog from './BulkTagManagerDialog';
 import { Tag } from '@/lib/db';
+import { useAvatarListTagManager } from '@/hooks/useAvatarListTagManager';
+import { avatarNameSearchFilterAvatars, avatarTagSearchFilterAvatars } from '@/lib/utils';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
@@ -22,81 +21,38 @@ interface AvatarListProps {
   handlerAvatarSwitch: (avatarId: string) => void;
 }
 const AvatarListComponent = (props: AvatarListProps) => {
-
-  const { removeTagAvatarsRelation, removeTagAvatarsRelationAsync } = useTagAvatarsRelationMutation(props.avatars);
-  const [selectedAvatarIds, setSelectedAvatarIds] = useState<Array<string>>([]);
-  const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
-  const [removingTagName, setRemovingTagName] = useState<string | null>(null);
-
   const filteredAvatars = useMemo(() => (
     avatarTagSearchFilterAvatars(
       avatarNameSearchFilterAvatars(props.avatars, props.searchQuery),
       props.selectedTags,
-      props.tagAvatarRelation
+      props.tagAvatarRelation,
     )
   ), [props.avatars, props.searchQuery, props.selectedTags, props.tagAvatarRelation]);
 
-  const visibleAvatarIds = useMemo(() => filteredAvatars.map(avatar => avatar.id), [filteredAvatars]);
-
-  useEffect(() => {
-    setSelectedAvatarIds((prev) => {
-      const next = prev.filter(id => visibleAvatarIds.includes(id));
-      return next.length === prev.length ? prev : next;
-    });
-  }, [visibleAvatarIds]);
-
-  useEffect(() => {
-    if (selectedAvatarIds.length === 0 && isBulkDialogOpen) {
-      setIsBulkDialogOpen(false);
-    }
-  }, [selectedAvatarIds, isBulkDialogOpen]);
-
-  const handleAvatarSelectionChange = useCallback((avatarId: string, checked: boolean) => {
-    setSelectedAvatarIds((prev) => {
-      if (checked) {
-        if (prev.includes(avatarId)) return prev;
-        return [...prev, avatarId];
-      }
-      return prev.filter(id => id !== avatarId);
-    });
-  }, []);
-
-  const handleSelectAllToggle = useCallback((checked: boolean) => {
-    if (checked) {
-      setSelectedAvatarIds(visibleAvatarIds);
-    } else {
-      setSelectedAvatarIds([]);
-    }
-  }, [visibleAvatarIds]);
-
-  const handleBulkTagRemove = useCallback(async (tagName: string) => {
-    if (selectedAvatarIds.length === 0) return;
-    setRemovingTagName(tagName);
-    try {
-      for (const avatarId of selectedAvatarIds) {
-        await removeTagAvatarsRelationAsync({ tagName, avatarId, currentUserId: props.currentUser.id });
-      }
-      notifications.show({
-        title: 'タグ削除',
-        message: `タグ「${tagName}」を選択中のアバターから削除しました。`,
-        color: 'green',
-      });
-    } catch (error) {
-      // onError inside mutation handles notification
-      console.error('Bulk tag removal failed:', error);
-    } finally {
-      setRemovingTagName(null);
-    }
-  }, [props.currentUser.id, removeTagAvatarsRelationAsync, selectedAvatarIds]);
+  const {
+    selectedAvatarIds,
+    selectedCount,
+    allSelected,
+    indeterminate,
+    isBulkDialogOpen,
+    removingTagName,
+    removeTagAvatarsRelation,
+    handleAvatarSelectionChange,
+    handleSelectAllToggle,
+    clearSelection,
+    openBulkDialog,
+    closeBulkDialog,
+    handleBulkTagRemove,
+  } = useAvatarListTagManager({
+    avatars: props.avatars,
+    filteredAvatars,
+    currentUser: props.currentUser,
+  });
 
   if (props.tagAvatarRelationLoading) return <LoaderFullWindow message="タグ情報を読み込み中..." withAppShell={true} />;
   if (props.tagAvatarRelation === undefined) return <div>タグ情報の読み込みに失敗しました。</div>;
 
   const tagAvatarRelation = props.tagAvatarRelation;
-
-  const selectedCount = selectedAvatarIds.length;
-  const allSelected = filteredAvatars.length > 0 && selectedCount === filteredAvatars.length;
-  const indeterminate = selectedCount > 0 && selectedCount < filteredAvatars.length;
 
   return (
     <Stack gap="md">
@@ -111,7 +67,7 @@ const AvatarListComponent = (props: AvatarListProps) => {
           <Button
             variant="subtle"
             color="gray"
-            onClick={() => setSelectedAvatarIds([])}
+            onClick={clearSelection}
             disabled={selectedCount === 0}
           >
             全解除
@@ -122,7 +78,7 @@ const AvatarListComponent = (props: AvatarListProps) => {
         </Group>
         <Button
           disabled={selectedCount === 0}
-          onClick={() => setIsBulkDialogOpen(true)}
+          onClick={openBulkDialog}
         >
           タグ一括編集
         </Button>
@@ -171,7 +127,7 @@ const AvatarListComponent = (props: AvatarListProps) => {
 
       <BulkTagManagerDialog
         opened={isBulkDialogOpen}
-        onClose={() => setIsBulkDialogOpen(false)}
+        onClose={closeBulkDialog}
         avatars={props.avatars}
         selectedAvatarIds={selectedAvatarIds}
         currentUser={props.currentUser}

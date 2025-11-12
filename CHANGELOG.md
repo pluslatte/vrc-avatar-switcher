@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- 文字列で表示するアバターを絞り込む機能を追加
 
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.2.0...HEAD
 

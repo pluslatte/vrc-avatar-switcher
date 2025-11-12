@@ -34,12 +34,23 @@ const AvatarCard = (props: AvatarCardProps) => {
         : undefined}
     >
       <Box pos="relative">
-        <Checkbox
-          aria-label="アバターを選択"
-          checked={props.isSelected}
-          onChange={(event) => props.onSelectionChange(event.currentTarget.checked)}
-          style={{ position: 'absolute', top: 12, right: 12, zIndex: 2 }}
-        />
+        <Box
+          style={{
+            position: 'absolute',
+            top: -6,
+            left: -6,
+            padding: 11,
+            zIndex: 3,
+            borderRadius: 'var(--mantine-radius-md)',
+            backgroundColor: props.isActiveAvatar ? 'dark' : 'var(--mantine-color-dark-6)',
+          }}
+        >
+          <Checkbox
+            aria-label="アバターを選択"
+            checked={props.isSelected}
+            onChange={(event) => props.onSelectionChange(event.currentTarget.checked)}
+          />
+        </Box>
         <BackgroundImage
           radius="md"
           src={props.avatar.thumbnailImageUrl}

@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - 文字列で表示するアバターを絞り込む機能を追加
+- アバターのタグを一括編集できるように変更
+
+### Fixed
+- 認証情報が期限切れした場合、ログイン画面に戻らなかったのを修正
 
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.2.0...HEAD
 

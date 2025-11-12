@@ -10,12 +10,17 @@ function App() {
   const query = useQuery({
     queryKey: ['auth_check'],
     queryFn: async () => {
-      const { authCookie, twofaCookie } = await loadCookies();
-      if (authCookie === '' || twofaCookie === '') {
+      try {
+        const { authCookie, twofaCookie } = await loadCookies();
+        if (authCookie === '' || twofaCookie === '') {
+          return false;
+        }
+        return await command_check_auth(authCookie, twofaCookie);
+      } catch (error) {
+        console.error('Error during auth check:', error);
         return false;
       }
-      return await command_check_auth(authCookie, twofaCookie);
-    }
+    },
   });
 
   const onLoginSuccess = () => {
@@ -28,7 +33,7 @@ function App() {
   return (
     <main>
       {query.isPending && <LoaderFullWindow message="認証情報を確認しています..." />}
-      {query.isError && <div>Error: {(query.error as Error).message}</div>}
+      {query.isError && <div>Error Auth: {(query.error as Error).message}</div>}
       {query.data === true && <DashBoard onLogoutSuccess={onLogoutSuccess} />}
       {query.data === false && <LoginForm onLoginSuccess={onLoginSuccess} />}
     </main>

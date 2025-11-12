@@ -37,5 +37,9 @@ export const useTagAvatarsRelationMutation = (avatars: Array<Avatar>) => {
     },
   });
 
-  return { removeTagAvatarsRelation: removeTagAvatarsRelationMutation.mutate };
+  return {
+    removeTagAvatarsRelation: removeTagAvatarsRelationMutation.mutate,
+    removeTagAvatarsRelationAsync: removeTagAvatarsRelationMutation.mutateAsync,
+    isRemovingTagRelation: removeTagAvatarsRelationMutation.isPending,
+  };
 };

@@ -76,7 +76,7 @@ export const createTagRelation = async (
 ) => {
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
   await db.execute(`
-    INSERT INTO tag_avatar_relations
+    INSERT OR IGNORE INTO tag_avatar_relations
       (tag_display_name, avatar_id, created_by)
     VALUES
       ($1, $2, $3)`,

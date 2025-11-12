@@ -31,7 +31,7 @@ const TagManagerButton = (props: TagManagerButtonProps) => {
       <Popover.Dropdown>
         <TagManager
           avatars={props.avatars}
-          avatarId={props.avatarId}
+          avatarIds={[props.avatarId]}
           tags={props.tags}
           currentUserId={props.currentUserId}
         />

@@ -51,7 +51,7 @@ const FooterContents = (props: FooterContentsProps) => {
       <Divider orientation="vertical" />
       <IconSearch />
       <AvatarSearchBox
-        updateInputString={props.updateAvatarSearchInputString}
+        onChange={props.updateAvatarSearchInputString}
       />
       <Divider orientation="vertical" />
       <SettingsPopover

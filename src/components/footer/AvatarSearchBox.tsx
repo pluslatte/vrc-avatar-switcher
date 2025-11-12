@@ -1,13 +1,13 @@
 import { TextInput } from '@mantine/core';
 
 interface AvatarSearchBoxProps {
-    updateInputString: (value: string) => void;
+    onChange: (value: string) => void;
 }
 const AvatarSearchBox = (props: AvatarSearchBoxProps) => {
     return (
         <TextInput
             placeholder="アバター名で絞り込み"
-            onChange={(event) => props.updateInputString(event.currentTarget.value)}
+            onChange={(event) => props.onChange(event.currentTarget.value)}
         />
     );
 };

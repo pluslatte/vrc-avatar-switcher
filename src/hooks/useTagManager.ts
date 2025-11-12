@@ -144,7 +144,7 @@ export const useTagManager = ({
     }, [newTagColor, newTagName, registerTagToAvatars]);
 
     const disabledTagNames = useMemo(() => {
-        if (avatarIds.length === 0) return [] as Array<string>;
+        if (avatarIds.length === 0) return [];
         return avatarIds.reduce<Array<string>>((common, avatarId, index) => {
             const names = resolveTagsOfAvatar(avatarId).map(tag => tag.display_name);
             if (index === 0) return names;

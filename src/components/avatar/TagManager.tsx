@@ -1,6 +1,6 @@
 import type { Tag } from '@/lib/db';
 import type { Avatar } from '@/lib/models';
-import { Badge, Box, Button, ColorPicker, DEFAULT_THEME, Divider, Group, Text, TextInput } from '@mantine/core';
+import { Badge, Box, Button, ColorPicker, DEFAULT_THEME, Divider, Group, Stack, Text, TextInput } from '@mantine/core';
 import { IconTagFilled } from '@tabler/icons-react';
 import { useTagManager } from '@/hooks/useTagManager';
 
@@ -57,13 +57,14 @@ const TagManager = (props: TagManagerProps) => {
       )}
       <Divider mb="xs" />
       <Text size="sm" mb="xs">新規タグ</Text>
-      <Group gap="xs">
+      <Stack gap="xs">
         <ColorPicker
           format="hex"
           value={newTagColor}
           onChange={(color) => setNewTagColor(color)}
           withPicker={false}
           fullWidth
+          maw={300}
           swatches={[
             ...DEFAULT_THEME.colors.red.slice(3, 10),
             ...DEFAULT_THEME.colors.green.slice(3, 10),
@@ -90,7 +91,7 @@ const TagManager = (props: TagManagerProps) => {
           追加
           <IconTagFilled style={{ marginLeft: 5 }} />
         </Button>
-      </Group>
+      </Stack>
     </Box>
   );
 };

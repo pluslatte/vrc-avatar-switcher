@@ -38,8 +38,8 @@ const DashBoard = (props: DashBoardProps) => {
   };
 
   if (avatarListQuery.isPending || avatarListQuery.isFetching) return <LoaderFullWindow message="アバターを読み込んでいます..." />;
-  if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;
-  if (avatarSortOrder === undefined) return <div>Error: avatarSortOrder is undefined</div>;
+  if (avatarListQuery.isError) return <div>Error AvatarList: {(avatarListQuery.error as Error).message}</div>;
+  if (avatarSortOrder === undefined) return <div>Error AvatarSortOrder: avatarSortOrder is undefined</div>;
 
   return (
     <AppShell

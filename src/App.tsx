@@ -28,7 +28,7 @@ function App() {
   return (
     <main>
       {query.isPending && <LoaderFullWindow message="認証情報を確認しています..." />}
-      {query.isError && <div>Error: {(query.error as Error).message}</div>}
+      {query.isError && <div>Error Auth: {(query.error as Error).message}</div>}
       {query.data === true && <DashBoard onLogoutSuccess={onLogoutSuccess} />}
       {query.data === false && <LoginForm onLoginSuccess={onLoginSuccess} />}
     </main>

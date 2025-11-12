@@ -7,7 +7,7 @@ import FooterContents from '@/components/footer/FooterContents';
 import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
 import { isAvatarSortOrder } from '@/lib/models';
-import { useState } from 'react';
+import { useDeferredValue, useState } from 'react';
 import { useAvatarSearchByName } from '@/hooks/useAvatarSearchByName';
 
 interface DashBoardProps {
@@ -27,7 +27,8 @@ const DashBoard = (props: DashBoardProps) => {
   } = useAvatarSwitcher();
   const { loading: cardImageSizeLoading, cardImageSize, handleCardImageSizeChange } = useCardImageSizeSelector();
   const { loading: cardNumberPerRowLoading, cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowSelector();
-  const avatarSearchQuery = useAvatarSearchByName();
+  const { avatarSearchQueryValue, setAvatarSearchQueryValue } = useAvatarSearchByName();
+  const deferredSearchQueryString = useDeferredValue(avatarSearchQueryValue);
   const [selectedTags, setSelectedTags] = useState<Array<string>>([]);
 
   const handlerSortOptSwitch = (option: string | null) => {
@@ -66,7 +67,7 @@ const DashBoard = (props: DashBoardProps) => {
             tagAvatarRelationLoading={tagAvatarRelationLoading}
             currentUser={avatarListQuery.data.currentUser}
             pendingSwitch={switchAvatarMutation.isPending}
-            searchQuery={avatarSearchQuery.deferredValue}
+            searchQuery={deferredSearchQueryString}
             cardImageSize={cardImageSize}
             cardNumberPerRow={cardNumberPerRow}
             selectedTags={selectedTags}
@@ -82,7 +83,7 @@ const DashBoard = (props: DashBoardProps) => {
               avatars={avatarListQuery.data.avatars}
               currentUser={avatarListQuery.data.currentUser}
               selectedSort={avatarSortOrder}
-              updateAvatarSearchInputString={avatarSearchQuery.set}
+              updateAvatarSearchInputString={setAvatarSearchQueryValue}
               cardImageSize={cardImageSize}
               cardImageSizeLoading={cardImageSizeLoading}
               cardNumberPerRow={cardNumberPerRow}

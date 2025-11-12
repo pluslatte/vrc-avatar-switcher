@@ -4,6 +4,7 @@ import { Avatar, CurrentUser } from '@/lib/models';
 import { LoaderFullWindow } from '../LoaderFullWindow';
 import { avatarNameSearchFilterAvatars, avatarTagSearchFilterAvatars } from '@/lib/utils';
 import { useTagAvatarsRelationMutation } from '@/hooks/useTagAvatarsRelationMutation';
+import { memo } from 'react';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
@@ -17,7 +18,7 @@ interface AvatarListProps {
   selectedTags: Array<string>;
   handlerAvatarSwitch: (avatarId: string) => void;
 }
-const AvatarList = (props: AvatarListProps) => {
+const AvatarListComponent = (props: AvatarListProps) => {
 
   const { removeTagAvatarsRelation } = useTagAvatarsRelationMutation(props.avatars);
 
@@ -71,5 +72,7 @@ const AvatarList = (props: AvatarListProps) => {
     </Grid>
   );
 };
+
+const AvatarList = memo(AvatarListComponent);
 
 export default AvatarList;

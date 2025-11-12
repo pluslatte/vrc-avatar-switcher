@@ -3,18 +3,15 @@ import { Avatar, CurrentUser } from '@/lib/models';
 import { Group, Badge, ActionIcon, Text } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import TagManagerButton from './TagManagerButton';
-import { useTagAvatarsRelationMutation } from '@/hooks/useTagAvatarsRelationMutation';
 
 interface AvatarTagsProps {
   avatar: Avatar;
   avatars: Array<Avatar>;
   avatarTags: Array<Tag>;
   currentUser: CurrentUser;
+  onTagRemove: (params: { tagName: string; avatarId: string; currentUserId: string }) => void;
 }
 const AvatarTags = (props: AvatarTagsProps) => {
-
-  const { removeTagAvatarsRelation } = useTagAvatarsRelationMutation(props.avatars);
-
   return (
     <Group gap="xs">
       {props.avatarTags.map((tag) => (
@@ -25,7 +22,7 @@ const AvatarTags = (props: AvatarTagsProps) => {
             color="white"
             variant="transparent"
             onClick={() => {
-              removeTagAvatarsRelation({
+              props.onTagRemove({
                 tagName: tag.display_name,
                 avatarId: props.avatar.id,
                 currentUserId: props.currentUser.id

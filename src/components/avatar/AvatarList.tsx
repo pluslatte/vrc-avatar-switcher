@@ -3,6 +3,7 @@ import AvatarCard from './AvatarCard';
 import { Avatar, CurrentUser } from '@/lib/models';
 import { LoaderFullWindow } from '../LoaderFullWindow';
 import { avatarNameSearchFilterAvatars, avatarTagSearchFilterAvatars } from '@/lib/utils';
+import { useTagAvatarsRelationMutation } from '@/hooks/useTagAvatarsRelationMutation';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
@@ -18,29 +19,34 @@ interface AvatarListProps {
 }
 const AvatarList = (props: AvatarListProps) => {
 
+  const { removeTagAvatarsRelation } = useTagAvatarsRelationMutation(props.avatars);
+
+  const filteredAvatars = avatarTagSearchFilterAvatars(
+    avatarNameSearchFilterAvatars(props.avatars, props.searchQuery),
+    props.selectedTags,
+    props.tagAvatarRelation
+  );
+
   if (props.tagAvatarRelationLoading) return <LoaderFullWindow message="タグ情報を読み込み中..." withAppShell={true} />;
   if (props.tagAvatarRelation === undefined) return <div>タグ情報の読み込みに失敗しました。</div>;
 
   return (
     <Grid overflow="hidden" gutter="lg">
-      {avatarTagSearchFilterAvatars(
-        avatarNameSearchFilterAvatars(props.avatars, props.searchQuery),
-        props.selectedTags,
-        props.tagAvatarRelation
-      ).map(avatar => {
+      {filteredAvatars.map(avatar => {
         if (props.tagAvatarRelation === undefined) return null;
         const isActive = props.currentUser.currentAvatar === avatar.id;
+        const avatarTags = props.tagAvatarRelation[avatar.id] ?? [];
         const card = (
           <AvatarCard
             avatar={avatar}
             avatars={props.avatars}
-            avatarTags={props.tagAvatarRelation[avatar.id] || []}
+            avatarTags={avatarTags}
             currentUser={props.currentUser}
             isActiveAvatar={isActive}
             pendingSwitch={props.pendingSwitch}
             imageSize={props.cardImageSize}
-            selectedTags={props.selectedTags}
             onAvatarSwitchClicked={props.handlerAvatarSwitch}
+            onTagRemove={removeTagAvatarsRelation}
           />
         );
         return (

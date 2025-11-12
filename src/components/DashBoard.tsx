@@ -7,7 +7,7 @@ import FooterContents from '@/components/footer/FooterContents';
 import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
 import { isAvatarSortOrder } from '@/lib/models';
-import { useState } from 'react';
+import { useDeferredValue, useState } from 'react';
 import { useAvatarSearchByName } from '@/hooks/useAvatarSearchByName';
 
 interface DashBoardProps {
@@ -28,6 +28,7 @@ const DashBoard = (props: DashBoardProps) => {
   const { loading: cardImageSizeLoading, cardImageSize, handleCardImageSizeChange } = useCardImageSizeSelector();
   const { loading: cardNumberPerRowLoading, cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowSelector();
   const avatarSearchQuery = useAvatarSearchByName();
+  const deferredSearchQuery = useDeferredValue(avatarSearchQuery.value);
   const [selectedTags, setSelectedTags] = useState<Array<string>>([]);
 
   const handlerSortOptSwitch = (option: string | null) => {
@@ -66,7 +67,7 @@ const DashBoard = (props: DashBoardProps) => {
             tagAvatarRelationLoading={tagAvatarRelationLoading}
             currentUser={avatarListQuery.data.currentUser}
             pendingSwitch={switchAvatarMutation.isPending}
-            searchQuery={avatarSearchQuery.value}
+            searchQuery={deferredSearchQuery}
             cardImageSize={cardImageSize}
             cardNumberPerRow={cardNumberPerRow}
             selectedTags={selectedTags}

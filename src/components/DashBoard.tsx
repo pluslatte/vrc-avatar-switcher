@@ -8,6 +8,7 @@ import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
 import { isAvatarSortOrder } from '@/lib/models';
 import { useState } from 'react';
+import { useAvatarSearchByName } from '@/hooks/useAvatarSearchByName';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -26,6 +27,7 @@ const DashBoard = (props: DashBoardProps) => {
   } = useAvatarSwitcher();
   const { loading: cardImageSizeLoading, cardImageSize, handleCardImageSizeChange } = useCardImageSizeSelector();
   const { loading: cardNumberPerRowLoading, cardNumberPerRow, handleCardNumberPerRow } = useCardNumberPerRowSelector();
+  const { avatarSearchQueryValueDeferred, setAvatarSearchQueryValue } = useAvatarSearchByName();
   const [selectedTags, setSelectedTags] = useState<Array<string>>([]);
 
   const handlerSortOptSwitch = (option: string | null) => {
@@ -55,18 +57,21 @@ const DashBoard = (props: DashBoardProps) => {
       </AppShell.Header>
 
       <AppShell.Main>
-        {cardImageSize === undefined || cardNumberPerRow === undefined && <LoaderFullWindow message="設定を読み込んでいます..." />}
-        {cardImageSize !== undefined && cardNumberPerRow !== undefined && <AvatarList
-          avatars={avatarListQuery.data.avatars}
-          tagAvatarRelation={tagAvatarRelation}
-          tagAvatarRelationLoading={tagAvatarRelationLoading}
-          currentUser={avatarListQuery.data.currentUser}
-          pendingSwitch={switchAvatarMutation.isPending}
-          cardImageSize={cardImageSize}
-          cardNumberPerRow={cardNumberPerRow}
-          selectedTags={selectedTags}
-          handlerAvatarSwitch={handlerAvatarSwitch}
-        />}
+        {cardImageSize === undefined || cardNumberPerRow === undefined &&
+          <LoaderFullWindow message="設定を読み込んでいます..." />}
+        {cardImageSize !== undefined && cardNumberPerRow !== undefined &&
+          <AvatarList
+            avatars={avatarListQuery.data.avatars}
+            tagAvatarRelation={tagAvatarRelation}
+            tagAvatarRelationLoading={tagAvatarRelationLoading}
+            currentUser={avatarListQuery.data.currentUser}
+            pendingSwitch={switchAvatarMutation.isPending}
+            searchQuery={avatarSearchQueryValueDeferred}
+            cardImageSize={cardImageSize}
+            cardNumberPerRow={cardNumberPerRow}
+            selectedTags={selectedTags}
+            handlerAvatarSwitch={handlerAvatarSwitch}
+          />}
       </AppShell.Main>
 
       <AppShell.Footer>
@@ -77,6 +82,7 @@ const DashBoard = (props: DashBoardProps) => {
               avatars={avatarListQuery.data.avatars}
               currentUser={avatarListQuery.data.currentUser}
               selectedSort={avatarSortOrder}
+              updateAvatarSearchInputString={setAvatarSearchQueryValue}
               cardImageSize={cardImageSize}
               cardImageSizeLoading={cardImageSizeLoading}
               cardNumberPerRow={cardNumberPerRow}

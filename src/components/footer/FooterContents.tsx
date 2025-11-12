@@ -1,10 +1,11 @@
 import { Box, Divider, Group, MultiSelect } from '@mantine/core';
-import { IconFilter, IconSortAscendingShapes } from '@tabler/icons-react';
+import { IconFilter, IconSearch, IconSortAscendingShapes } from '@tabler/icons-react';
 import SortOrderSelector from './SortOrderSelector';
 import { Avatar, AvatarSortOrder, CurrentUser } from '@/lib/models';
 import { Tag } from '@/lib/db';
 import TagsRemovalPopover from './TagsRemovalPopover';
 import SettingsPopover from './SettingsPopover';
+import AvatarSearchBox from './AvatarSearchBox';
 
 interface FooterContentsProps {
   avatars: Array<Avatar>;
@@ -14,6 +15,7 @@ interface FooterContentsProps {
   cardImageSizeLoading: boolean;
   cardNumberPerRow: number | undefined;
   cardNumberPerRowLoading: boolean;
+  updateAvatarSearchInputString: (input: string) => void;
   availableTags: Array<Tag>;
   setCardImageSize: (size: string | null) => void;
   onSortSettingChange: (option: string | null) => void;
@@ -45,6 +47,11 @@ const FooterContents = (props: FooterContentsProps) => {
         avatars={props.avatars}
         currentUser={props.currentUser}
         availableTags={props.availableTags}
+      />
+      <Divider orientation="vertical" />
+      <IconSearch />
+      <AvatarSearchBox
+        onChange={props.updateAvatarSearchInputString}
       />
       <Divider orientation="vertical" />
       <SettingsPopover

@@ -10,11 +10,6 @@ export const useAvatarSwitcher = () => {
   const avatarListQuery = useAvatarListQuery(avatarSortOrder);
   const switchAvatarMutation = useSwitchAvatarMutation(avatarSortOrder);
   const availableTagsQuery = useAvailableTagsQuery(avatarListQuery.data);
-
-  const handlerAvatarSwitch = (avatarId: string) => {
-    switchAvatarMutation.mutate(avatarId);
-  };
-
   const tagAvatarsRelationQuery = useTagAvatarsRelationQuery(avatarListQuery.data);
 
   return {
@@ -26,6 +21,7 @@ export const useAvatarSwitcher = () => {
     tagAvatarRelationLoading: tagAvatarsRelationQuery.isPending,
     tagAvatarRelation: tagAvatarsRelationQuery.data,
     handleAvatarSortOrderChange,
-    handlerAvatarSwitch,
+    handlerAvatarSwitch: switchAvatarMutation.mutate,
+    // https://github.com/pluslatte/vrc-avatar-switcher/pull/3#issuecomment-3522684051 
   };
 };

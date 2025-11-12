@@ -2,7 +2,9 @@ import { Grid, Indicator } from '@mantine/core';
 import AvatarCard from './AvatarCard';
 import { Avatar, CurrentUser } from '@/lib/models';
 import { LoaderFullWindow } from '../LoaderFullWindow';
-import { avatarTagSearchfilterAvatars } from '@/lib/utils';
+import { avatarNameSearchFilterAvatars, avatarTagSearchFilterAvatars } from '@/lib/utils';
+import { useTagAvatarsRelationMutation } from '@/hooks/useTagAvatarsRelationMutation';
+import { memo } from 'react';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
@@ -10,36 +12,42 @@ interface AvatarListProps {
   tagAvatarRelationLoading: boolean;
   currentUser: CurrentUser;
   pendingSwitch: boolean;
+  searchQuery: string;
   cardImageSize: number;
   cardNumberPerRow: number;
   selectedTags: Array<string>;
   handlerAvatarSwitch: (avatarId: string) => void;
 }
-const AvatarList = (props: AvatarListProps) => {
+const AvatarListComponent = (props: AvatarListProps) => {
+
+  const { removeTagAvatarsRelation } = useTagAvatarsRelationMutation(props.avatars);
+
+  const filteredAvatars = avatarTagSearchFilterAvatars(
+    avatarNameSearchFilterAvatars(props.avatars, props.searchQuery),
+    props.selectedTags,
+    props.tagAvatarRelation
+  );
 
   if (props.tagAvatarRelationLoading) return <LoaderFullWindow message="タグ情報を読み込み中..." withAppShell={true} />;
   if (props.tagAvatarRelation === undefined) return <div>タグ情報の読み込みに失敗しました。</div>;
 
   return (
     <Grid overflow="hidden" gutter="lg">
-      {avatarTagSearchfilterAvatars(
-        props.avatars,
-        props.selectedTags,
-        props.tagAvatarRelation
-      ).map(avatar => {
+      {filteredAvatars.map(avatar => {
         if (props.tagAvatarRelation === undefined) return null;
         const isActive = props.currentUser.currentAvatar === avatar.id;
+        const avatarTags = props.tagAvatarRelation[avatar.id] ?? [];
         const card = (
           <AvatarCard
             avatar={avatar}
             avatars={props.avatars}
-            avatarTags={props.tagAvatarRelation[avatar.id] || []}
+            avatarTags={avatarTags}
             currentUser={props.currentUser}
             isActiveAvatar={isActive}
             pendingSwitch={props.pendingSwitch}
             imageSize={props.cardImageSize}
-            selectedTags={props.selectedTags}
             onAvatarSwitchClicked={props.handlerAvatarSwitch}
+            onTagRemove={removeTagAvatarsRelation}
           />
         );
         return (
@@ -64,5 +72,7 @@ const AvatarList = (props: AvatarListProps) => {
     </Grid>
   );
 };
+
+const AvatarList = memo(AvatarListComponent);
 
 export default AvatarList;

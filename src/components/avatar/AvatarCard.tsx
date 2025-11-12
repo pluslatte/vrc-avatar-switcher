@@ -6,13 +6,13 @@ import AvatarTags from './AvatarTags';
 interface AvatarCardProps {
   avatar: Avatar;
   avatars: Array<Avatar>;
-  avatarTags: Array<Tag>
+  avatarTags: Array<Tag>;
   currentUser: CurrentUser;
   isActiveAvatar: boolean;
   pendingSwitch: boolean;
   imageSize: number | null;
-  selectedTags: Array<string>;
   onAvatarSwitchClicked: (avatarId: string) => void;
+  onTagRemove: (params: { tagName: string; avatarId: string; currentUserId: string }) => void;
 }
 
 const AvatarCard = (props: AvatarCardProps) => {
@@ -77,6 +77,7 @@ const AvatarCard = (props: AvatarCardProps) => {
           avatars={props.avatars}
           avatarTags={props.avatarTags}
           currentUser={props.currentUser}
+          onTagRemove={props.onTagRemove}
         />
       </Card.Section>
     </Card>

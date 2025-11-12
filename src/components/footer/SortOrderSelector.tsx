@@ -7,7 +7,7 @@ const SortOrderSelector = (props: {
   return (
     <Select
       data={[{ value: 'Name', label: '名前' }, { value: 'Updated', label: '更新日' }]}
-      style={{ width: 200 }}
+      style={{ width: 100 }}
       value={props.selectedSort}
       onChange={props.onSortSettingChange}
     />

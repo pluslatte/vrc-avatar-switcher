@@ -2,7 +2,7 @@ import { Grid, Indicator } from '@mantine/core';
 import AvatarCard from './AvatarCard';
 import { Avatar, CurrentUser } from '@/lib/models';
 import { LoaderFullWindow } from '../LoaderFullWindow';
-import { avatarTagSearchfilterAvatars } from '@/lib/utils';
+import { avatarNameSearchFilterAvatars, avatarTagSearchFilterAvatars } from '@/lib/utils';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
@@ -10,6 +10,7 @@ interface AvatarListProps {
   tagAvatarRelationLoading: boolean;
   currentUser: CurrentUser;
   pendingSwitch: boolean;
+  searchQuery: string;
   cardImageSize: number;
   cardNumberPerRow: number;
   selectedTags: Array<string>;
@@ -22,8 +23,8 @@ const AvatarList = (props: AvatarListProps) => {
 
   return (
     <Grid overflow="hidden" gutter="lg">
-      {avatarTagSearchfilterAvatars(
-        props.avatars,
+      {avatarTagSearchFilterAvatars(
+        avatarNameSearchFilterAvatars(props.avatars, props.searchQuery),
         props.selectedTags,
         props.tagAvatarRelation
       ).map(avatar => {

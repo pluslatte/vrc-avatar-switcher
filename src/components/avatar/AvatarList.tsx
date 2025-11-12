@@ -3,7 +3,6 @@ import AvatarCard from './AvatarCard';
 import { Avatar, CurrentUser } from '@/lib/models';
 import { LoaderFullWindow } from '../LoaderFullWindow';
 import { avatarNameSearchFilterAvatars, avatarTagSearchFilterAvatars } from '@/lib/utils';
-import { useMemo } from 'react';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
@@ -22,17 +21,13 @@ const AvatarList = (props: AvatarListProps) => {
   if (props.tagAvatarRelationLoading) return <LoaderFullWindow message="タグ情報を読み込み中..." withAppShell={true} />;
   if (props.tagAvatarRelation === undefined) return <div>タグ情報の読み込みに失敗しました。</div>;
 
-  const filteredAvatars = useMemo(() => {
-    return avatarTagSearchFilterAvatars(
-      avatarNameSearchFilterAvatars(props.avatars, props.searchQuery),
-      props.selectedTags,
-      props.tagAvatarRelation
-    );
-  }, [props.avatars, props.searchQuery, props.selectedTags, props.tagAvatarRelation]);
-
   return (
     <Grid overflow="hidden" gutter="lg">
-      {filteredAvatars.map(avatar => {
+      {avatarTagSearchFilterAvatars(
+        avatarNameSearchFilterAvatars(props.avatars, props.searchQuery),
+        props.selectedTags,
+        props.tagAvatarRelation
+      ).map(avatar => {
         if (props.tagAvatarRelation === undefined) return null;
         const isActive = props.currentUser.currentAvatar === avatar.id;
         const card = (

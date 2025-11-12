@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { useAvatarSortOrderSelector } from './useAvatarSortOrderSelector';
 import { useAvatarListQuery } from './useAvatarListQuery';
 import { useSwitchAvatarMutation } from './useSwitchAvatarMutation';
@@ -12,9 +11,9 @@ export const useAvatarSwitcher = () => {
   const switchAvatarMutation = useSwitchAvatarMutation(avatarSortOrder);
   const availableTagsQuery = useAvailableTagsQuery(avatarListQuery.data);
 
-  const handlerAvatarSwitch = useCallback((avatarId: string) => {
+  const handlerAvatarSwitch = (avatarId: string) => {
     switchAvatarMutation.mutate(avatarId);
-  }, [switchAvatarMutation]);
+  };
 
   const tagAvatarsRelationQuery = useTagAvatarsRelationQuery(avatarListQuery.data);
 

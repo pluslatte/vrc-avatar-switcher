@@ -7,7 +7,7 @@ import FooterContents from '@/components/footer/FooterContents';
 import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
 import { isAvatarSortOrder } from '@/lib/models';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useAvatarSearchByName } from '@/hooks/useAvatarSearchByName';
 
 interface DashBoardProps {
@@ -30,12 +30,12 @@ const DashBoard = (props: DashBoardProps) => {
   const avatarSearchQuery = useAvatarSearchByName();
   const [selectedTags, setSelectedTags] = useState<Array<string>>([]);
 
-  const handlerSortOptSwitch = useCallback((option: string | null) => {
+  const handlerSortOptSwitch = (option: string | null) => {
     // check if option is AvatarSortOrder
     if (isAvatarSortOrder(option)) {
       handleAvatarSortOrderChange(option);
     }
-  }, [handleAvatarSortOrderChange]);
+  };
 
   if (avatarListQuery.isPending || avatarListQuery.isFetching) return <LoaderFullWindow message="アバターを読み込んでいます..." />;
   if (avatarListQuery.isError) return <div>Error: {(avatarListQuery.error as Error).message}</div>;
@@ -66,7 +66,7 @@ const DashBoard = (props: DashBoardProps) => {
             tagAvatarRelationLoading={tagAvatarRelationLoading}
             currentUser={avatarListQuery.data.currentUser}
             pendingSwitch={switchAvatarMutation.isPending}
-            searchQuery={avatarSearchQuery.debouncedValue}
+            searchQuery={avatarSearchQuery.value}
             cardImageSize={cardImageSize}
             cardNumberPerRow={cardNumberPerRow}
             selectedTags={selectedTags}

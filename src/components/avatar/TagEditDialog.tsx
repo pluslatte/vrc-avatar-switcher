@@ -3,7 +3,7 @@ import { tagAvatarRelationQueryKey } from '@/hooks/useTagAvatarsRelationQuery';
 import { COLOR_SWATCHES } from '@/lib/colorSwatchesPalette';
 import { Tag, updateTag } from '@/lib/db';
 import { Avatar } from '@/lib/models';
-import { ActionIcon, Badge, Button, ColorPicker, Group, Modal, Stack, TextInput } from '@mantine/core';
+import { ActionIcon, Badge, Button, ColorPicker, Group, Modal, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconEdit } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -18,7 +18,7 @@ interface TagEditDialogProps {
 }
 const TagEditDialog = (props: TagEditDialogProps) => {
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
-  const [displayName, setDisplayName] = useState('');
+  const [tagDisplayName, setTagDisplayName] = useState('');
   const [color, setColor] = useState('#868e96');
 
   const queryClient = useQueryClient();
@@ -43,6 +43,9 @@ const TagEditDialog = (props: TagEditDialogProps) => {
     onSuccess: ({ oldName, currentUserId, avatars }) => {
       queryClient.invalidateQueries({ queryKey: availableTagsQueryKey(currentUserId) });
       queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(avatars, currentUserId) });
+      setTagDisplayName('');
+      setSelectedTag(null);
+      setColor('#868e96');
       notifications.show({
         title: '成功',
         message: `タグ「${oldName}」を更新しました`,
@@ -62,7 +65,7 @@ const TagEditDialog = (props: TagEditDialogProps) => {
 
   const handleSave = () => {
     if (!selectedTag) return;
-    if (displayName.trim() === '') {
+    if (tagDisplayName.trim() === '') {
       notifications.show({
         title: 'エラー',
         message: 'タグ名を入力してください',
@@ -74,7 +77,7 @@ const TagEditDialog = (props: TagEditDialogProps) => {
     updateTagMutation.mutate({
       tag: selectedTag,
       avatars: props.avatars,
-      newDisplayName: displayName.trim(),
+      newDisplayName: tagDisplayName.trim(),
       newColor: color,
       currentUserId: props.currentUserId,
     });
@@ -88,7 +91,7 @@ const TagEditDialog = (props: TagEditDialogProps) => {
       centered
       size="md"
     >
-      <Stack gap="md">
+      <Group gap="xs">
         {props.tags.map(tag => (
           <Badge
             key={tag.display_name}
@@ -100,7 +103,7 @@ const TagEditDialog = (props: TagEditDialogProps) => {
                 color="gray"
                 onClick={() => {
                   setSelectedTag(tag);
-                  setDisplayName(tag.display_name);
+                  setTagDisplayName(tag.display_name);
                   setColor(tag.color || '#868e96');
                 }}
               >
@@ -123,8 +126,8 @@ const TagEditDialog = (props: TagEditDialogProps) => {
         <TextInput
           label="タグ名"
           placeholder="タグ名を入力"
-          value={displayName}
-          onChange={(event) => setDisplayName(event.currentTarget.value)}
+          value={tagDisplayName}
+          onChange={(event) => setTagDisplayName(event.currentTarget.value)}
         />
         <Group justify="flex-end" gap="xs">
           <Button
@@ -139,12 +142,12 @@ const TagEditDialog = (props: TagEditDialogProps) => {
             color={color}
             onClick={handleSave}
             loading={updateTagMutation.isPending}
-            disabled={!selectedTag || displayName.trim() === ''}
+            disabled={!selectedTag || tagDisplayName.trim() === ''}
           >
             保存
           </Button>
         </Group>
-      </Stack>
+      </Group>
     </Modal>
   );
 };

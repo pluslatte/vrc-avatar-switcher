@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- タグ追加時に選べる色が増えた
+- タグ追加時に選べる色を追加
+- タグの名称と色を変更できるように修正
 
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.3.1...HEAD
 

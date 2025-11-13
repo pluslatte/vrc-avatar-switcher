@@ -77,13 +77,22 @@ export const updateTag = async (
 ) => {
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
   await db.execute(`
-    UPDATE
-      tags
-    SET
-      display_name = $1,
-      color = $2
-    WHERE
-      display_name = $3 AND created_by = $4
+    BEGIN TRANSACTION;
+      UPDATE
+        tags
+      SET
+        display_name = $1,
+        color = $2
+      WHERE
+        display_name = $3 AND created_by = $4;
+
+      UPDATE
+        tag_avatar_relations
+      SET
+        tag_display_name = $1
+      WHERE
+        tag_display_name = $3 AND created_by = $4;
+    COMMIT;
   `, [newTagName, newColor, oldTagName, currentUserId]);
 };
 

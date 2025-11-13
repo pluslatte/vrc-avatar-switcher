@@ -22,7 +22,9 @@ const TagEditDialog = (props: TagEditDialogProps) => {
     color,
     setColor,
     handleSave,
+    handleDelete,
     updateTagMutation,
+    dropTagMutation,
     onClose,
   } = useTagEditDialog(
     props.onClose,
@@ -69,30 +71,42 @@ const TagEditDialog = (props: TagEditDialogProps) => {
             <TextInput
               label="タグ名"
               placeholder="タグ名を入力"
+              w="100%"
               value={tagDisplayName}
               onChange={(event) => setTagDisplayName(event.currentTarget.value)}
             />
-            <Group justify="flex-end" gap="xs">
+            <Group gap="xs" justify="space-between" w="100%">
               <Button
-                variant="subtle"
-                color="gray"
-                onClick={() => {
-                  setSelectedTag(null);
-                  setTagDisplayName('');
-                  setColor('#868e96');
-                }}
+                variant="outline"
+                color="red"
+                onClick={handleDelete}
+                loading={dropTagMutation.isPending}
                 disabled={updateTagMutation.isPending}
               >
-                キャンセル
+                削除
               </Button>
-              <Button
-                color={color}
-                onClick={handleSave}
-                loading={updateTagMutation.isPending}
-                disabled={tagDisplayName.trim() === ''}
-              >
-                保存
-              </Button>
+              <Group gap="xs">
+                <Button
+                  variant="subtle"
+                  color="gray"
+                  onClick={() => {
+                    setSelectedTag(null);
+                    setTagDisplayName('');
+                    setColor('#868e96');
+                  }}
+                  disabled={updateTagMutation.isPending || dropTagMutation.isPending}
+                >
+                  キャンセル
+                </Button>
+                <Button
+                  color={color}
+                  onClick={handleSave}
+                  loading={updateTagMutation.isPending}
+                  disabled={tagDisplayName.trim() === '' || dropTagMutation.isPending}
+                >
+                  保存
+                </Button>
+              </Group>
             </Group>
           </React.Fragment>
         )}

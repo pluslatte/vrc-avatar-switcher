@@ -1,4 +1,4 @@
-import { Tag, updateTag } from '@/lib/db';
+import { Tag, updateTag, dropTag } from '@/lib/db';
 import { Avatar } from '@/lib/models';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
@@ -87,6 +87,56 @@ export const useTagEditDialog = (onCloseSuper: () => void, avatars: Array<Avatar
     });
   }, [selectedTag, tagDisplayName, color, avatars, currentUserId]);
 
+  const dropTagMutation = useMutation({
+    mutationFn: async ({
+      tagName,
+      currentUserId
+    }: {
+      tagName: string,
+      currentUserId: string
+    }) => {
+      await dropTag(tagName, currentUserId);
+      return { tagName, currentUserId };
+    },
+    onSuccess: ({ tagName, currentUserId }) => {
+      queryClient.invalidateQueries({ queryKey: availableTagsQueryKey(currentUserId) });
+      queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(avatars, currentUserId) });
+      setTagDisplayName('');
+      setSelectedTag(null);
+      setColor('#868e96');
+      notifications.show({
+        title: 'タグ削除',
+        message: `タグ「${tagName}」を削除しました（関連付けられたアバターからも削除されました）`,
+        color: 'green',
+      });
+    },
+    onError: (error, variables) => {
+      const { tagName } = variables;
+      console.error('Error dropping tag:', error);
+
+      let errorMessage = 'タグの削除中にエラーが発生しました';
+      if (error instanceof Error && error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
+      notifications.show({
+        title: 'タグ削除エラー',
+        message: `タグ「${tagName}」: ${errorMessage}`,
+        color: 'red',
+      });
+    }
+  });
+
+  const handleDelete = useCallback(() => {
+    if (!selectedTag) return;
+
+    dropTagMutation.mutate({
+      tagName: selectedTag.display_name,
+      currentUserId,
+    });
+  }, [selectedTag, currentUserId]);
 
   return {
     selectedTag,
@@ -96,7 +146,9 @@ export const useTagEditDialog = (onCloseSuper: () => void, avatars: Array<Avatar
     color,
     setColor,
     handleSave,
+    handleDelete,
     updateTagMutation,
+    dropTagMutation,
     onClose,
   };
 };

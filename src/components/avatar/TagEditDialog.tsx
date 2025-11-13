@@ -89,7 +89,7 @@ const TagEditDialog = (props: TagEditDialogProps) => {
                 color={color}
                 onClick={handleSave}
                 loading={updateTagMutation.isPending}
-                disabled={!selectedTag || tagDisplayName.trim() === ''}
+                disabled={tagDisplayName.trim() === ''}
               >
                 保存
               </Button>

@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Group, MultiSelect } from '@mantine/core';
+import { ActionIcon, Box, Divider, Group, MultiSelect } from '@mantine/core';
 import { IconFilter, IconSearch, IconSortAscendingShapes, IconTags } from '@tabler/icons-react';
 import SortOrderSelector from './SortOrderSelector';
 import { Avatar, AvatarSortOrder, CurrentUser } from '@/lib/models';
@@ -36,7 +36,10 @@ const FooterContents = (props: FooterContentsProps) => {
       />
       <Divider orientation="vertical" />
       <IconFilter />
-      <Box pos="relative">
+      <Box
+        pos="relative"
+        style={{ marginRight: 'auto' }}
+      >
         <MultiSelect
           placeholder="タグでフィルター"
           data={props.availableTags.map(tag => ({ value: tag.display_name, label: tag.display_name }))}
@@ -45,25 +48,25 @@ const FooterContents = (props: FooterContentsProps) => {
         />
       </Box>
       <Divider orientation="vertical" />
-      <Button
-        variant="outline"
-        size="xs"
+      <IconSearch />
+      <AvatarSearchBox
+        onChange={props.updateAvatarSearchInputString}
+      />
+      <Divider orientation="vertical" />
+      <ActionIcon
+        color="gray"
+        variant="subtle"
+        radius="sm"
         onClick={() => { openTagEditDialog(); }}
-        style={{ marginLeft: 'auto' }}
       >
         <IconTags />
-      </Button>
+      </ActionIcon>
       <TagEditDialog
         opened={tagEditDialogOpened}
         onClose={closeTagEditDialog}
         avatars={props.avatars}
         tags={props.availableTags}
         currentUserId={props.currentUser.id}
-      />
-      <Divider orientation="vertical" />
-      <IconSearch />
-      <AvatarSearchBox
-        onChange={props.updateAvatarSearchInputString}
       />
       <Divider orientation="vertical" />
       <SettingsPopover

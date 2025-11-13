@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.3.1...HEAD
+
+## [0.3.1]
+### Changed
+- ライセンスを変更
+
+[0.3.1]: https://github.com/pluslatte/vrc-avatar-switcher/releases/tag/v0.3.1
 
 ## [0.3.0]
 ### Added

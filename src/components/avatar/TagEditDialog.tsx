@@ -31,23 +31,23 @@ const TagEditDialog = (props: TagEditDialogProps) => {
   const queryClient = useQueryClient();
   const updateTagMutation = useMutation({
     mutationFn: async ({
-      tag, avatars, newDisplayName, newColor, currentUserId
+      tag, avatars, newTagDisplayName, newColor, currentUserId
     }: {
       tag: Tag,
       avatars: Array<Avatar>,
-      newDisplayName: string,
+      newTagDisplayName: string,
       newColor: string,
       currentUserId: string
     }) => {
       await updateTag(
         tag.display_name,
-        newDisplayName,
+        newTagDisplayName,
         newColor,
         currentUserId
       );
-      return { oldName: tag.display_name, newDisplayName, currentUserId, avatars };
+      return { oldName: tag.display_name, newTagDisplayName, currentUserId, avatars };
     },
-    onSuccess: ({ oldName, currentUserId, avatars }) => {
+    onSuccess: ({ oldName, newTagDisplayName, currentUserId, avatars }) => {
       queryClient.invalidateQueries({ queryKey: availableTagsQueryKey(currentUserId) });
       queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(avatars, currentUserId) });
       setTagDisplayName('');
@@ -55,7 +55,7 @@ const TagEditDialog = (props: TagEditDialogProps) => {
       setColor('#868e96');
       notifications.show({
         title: '成功',
-        message: `タグ「${oldName}」を更新しました`,
+        message: `タグ「${oldName}」を更新しました > ${newTagDisplayName}`,
         color: 'green',
       });
     },
@@ -84,7 +84,7 @@ const TagEditDialog = (props: TagEditDialogProps) => {
     updateTagMutation.mutate({
       tag: selectedTag,
       avatars: props.avatars,
-      newDisplayName: tagDisplayName.trim(),
+      newTagDisplayName: tagDisplayName.trim(),
       newColor: color,
       currentUserId: props.currentUserId,
     });

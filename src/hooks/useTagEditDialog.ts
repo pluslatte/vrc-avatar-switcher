@@ -51,9 +51,17 @@ export const useTagEditDialog = (onCloseSuper: () => void, avatars: Array<Avatar
     onError: (error, variables) => {
       const { tag } = variables;
       console.error('Error updating tag:', error);
+
+      let errorMessage = 'タグの更新中にエラーが発生しました';
+      if (error instanceof Error && error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
       notifications.show({
         title: 'エラー',
-        message: `タグ「${tag.display_name}」の更新中にエラーが発生しました: ${error.message}`,
+        message: `タグ「${tag.display_name}」の更新に失敗しました: ${errorMessage}`,
         color: 'red',
       });
     }

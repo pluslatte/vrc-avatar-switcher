@@ -120,9 +120,17 @@ export const useTagManager = ({
             queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(avatars, currentUserId) });
         } catch (error) {
             console.error('Error registering avatar tag:', error);
+
+            let errorMessage = 'タグの登録中にエラーが発生しました';
+            if (error instanceof Error && error.message) {
+                errorMessage = error.message;
+            } else if (typeof error === 'string') {
+                errorMessage = error;
+            }
+
             notifications.show({
                 title: 'タグ登録エラー',
-                message: `タグ「${tagName}」の登録中にエラーが発生しました: ${(error as Error).message}`,
+                message: `タグ「${tagName}」: ${errorMessage}`,
                 color: 'red',
             });
         } finally {

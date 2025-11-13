@@ -15,14 +15,32 @@ interface TagsRemovalPopoverProps {
 const TagsRemovalPopover = (props: TagsRemovalPopoverProps) => {
   const queryClient = useQueryClient();
   const handlerDropTag = async (tagName: string, currentUserId: string) => {
-    await dropTag(tagName, currentUserId);
-    queryClient.invalidateQueries({ queryKey: availableTagsQueryKey(currentUserId) });
-    queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(props.avatars, props.currentUser.id) });
-    notifications.show({
-      title: 'タグ削除',
-      message: `タグ「${tagName}」を削除しました（関連付けられたアバターからも削除されました）`,
-      color: 'green',
-    });
+    try {
+      await dropTag(tagName, currentUserId);
+      queryClient.invalidateQueries({ queryKey: availableTagsQueryKey(currentUserId) });
+      queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(props.avatars, props.currentUser.id) });
+      notifications.show({
+        title: 'タグ削除',
+        message: `タグ「${tagName}」を削除しました（関連付けられたアバターからも削除されました）`,
+        color: 'green',
+      });
+    } catch (error) {
+      console.error('Error dropping tag:', error);
+
+      // エラーメッセージを取得（error.messageがない場合も対応）
+      let errorMessage = 'タグの削除中にエラーが発生しました';
+      if (error instanceof Error && error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
+      notifications.show({
+        title: 'タグ削除エラー',
+        message: `タグ「${tagName}」: ${errorMessage}`,
+        color: 'red',
+      });
+    }
   };
   return (
     <Popover width={300} position="top" withArrow shadow="md">

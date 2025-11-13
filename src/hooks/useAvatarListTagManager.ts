@@ -79,6 +79,19 @@ export const useAvatarListTagManager = ({
             });
         } catch (error) {
             console.error('Bulk tag removal failed:', error);
+
+            let errorMessage = 'タグの一括削除中にエラーが発生しました';
+            if (error instanceof Error && error.message) {
+                errorMessage = error.message;
+            } else if (typeof error === 'string') {
+                errorMessage = error;
+            }
+
+            notifications.show({
+                title: 'タグ一括削除エラー',
+                message: `タグ「${tagName}」: ${errorMessage}`,
+                color: 'red',
+            });
         } finally {
             setRemovingTagName(null);
         }

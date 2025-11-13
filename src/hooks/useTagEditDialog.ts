@@ -85,7 +85,7 @@ export const useTagEditDialog = (onCloseSuper: () => void, avatars: Array<Avatar
       newColor: color,
       currentUserId,
     });
-  }, [selectedTag, tagDisplayName, color, avatars, currentUserId, updateTagMutation.mutate]);
+  }, [selectedTag, tagDisplayName, color, avatars, currentUserId]);
 
 
   return {

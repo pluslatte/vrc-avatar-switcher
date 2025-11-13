@@ -3,10 +3,11 @@ import { tagAvatarRelationQueryKey } from '@/hooks/useTagAvatarsRelationQuery';
 import { COLOR_SWATCHES } from '@/lib/colorSwatchesPalette';
 import { Tag, updateTag } from '@/lib/db';
 import { Avatar } from '@/lib/models';
-import { ActionIcon, Badge, Button, ColorPicker, Group, Modal, TextInput } from '@mantine/core';
+import { Button, ColorPicker, Group, Modal, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconEdit } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useCallback } from 'react';
 import { useState } from 'react';
 
 interface TagEditDialogProps {
@@ -20,6 +21,12 @@ const TagEditDialog = (props: TagEditDialogProps) => {
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [tagDisplayName, setTagDisplayName] = useState('');
   const [color, setColor] = useState('#868e96');
+  const onClose = useCallback(() => {
+    setSelectedTag(null);
+    setTagDisplayName('');
+    setColor('#868e96');
+    props.onClose();
+  }, [setSelectedTag, setTagDisplayName, setColor, props.onClose]);
 
   const queryClient = useQueryClient();
   const updateTagMutation = useMutation({
@@ -63,7 +70,7 @@ const TagEditDialog = (props: TagEditDialogProps) => {
     }
   });
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (!selectedTag) return;
     if (tagDisplayName.trim() === '') {
       notifications.show({
@@ -81,72 +88,74 @@ const TagEditDialog = (props: TagEditDialogProps) => {
       newColor: color,
       currentUserId: props.currentUserId,
     });
-  };
+  }, [selectedTag, tagDisplayName, color, props.avatars, props.currentUserId, updateTagMutation.mutate]);
 
   return (
     <Modal
       opened={props.opened}
-      onClose={props.onClose}
+      onClose={onClose}
       title="タグを編集"
       centered
       size="md"
     >
       <Group gap="xs">
-        {props.tags.map(tag => (
-          <Badge
+        {!selectedTag && props.tags.map(tag => (
+          <Button
             key={tag.display_name}
             color={tag.color || 'gray'}
-            rightSection={
-              <ActionIcon
-                size={16}
+            onClick={() => {
+              setSelectedTag(tag);
+              setTagDisplayName(tag.display_name);
+              setColor(tag.color || '#868e96');
+            }}
+            rightSection={(
+              <IconEdit size={16} />
+            )}
+          >
+            {tag.display_name}
+          </Button>
+        ))}
+        {selectedTag && (
+          <React.Fragment>
+            <ColorPicker
+              format="hex"
+              value={color}
+              onChange={setColor}
+              withPicker={false}
+              fullWidth
+              swatchesPerRow={7}
+              swatches={COLOR_SWATCHES}
+            />
+            <TextInput
+              label="タグ名"
+              placeholder="タグ名を入力"
+              value={tagDisplayName}
+              onChange={(event) => setTagDisplayName(event.currentTarget.value)}
+            />
+            <Group justify="flex-end" gap="xs">
+              <Button
                 variant="subtle"
                 color="gray"
                 onClick={() => {
-                  setSelectedTag(tag);
-                  setTagDisplayName(tag.display_name);
-                  setColor(tag.color || '#868e96');
+                  setSelectedTag(null);
+                  setTagDisplayName('');
+                  setColor('#868e96');
                 }}
+                disabled={updateTagMutation.isPending}
               >
-                <IconEdit size={12} />
-              </ActionIcon>
-            }
-          >
-            {tag.display_name}
-          </Badge>
-        ))}
-        <ColorPicker
-          format="hex"
-          value={color}
-          onChange={setColor}
-          withPicker={false}
-          fullWidth
-          swatchesPerRow={7}
-          swatches={COLOR_SWATCHES}
-        />
-        <TextInput
-          label="タグ名"
-          placeholder="タグ名を入力"
-          value={tagDisplayName}
-          onChange={(event) => setTagDisplayName(event.currentTarget.value)}
-        />
-        <Group justify="flex-end" gap="xs">
-          <Button
-            variant="subtle"
-            color="gray"
-            onClick={props.onClose}
-            disabled={updateTagMutation.isPending}
-          >
-            キャンセル
-          </Button>
-          <Button
-            color={color}
-            onClick={handleSave}
-            loading={updateTagMutation.isPending}
-            disabled={!selectedTag || tagDisplayName.trim() === ''}
-          >
-            保存
-          </Button>
-        </Group>
+                キャンセル
+              </Button>
+              <Button
+                color={color}
+                onClick={handleSave}
+                loading={updateTagMutation.isPending}
+                disabled={!selectedTag || tagDisplayName.trim() === ''}
+              >
+                保存
+              </Button>
+            </Group>
+          </React.Fragment>
+        )}
       </Group>
     </Modal>
   );

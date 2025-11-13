@@ -49,6 +49,7 @@ const FooterContents = (props: FooterContentsProps) => {
         variant="outline"
         size="xs"
         onClick={() => { openTagEditDialog(); }}
+        style={{ marginLeft: 'auto' }}
       >
         <IconTags />
       </Button>

@@ -1,8 +1,9 @@
 import type { Tag } from '@/lib/db';
 import type { Avatar } from '@/lib/models';
-import { Badge, Box, Button, ColorPicker, DEFAULT_THEME, Divider, Group, Stack, Text, TextInput } from '@mantine/core';
+import { Badge, Box, Button, ColorPicker, Divider, Group, Stack, Text, TextInput } from '@mantine/core';
 import { IconTagFilled } from '@tabler/icons-react';
 import { useTagManager } from '@/hooks/useTagManager';
+import { COLOR_SWATCHES } from '@/lib/colorSwatchesPalette';
 
 interface TagManagerProps {
   avatars: Array<Avatar>;
@@ -30,24 +31,6 @@ const TagManager = (props: TagManagerProps) => {
     currentUserId: props.currentUserId,
     tagAvatarRelation: props.tagAvatarRelation,
   });
-
-  const colorNamesA = [
-    'red', 'pink', 'grape', 'violet', 'indigo', 'blue', 'cyan',
-  ] as const;
-  const colorNamesB = [
-    'teal', 'green', 'lime', 'yellow', 'orange', 'gray', 'dark'
-  ] as const;
-  const colorSwatches: string[] = [];
-  for (let shade = 2; shade <= 7; shade += 2) {
-    for (const colorName of colorNamesA) {
-      colorSwatches.push(DEFAULT_THEME.colors[colorName][shade]);
-    }
-  }
-  for (let shade = 2; shade <= 7; shade += 2) {
-    for (const colorName of colorNamesB) {
-      colorSwatches.push(DEFAULT_THEME.colors[colorName][shade]);
-    }
-  }
 
   return (
     <Box>
@@ -85,7 +68,7 @@ const TagManager = (props: TagManagerProps) => {
           fullWidth
           maw={300}
           swatchesPerRow={7}
-          swatches={colorSwatches}
+          swatches={COLOR_SWATCHES}
         />
         <TextInput
           placeholder="タグ名"

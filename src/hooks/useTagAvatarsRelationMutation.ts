@@ -29,9 +29,17 @@ export const useTagAvatarsRelationMutation = (avatars: Array<Avatar>) => {
     onError: (error, variables) => {
       const { tagName } = variables;
       console.error('Error removing avatar tag:', error);
+
+      let errorMessage = 'タグの削除中にエラーが発生しました';
+      if (error instanceof Error && error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
       notifications.show({
         title: 'タグ削除エラー',
-        message: `タグ「${tagName}」の削除中にエラーが発生しました: ${(error as Error).message}`,
+        message: `タグ「${tagName}」: ${errorMessage}`,
         color: 'red',
       });
     },

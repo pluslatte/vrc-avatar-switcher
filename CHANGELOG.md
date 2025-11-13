@@ -6,10 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Changed
-- タグ追加時に選べる色が増えた
 
-[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.4.0...HEAD
+
+## [0.4.0]
+### Changed
+- タグ追加時に選べる色を追加
+- タグの名称と色を変更できるように修正
+
+### Fixed
+- タグ名の変更時に名前が重複した場合、エラー内容が「undefined」と表示されていたのを修正
+- タグの作成・更新・削除時のエラーメッセージが適切に表示されるように改善
+
+[0.4.0]: https://github.com/pluslatte/vrc-avatar-switcher/releases/tag/v0.4.0
 
 ## [0.3.1]
 ### Changed

@@ -11,6 +11,11 @@ export const createTag = async (
   currentUserId: string,
   color: string,
 ) => {
+  const exists = await queryTagExists(tagName, currentUserId);
+  if (exists) {
+    throw new Error(`タグ名「${tagName}」は既に存在します`);
+  }
+
   const db = await Database.load('sqlite:vrc-avatar-switcher.db');
   await db.execute(`
     INSERT INTO
@@ -67,6 +72,32 @@ export const dropTag = async (
     WHERE
       display_name = $1 AND created_by = $2
   `, [tagName, currentUserId]);
+};
+
+export const updateTag = async (
+  oldTagName: string,
+  newTagName: string,
+  newColor: string,
+  currentUserId: string,
+) => {
+  // タグ名が変更される場合、新しいタグ名が既に存在しないかチェック
+  if (oldTagName !== newTagName) {
+    const exists = await queryTagExists(newTagName, currentUserId);
+    if (exists) {
+      throw new Error(`タグ名「${newTagName}」は既に存在します`);
+    }
+  }
+
+  const db = await Database.load('sqlite:vrc-avatar-switcher.db');
+  await db.execute(`
+    UPDATE
+      tags
+    SET
+      display_name = $1,
+      color = $2
+    WHERE
+      display_name = $3 AND created_by = $4
+  `, [newTagName, newColor, oldTagName, currentUserId]);
 };
 
 export const createTagRelation = async (

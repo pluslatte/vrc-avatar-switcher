@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <QueryClientProvider client={queryClient}>
       <MantineProvider forceColorScheme="dark">
         <App />
-        <Notifications />
+        <Notifications position="top-right" />
       </MantineProvider>
     </QueryClientProvider>
   </React.StrictMode>,

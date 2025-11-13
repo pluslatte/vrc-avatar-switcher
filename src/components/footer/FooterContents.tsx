@@ -1,11 +1,12 @@
-import { Box, Divider, Group, MultiSelect } from '@mantine/core';
-import { IconFilter, IconSearch, IconSortAscendingShapes } from '@tabler/icons-react';
+import { Box, Button, Divider, Group, MultiSelect } from '@mantine/core';
+import { IconFilter, IconSearch, IconSortAscendingShapes, IconTags } from '@tabler/icons-react';
 import SortOrderSelector from './SortOrderSelector';
 import { Avatar, AvatarSortOrder, CurrentUser } from '@/lib/models';
 import { Tag } from '@/lib/db';
-import TagsRemovalPopover from './TagsRemovalPopover';
 import SettingsPopover from './SettingsPopover';
 import AvatarSearchBox from './AvatarSearchBox';
+import TagEditDialog from '../avatar/TagEditDialog';
+import { useDisclosure } from '@mantine/hooks';
 
 interface FooterContentsProps {
   avatars: Array<Avatar>;
@@ -24,6 +25,7 @@ interface FooterContentsProps {
   onLogoutSuccess: () => void;
 }
 const FooterContents = (props: FooterContentsProps) => {
+  const [tagEditDialogOpened, { open: openTagEditDialog, close: closeTagEditDialog }] = useDisclosure(false);
 
   return (
     <Group px="md" mt="8">
@@ -43,10 +45,19 @@ const FooterContents = (props: FooterContentsProps) => {
         />
       </Box>
       <Divider orientation="vertical" />
-      <TagsRemovalPopover
+      <Button
+        variant="outline"
+        size="xs"
+        onClick={() => { openTagEditDialog(); }}
+      >
+        <IconTags />
+      </Button>
+      <TagEditDialog
+        opened={tagEditDialogOpened}
+        onClose={closeTagEditDialog}
         avatars={props.avatars}
-        currentUser={props.currentUser}
-        availableTags={props.availableTags}
+        tags={props.availableTags}
+        currentUserId={props.currentUser.id}
       />
       <Divider orientation="vertical" />
       <IconSearch />

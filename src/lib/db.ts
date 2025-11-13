@@ -69,6 +69,24 @@ export const dropTag = async (
   `, [tagName, currentUserId]);
 };
 
+export const updateTag = async (
+  oldTagName: string,
+  newTagName: string,
+  newColor: string,
+  currentUserId: string,
+) => {
+  const db = await Database.load('sqlite:vrc-avatar-switcher.db');
+  await db.execute(`
+    UPDATE
+      tags
+    SET
+      display_name = $1,
+      color = $2
+    WHERE
+      display_name = $3 AND created_by = $4
+  `, [newTagName, newColor, oldTagName, currentUserId]);
+};
+
 export const createTagRelation = async (
   tagName: string,
   avatarId: string,

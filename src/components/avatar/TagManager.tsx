@@ -30,6 +30,25 @@ const TagManager = (props: TagManagerProps) => {
     currentUserId: props.currentUserId,
     tagAvatarRelation: props.tagAvatarRelation,
   });
+
+  const colorNamesA = [
+    'red', 'pink', 'grape', 'violet', 'indigo', 'blue', 'cyan',
+  ] as const;
+  const colorNamesB = [
+    'teal', 'green', 'lime', 'yellow', 'orange', 'gray', 'dark'
+  ] as const;
+  const colorSwatches: string[] = [];
+  for (let shade = 2; shade <= 7; shade += 2) {
+    for (const colorName of colorNamesA) {
+      colorSwatches.push(DEFAULT_THEME.colors[colorName][shade]);
+    }
+  }
+  for (let shade = 2; shade <= 7; shade += 2) {
+    for (const colorName of colorNamesB) {
+      colorSwatches.push(DEFAULT_THEME.colors[colorName][shade]);
+    }
+  }
+
   return (
     <Box>
       <Text size="sm" mb="xs">タグを選択</Text>
@@ -65,13 +84,8 @@ const TagManager = (props: TagManagerProps) => {
           withPicker={false}
           fullWidth
           maw={300}
-          swatches={[
-            ...DEFAULT_THEME.colors.red.slice(3, 10),
-            ...DEFAULT_THEME.colors.green.slice(3, 10),
-            ...DEFAULT_THEME.colors.blue.slice(3, 10),
-            ...DEFAULT_THEME.colors.yellow.slice(3, 10),
-            ...DEFAULT_THEME.colors.dark.slice(3, 10),
-          ]}
+          swatchesPerRow={7}
+          swatches={colorSwatches}
         />
         <TextInput
           placeholder="タグ名"

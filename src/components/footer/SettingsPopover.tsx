@@ -3,6 +3,9 @@ import { IconSettings, IconImageInPicture, IconTableColumn } from '@tabler/icons
 import AvatarCardColumnSizeSelector from './AvatarCardColumnSizeSelector';
 import AvatarCardImageSizeSelector from './AvatarCardImageSizeSelector';
 import LogoutButton from '@/components/LogoutButton';
+import { useDisclosure } from '@mantine/hooks';
+import LicensePage from '@/components/LicensePage';
+import React from 'react';
 
 interface SettingsPopoverProps {
   cardImageSize: number | undefined;
@@ -14,55 +17,70 @@ interface SettingsPopoverProps {
   onLogoutSuccess: () => void;
 }
 const SettingsPopover = (props: SettingsPopoverProps) => {
+  const [licenseOpened, { open: openLicense, close: closeLicense }] = useDisclosure(false);
+
   return (
-    <Popover width={300} position="top" withArrow shadow="md">
-      <Popover.Target>
-        <ActionIcon
-          color="gray"
-          variant="subtle"
-          radius="sm"
-        >
-          <IconSettings />
-        </ActionIcon>
-      </Popover.Target>
-      <Popover.Dropdown>
-        <Group justify="space-between" style={{ width: '100%' }}>
-          <Text fz="xs" c="dimmed">
-            {'© 2025 pluslatte'}
-            <br />
-            {'Licensed under GPL-3.0'}
-            <br />
+    <React.Fragment>
+      <Popover width={300} position="top" withArrow shadow="md">
+        <Popover.Target>
+          <ActionIcon
+            color="gray"
+            variant="subtle"
+            radius="sm"
+          >
+            <IconSettings />
+          </ActionIcon>
+        </Popover.Target>
+        <Popover.Dropdown>
+          <Group justify="space-between" style={{ width: '100%' }}>
+            <Text fz="xs" c="dimmed">
+              {'© 2025 pluslatte'}
+              <br />
+              <Anchor
+                onClick={openLicense}
+                fz="xs"
+                c="dimmed"
+                underline="always"
+                style={{ cursor: 'pointer' }}
+              >
+                {'Licensed under GPL-3.0'}
+              </Anchor>
+            </Text>
+          </Group>
+          <Divider my="xs" />
+          <Group>
+            <IconImageInPicture />
+            <AvatarCardImageSizeSelector
+              cardImageSize={props.cardImageSize}
+              cardImageSizeLoading={props.cardImageSizeLoading}
+              setCardImageSize={props.setCardImageSize}
+            />
+          </Group>
+          <Divider my="xs" />
+          <Group>
+            <IconTableColumn />
+            <AvatarCardColumnSizeSelector
+              cardNumberPerRow={props.cardNumberPerRow}
+              cardNumberPerRowLoading={props.cardNumberPerRowLoading}
+              setCardNumberPerRow={props.setCardNumberPerRow}
+            />
+          </Group>
+          <Divider my="xs" />
+          <Group>
             <Anchor
               href="https://github.com/pluslatte/vrc-avatar-switcher"
               fz="xs"
               c="dimmed"
               target="_blank"
             >
-              ソースコード
+              Source Code
             </Anchor>
-          </Text>
-          <LogoutButton onLogoutSuccess={props.onLogoutSuccess} />
-        </Group>
-        <Divider my="xs" />
-        <Group>
-          <IconImageInPicture />
-          <AvatarCardImageSizeSelector
-            cardImageSize={props.cardImageSize}
-            cardImageSizeLoading={props.cardImageSizeLoading}
-            setCardImageSize={props.setCardImageSize}
-          />
-        </Group>
-        <Divider my="xs" />
-        <Group>
-          <IconTableColumn />
-          <AvatarCardColumnSizeSelector
-            cardNumberPerRow={props.cardNumberPerRow}
-            cardNumberPerRowLoading={props.cardNumberPerRowLoading}
-            setCardNumberPerRow={props.setCardNumberPerRow}
-          />
-        </Group>
-      </Popover.Dropdown>
-    </Popover>
+            <LogoutButton onLogoutSuccess={props.onLogoutSuccess} />
+          </Group>
+        </Popover.Dropdown>
+      </Popover>
+      <LicensePage opened={licenseOpened} onClose={closeLicense} />
+    </React.Fragment>
   );
 };
 

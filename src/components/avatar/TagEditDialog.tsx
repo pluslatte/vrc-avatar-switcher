@@ -1,8 +1,9 @@
 import { availableTagsQueryKey } from '@/hooks/useAvailableTagsQuery';
 import { tagAvatarRelationQueryKey } from '@/hooks/useTagAvatarsRelationQuery';
+import { COLOR_SWATCHES } from '@/lib/colorSwatchesPalette';
 import { Tag, updateTag } from '@/lib/db';
 import { Avatar } from '@/lib/models';
-import { ActionIcon, Badge, Button, ColorPicker, DEFAULT_THEME, Group, Modal, Stack, TextInput } from '@mantine/core';
+import { ActionIcon, Badge, Button, ColorPicker, Group, Modal, Stack, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconEdit } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -58,24 +59,6 @@ const TagEditDialog = (props: TagEditDialogProps) => {
       });
     }
   });
-
-  const colorNamesA = [
-    'red', 'pink', 'grape', 'violet', 'indigo', 'blue', 'cyan',
-  ] as const;
-  const colorNamesB = [
-    'teal', 'green', 'lime', 'yellow', 'orange', 'gray', 'dark'
-  ] as const;
-  const colorSwatches: string[] = [];
-  for (let shade = 2; shade <= 7; shade += 2) {
-    for (const colorName of colorNamesA) {
-      colorSwatches.push(DEFAULT_THEME.colors[colorName][shade]);
-    }
-  }
-  for (let shade = 2; shade <= 7; shade += 2) {
-    for (const colorName of colorNamesB) {
-      colorSwatches.push(DEFAULT_THEME.colors[colorName][shade]);
-    }
-  }
 
   const handleSave = () => {
     if (!selectedTag) return;
@@ -135,7 +118,7 @@ const TagEditDialog = (props: TagEditDialogProps) => {
           withPicker={false}
           fullWidth
           swatchesPerRow={7}
-          swatches={colorSwatches}
+          swatches={COLOR_SWATCHES}
         />
         <TextInput
           label="タグ名"

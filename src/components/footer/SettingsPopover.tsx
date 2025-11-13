@@ -1,4 +1,4 @@
-import { Popover, ActionIcon, Group, Divider, Text } from '@mantine/core';
+import { Popover, ActionIcon, Group, Divider, Text, Anchor } from '@mantine/core';
 import { IconSettings, IconImageInPicture, IconTableColumn } from '@tabler/icons-react';
 import AvatarCardColumnSizeSelector from './AvatarCardColumnSizeSelector';
 import AvatarCardImageSizeSelector from './AvatarCardImageSizeSelector';
@@ -26,9 +26,20 @@ const SettingsPopover = (props: SettingsPopoverProps) => {
         </ActionIcon>
       </Popover.Target>
       <Popover.Dropdown>
-        <Group>
+        <Group justify="space-between" style={{ width: '100%' }}>
           <Text fz="xs" c="dimmed">
-            {'(c) 2025 pluslatte'}
+            {'© 2025 pluslatte'}
+            <br />
+            {'Licensed under GPL-3.0'}
+            <br />
+            <Anchor
+              href="https://github.com/pluslatte/vrc-avatar-switcher"
+              fz="xs"
+              c="dimmed"
+              target="_blank"
+            >
+              ソースコード
+            </Anchor>
           </Text>
           <LogoutButton onLogoutSuccess={props.onLogoutSuccess} />
         </Group>

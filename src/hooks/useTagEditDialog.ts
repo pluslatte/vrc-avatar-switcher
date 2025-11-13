@@ -15,7 +15,7 @@ export const useTagEditDialog = (onCloseSuper: () => void, avatars: Array<Avatar
     setTagDisplayName('');
     setColor('#868e96');
     onCloseSuper();
-  }, [setSelectedTag, setTagDisplayName, setColor, onCloseSuper]);
+  }, [onCloseSuper]);
 
   const queryClient = useQueryClient();
   const updateTagMutation = useMutation({

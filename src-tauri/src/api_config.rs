@@ -3,9 +3,9 @@
  * This file is part of vrc-avatar-switcher.
  *
  * vrc-avatar-switcher is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * vrc-avatar-switcher is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with vrc-avatar-switcher. If not, see <https://www.gnu.org/licenses/>. 
+ * You should have received a copy of the GNU General Public License along with vrc-avatar-switcher. If not, see <https://www.gnu.org/licenses/>.
 */
 
 use std::sync::Arc;
@@ -13,7 +13,7 @@ use std::sync::Arc;
 use reqwest::cookie::Jar;
 use vrchatapi::apis::configuration::Configuration;
 
-const USER_AGENT: &str = "vrc-avatar-switcher/0.4.1";
+const USER_AGENT: &str = "vrc-avatar-switcher/0.4.2";
 
 pub fn create_configuration_for_login(
     jar: &Arc<Jar>,

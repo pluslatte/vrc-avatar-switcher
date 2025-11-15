@@ -1,6 +1,6 @@
 [package]
 name = "vrc-avatar-switcher"
-version = "0.4.1"
+version = "0.4.2"
 description = "A Tauri App"
 authors = ["pluslatte"]
 license = "GPL-3.0"

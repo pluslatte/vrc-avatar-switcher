@@ -7,10 +7,8 @@ import FooterContents from '@/components/footer/FooterContents';
 import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
 import { useCardNumberPerRowSelector } from '@/hooks/useCardNumberPerRowSelector';
 import { isAvatarSortOrder } from '@/lib/models';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAvatarSearchByName } from '@/hooks/useAvatarSearchByName';
-import { notifications } from '@mantine/notifications';
-import LogoutButton from './LogoutButton';
 
 interface DashBoardProps {
   onLogoutSuccess: () => void;
@@ -33,27 +31,13 @@ const MainAppShell = (props: DashBoardProps) => {
   const [selectedTags, setSelectedTags] = useState<Array<string>>([]);
 
   const handlerSortOptSwitch = (option: string | null) => {
-    // check if option is AvatarSortOrder
     if (isAvatarSortOrder(option)) {
       handleAvatarSortOrderChange(option);
     }
   };
 
   if (avatarListQuery.isPending || avatarListQuery.isFetching) return <LoaderFullWindow message="アバターを読み込んでいます..." />;
-  if (avatarListQuery.isError) {
-    console.error(avatarListQuery.error);
-    notifications.show({
-      title: 'アバターの読み込みに失敗しました',
-      message: (avatarListQuery.error as Error).message,
-      color: 'red',
-    });
-    return (
-      <React.Fragment>
-        <div>Error AvatarList: {(avatarListQuery.error as Error).message}</div>
-        <LogoutButton onLogoutSuccess={props.onLogoutSuccess} />
-      </React.Fragment>
-    );
-  }
+  if (avatarListQuery.isError) return (<div>Error AvatarList: {avatarListQuery.error.message}</div>);
   if (avatarSortOrder === undefined) return <div>Error AvatarSortOrder: avatarSortOrder is undefined</div>;
 
   return (

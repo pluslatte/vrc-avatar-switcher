@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 依存パッケージを更新
 
 ### Fixed
-- 認証が失敗してアバター読み込みが失敗する場合に、ログイン画面に戻る手段がなかったのを修正
+- API の仕様変更により、ユーザー情報の取得に失敗していたのを修正（ vrchatapi-rust が修正されるまで、自分でパッチを当てたバージョンを使用。）
 
 [0.4.1]: https://github.com/pluslatte/vrc-avatar-switcher/releases/tag/v0.4.1
 

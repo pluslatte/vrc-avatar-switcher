@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.4.0...HEAD
 
+## [0.4.1]
+### Changed
+- いくつかの依存パッケージを更新
+
+### Fixed
+- 認証が失敗してアバター読み込みが失敗する場合に、ログイン画面に戻る手段がなかったのを修正
+
+[0.4.1]: https://github.com/pluslatte/vrc-avatar-switcher/releases/tag/v0.4.1
+
 ## [0.4.0]
 ### Changed
 - タグ追加時に選べる色を追加

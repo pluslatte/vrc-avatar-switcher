@@ -1,7 +1,7 @@
 {
   "name": "vrc-avatar-switcher",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.4.1",
   "type": "module",
   "license": "GPL-3.0",
   "scripts": {
@@ -19,7 +19,7 @@
     "@mantine/notifications": "^8.3.1",
     "@tabler/icons-react": "^3.34.1",
     "@tanstack/react-query": "^5.87.4",
-    "@tauri-apps/api": "^2.8.0",
+    "@tauri-apps/api": "^2.9.0",
     "@tauri-apps/plugin-opener": "^2.5.0",
     "@tauri-apps/plugin-sql": "~2.3.0",
     "react": "^19.1.1",
@@ -28,7 +28,7 @@
   "devDependencies": {
     "@eslint/js": "^9.35.0",
     "@tanstack/eslint-plugin-query": "^5.86.0",
-    "@tauri-apps/cli": "^2.8.4",
+    "@tauri-apps/cli": "^2.9.4",
     "@types/node": "^24.4.0",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",

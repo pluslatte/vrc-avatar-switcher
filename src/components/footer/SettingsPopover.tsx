@@ -4,7 +4,7 @@ import AvatarCardColumnSizeSelector from './AvatarCardColumnSizeSelector';
 import AvatarCardImageSizeSelector from './AvatarCardImageSizeSelector';
 import LogoutButton from '@/components/LogoutButton';
 import { useDisclosure } from '@mantine/hooks';
-import LicensePage from '@/components/LicensePage';
+import LicensePage from '@/components/footer/LicensePage';
 import React from 'react';
 
 interface SettingsPopoverProps {

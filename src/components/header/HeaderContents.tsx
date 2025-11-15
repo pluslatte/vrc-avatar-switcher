@@ -1,5 +1,5 @@
 import { Avatar, Box, Divider, Group, Text } from '@mantine/core';
-import AvatarListRefreshButton from '@/components/AvatarListRefreshButton';
+import AvatarListRefreshButton from '@/components/header/AvatarListRefreshButton';
 import { AvatarSortOrder } from '@/lib/models';
 
 interface HeaderContentsProps {

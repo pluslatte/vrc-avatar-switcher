@@ -38,7 +38,7 @@ const TagManagerButton = (props: TagManagerButtonProps) => {
           </ActionIcon>
         </Tooltip>
       </Popover.Target>
-      <Popover.Dropdown>
+      <Popover.Dropdown w={300}>
         <TagManager
           avatars={props.avatars}
           avatarIds={[props.avatarId]}

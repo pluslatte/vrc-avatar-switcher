@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.4.1...HEAD
+
+## [0.4.1]
+### Changed
+- 依存パッケージを更新
+
+### Fixed
+- API の仕様変更により、ユーザー情報の取得に失敗していたのを修正（ vrchatapi-rust が修正されるまで、自分でパッチを当てたバージョンを使用。）
+
+[0.4.1]: https://github.com/pluslatte/vrc-avatar-switcher/releases/tag/v0.4.1
 
 ## [0.4.0]
 ### Changed

@@ -1,7 +1,7 @@
 import AvatarList from '@/components/avatar/AvatarList';
 import { useAvatarSwitcher } from '@/hooks/useAvatarSwitcher';
 import { AppShell, LoadingOverlay, ScrollArea } from '@mantine/core';
-import HeaderContents from '@/components/HeaderContents';
+import HeaderContents from '@/components/header/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
 import FooterContents from '@/components/footer/FooterContents';
 import { useCardImageSizeSelector } from '@/hooks/useCardImageSizeSelector';
@@ -13,7 +13,7 @@ import { useAvatarSearchByName } from '@/hooks/useAvatarSearchByName';
 interface DashBoardProps {
   onLogoutSuccess: () => void;
 }
-const DashBoard = (props: DashBoardProps) => {
+const MainAppShell = (props: DashBoardProps) => {
   const {
     avatarListQuery,
     switchAvatarMutation,
@@ -31,14 +31,13 @@ const DashBoard = (props: DashBoardProps) => {
   const [selectedTags, setSelectedTags] = useState<Array<string>>([]);
 
   const handlerSortOptSwitch = (option: string | null) => {
-    // check if option is AvatarSortOrder
     if (isAvatarSortOrder(option)) {
       handleAvatarSortOrderChange(option);
     }
   };
 
   if (avatarListQuery.isPending || avatarListQuery.isFetching) return <LoaderFullWindow message="アバターを読み込んでいます..." />;
-  if (avatarListQuery.isError) return <div>Error AvatarList: {(avatarListQuery.error as Error).message}</div>;
+  if (avatarListQuery.isError) return (<div>Error AvatarList: {avatarListQuery.error.message}</div>);
   if (avatarSortOrder === undefined) return <div>Error AvatarSortOrder: avatarSortOrder is undefined</div>;
 
   return (
@@ -102,4 +101,4 @@ const DashBoard = (props: DashBoardProps) => {
   );
 };
 
-export default DashBoard;
+export default MainAppShell;

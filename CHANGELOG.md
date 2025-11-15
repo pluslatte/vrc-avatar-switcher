@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.1]
 ### Changed
-- いくつかの依存パッケージを更新
+- 依存パッケージを更新
 
 ### Fixed
 - 認証が失敗してアバター読み込みが失敗する場合に、ログイン画面に戻る手段がなかったのを修正

@@ -16,6 +16,11 @@ use crate::commands::{
 pub fn run() {
     tauri::Builder::default()
         .plugin(
+            tauri_plugin_log::Builder::new()
+                .level(tauri_plugin_log::log::LevelFilter::Info)
+                .build(),
+        )
+        .plugin(
             tauri_plugin_sql::Builder::new()
                 .add_migrations("sqlite:vrc-avatar-switcher.db", migrations::migrations())
                 .build(),

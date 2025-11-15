@@ -27,3 +27,4 @@ vrchatapi = "1.20.4"
 reqwest = "0.12.24"
 url = "2.5.7"
 tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+tauri-plugin-log = "2"

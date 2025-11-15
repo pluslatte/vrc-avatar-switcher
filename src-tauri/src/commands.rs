@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use reqwest::cookie::Jar;
+use tauri_plugin_log::log;
 use vrchatapi::{
     apis::authentication_api::{verify2_fa, verify2_fa_email_code},
     models::{Avatar, CurrentUser, TwoFactorAuthCode, TwoFactorEmailCode},
@@ -77,10 +78,12 @@ pub async fn command_2fa(
     set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
     let config = create_configuration(&jar)?;
 
+    log::info!("Verifying 2FA code...");
     verify2_fa(&config, TwoFactorAuthCode::new(two_fa_code.to_string()))
         .await
         .map_err(|e| e.to_string())?;
 
+    log::info!("2FA code verified. Attempting to log in...");
     let config = create_configuration_for_login(&jar, username, password)?;
     match try_login_without_2fa(&config).await? {
         AuthCookieOk::Success => {

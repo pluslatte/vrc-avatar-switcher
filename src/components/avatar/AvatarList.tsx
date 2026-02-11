@@ -8,7 +8,7 @@
  * You should have received a copy of the GNU General Public License along with vrc-avatar-switcher. If not, see <https://www.gnu.org/licenses/>. 
 */
 
-import { Button, Checkbox, Grid, Group, Indicator, Stack, Text } from '@mantine/core';
+import { Button, Center, Checkbox, Grid, Group, Indicator, Stack, Text } from '@mantine/core';
 import { memo, useMemo } from 'react';
 import AvatarCard from './AvatarCard';
 import BulkTagManagerDialog from './BulkTagManagerDialog';
@@ -63,6 +63,18 @@ const AvatarListComponent = (props: AvatarListProps) => {
   if (props.tagAvatarRelation === undefined) return <div>タグ情報の読み込みに失敗しました。</div>;
 
   const tagAvatarRelation = props.tagAvatarRelation;
+
+  // 初回エラー時（キャッシュがない場合）のフォールバック UI
+  if (props.avatars.length === 0) {
+    return (
+      <Center h="calc(100vh - 200px)">
+        <Stack align="center" gap="md">
+          <Text size="xl" c="dimmed">アバターの読み込みに失敗しました</Text>
+          <Text size="sm" c="dimmed">ヘッダーのリフレッシュボタンから再試行してください</Text>
+        </Stack>
+      </Center>
+    );
+  }
 
   return (
     <Stack gap="md">

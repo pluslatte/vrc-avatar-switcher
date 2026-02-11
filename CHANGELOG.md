@@ -8,6 +8,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- API エラー発生時にアプリが操作不能になる問題を修正
+  - 認証失敗時にログインフォームが再表示され、再ログインできるように
+  - アバター一覧の取得に失敗しても、前回取得したデータで操作を継続できるように
+  - エラー発生時にトースト通知で状況をわかりやすく表示するように
+
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.4.3...HEAD
 
 ## [0.4.3]

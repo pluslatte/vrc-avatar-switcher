@@ -8,12 +8,16 @@ and this project adheres to
 
 ## [Unreleased]
 
+[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.4.4...HEAD
+
+## [0.4.4] - 2026-05-07
+
 ### Changed
 
 - ライセンス変更
 - パッチを当てたバージョンを使用していた vrchatapi-rust を、上流のバージョンに修正
 
-[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.4.3...HEAD
+[0.4.4]: https://github.com/pluslatte/vrc-avatar-switcher/releases/tag/v0.4.4
 
 ## [0.4.3]
 

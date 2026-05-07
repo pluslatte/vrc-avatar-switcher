@@ -26,7 +26,7 @@ export const useAvatarListQuery = (avatarSortOrder: AvatarSortOrder | undefined)
           message: (error as Error).message,
           color: 'red',
         });
-        throw error;
+        throw new Error(`Failed to fetch avatar list: ${(error as Error).message}`);
       }
     },
     enabled: !!avatarSortOrder,

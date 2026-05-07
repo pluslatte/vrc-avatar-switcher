@@ -4,7 +4,6 @@ import MainAppShell from '@/components/MainAppShell';
 import LoginForm from '@/components/LoginForm';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { LoaderFullWindow } from './components/LoaderFullWindow';
-import { notifications } from '@mantine/notifications';
 
 function App() {
   const queryClient = useQueryClient();
@@ -19,11 +18,6 @@ function App() {
         return await command_check_auth(authCookie, twofaCookie);
       } catch (error) {
         console.error('Error during auth check:', error);
-        notifications.show({
-          title: '認証に失敗しました',
-          message: (error as Error).message,
-          color: 'red',
-        });
         return false;
       }
     },
@@ -39,6 +33,7 @@ function App() {
   return (
     <main>
       {query.isPending && <LoaderFullWindow message="認証情報を確認しています..." />}
+      {query.isError && <div>Error Auth: {(query.error as Error).message}</div>}
       {query.data === true && <MainAppShell onLogoutSuccess={onLogoutSuccess} />}
       {query.data === false && <LoginForm onLoginSuccess={onLoginSuccess} />}
     </main>

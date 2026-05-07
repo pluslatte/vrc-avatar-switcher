@@ -1,7 +1,6 @@
 import AvatarList from '@/components/avatar/AvatarList';
 import { useAvatarSwitcher } from '@/hooks/useAvatarSwitcher';
-import { Alert, AppShell, LoadingOverlay, ScrollArea } from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons-react';
+import { AppShell, LoadingOverlay, ScrollArea } from '@mantine/core';
 import HeaderContents from '@/components/header/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
 import FooterContents from '@/components/footer/FooterContents';
@@ -38,11 +37,8 @@ const MainAppShell = (props: DashBoardProps) => {
   };
 
   if (avatarListQuery.isPending || avatarListQuery.isFetching) return <LoaderFullWindow message="アバターを読み込んでいます..." />;
+  if (avatarListQuery.isError) return (<div>Error AvatarList: {avatarListQuery.error.message}</div>);
   if (avatarSortOrder === undefined) return <div>Error AvatarSortOrder: avatarSortOrder is undefined</div>;
-
-  // エラー時でも前回のキャッシュデータを使用（初回エラー時は空データ）
-  const avatars = avatarListQuery.data?.avatars || [];
-  const currentUser = avatarListQuery.data?.currentUser || { id: '', displayName: '', currentAvatar: '', currentAvatarThumbnailImageUrl: '' };
 
   return (
     <AppShell
@@ -53,31 +49,21 @@ const MainAppShell = (props: DashBoardProps) => {
       <AppShell.Header>
         <HeaderContents
           avatarSortOrder={avatarSortOrder}
-          currentUserDisplayName={currentUser.displayName}
-          currentUserThumbnailImageUrl={currentUser.currentAvatarThumbnailImageUrl}
-          currentUserAvatarName={avatars.find(avatar => avatar.id === currentUser.currentAvatar)?.name || 'No Avatar'}
+          currentUserDisplayName={avatarListQuery.data.currentUser.displayName}
+          currentUserThumbnailImageUrl={avatarListQuery.data.currentUser.currentAvatarThumbnailImageUrl}
+          currentUserAvatarName={avatarListQuery.data.avatars.find(avatar => avatar.id === avatarListQuery.data.currentUser.currentAvatar)?.name || 'No Avatar'}
         />
       </AppShell.Header>
 
       <AppShell.Main>
-        {avatarListQuery.isError && avatarListQuery.data && (
-          <Alert
-            icon={<IconAlertCircle size={16} />}
-            title="最新データの取得に失敗しました"
-            color="orange"
-            mb="md"
-          >
-            前回のデータを表示しています。ヘッダーのリフレッシュボタンから再試行できます。
-          </Alert>
-        )}
         {cardImageSize === undefined || cardNumberPerRow === undefined &&
           <LoaderFullWindow message="設定を読み込んでいます..." />}
         {cardImageSize !== undefined && cardNumberPerRow !== undefined &&
           <AvatarList
-            avatars={avatars}
+            avatars={avatarListQuery.data.avatars}
             tagAvatarRelation={tagAvatarRelation}
             tagAvatarRelationLoading={tagAvatarRelationLoading}
-            currentUser={currentUser}
+            currentUser={avatarListQuery.data.currentUser}
             pendingSwitch={switchAvatarMutation.isPending}
             searchQuery={avatarSearchQueryValueDeferred}
             cardImageSize={cardImageSize}
@@ -92,8 +78,8 @@ const MainAppShell = (props: DashBoardProps) => {
           {<LoadingOverlay visible={tagsLoading} overlayProps={{ radius: 'md', blur: 2 }} />}
           {availableTags !== undefined && (
             <FooterContents
-              avatars={avatars}
-              currentUser={currentUser}
+              avatars={avatarListQuery.data.avatars}
+              currentUser={avatarListQuery.data.currentUser}
               selectedSort={avatarSortOrder}
               updateAvatarSearchInputString={setAvatarSearchQueryValue}
               cardImageSize={cardImageSize}

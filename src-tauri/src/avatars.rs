@@ -32,6 +32,7 @@ pub async fn fetch_avatars(
             None,
             None,
             None,
+            None,
         )
         .await;
 

@@ -3,7 +3,10 @@ use vrchatapi::{
         authentication_api::{get_current_user, verify_auth_token},
         configuration::Configuration,
     },
-    models::EitherUserOrTwoFactor::{CurrentUser, RequiresTwoFactorAuth},
+    models::{
+        EitherUserOrTwoFactor::{CurrentUser, RequiresTwoFactorAuth},
+        TwoFactorAuthType,
+    },
 };
 
 pub enum AuthCookieOk {
@@ -18,7 +21,7 @@ pub async fn try_login_without_2fa(config: &Configuration) -> Result<AuthCookieO
             RequiresTwoFactorAuth(auth_required) => {
                 if auth_required
                     .requires_two_factor_auth
-                    .contains(&String::from("emailOtp"))
+                    .contains(&TwoFactorAuthType::EmailOtp)
                 {
                     Ok(AuthCookieOk::RequiresEmail2FA)
                 } else {

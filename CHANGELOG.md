@@ -11,6 +11,7 @@ and this project adheres to
 ### Changed
 
 - ライセンス変更
+- パッチを当てたバージョンを使用していた vrchatapi-rust を、上流のバージョンに修正
 
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.4.3...HEAD
 

@@ -5187,15 +5187,16 @@ dependencies = [
 
 [[package]]
 name = "vrchatapi"
-version = "1.20.4"
-source = "git+https://github.com/pluslatte/vrchatapi-rust.git?branch=v1.20.4-pluslatte.1#48c46c654e218cf73f66a7878b15f85fd045b8e6"
+version = "1.20.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6efa3632adbeeb900c76b0ea9130cf9b50cac9b535f1af4361f2264445e53132"
 dependencies = [
  "reqwest",
  "serde",
  "serde_json",
+ "serde_repr",
  "serde_with",
  "url",
- "uuid",
 ]
 
 [[package]]

@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- ライセンス変更
+
 ### Fixed
 
 - API エラー発生時にアプリが操作不能になる問題を修正

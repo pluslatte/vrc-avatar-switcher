@@ -14,4 +14,4 @@ pnpm tauri build
 <img width="1198" height="924" alt="image" src="https://github.com/user-attachments/assets/1737db2e-afc3-4534-b20d-59bad890f888" />
 
 ## ライセンス
-このプロジェクトは [GNU General Public License v3.0](LICENSE) の下でライセンスされています。
+このプロジェクトは [Apache License 2.0](LICENSE) の下でライセンスされています。

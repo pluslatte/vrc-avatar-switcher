@@ -1,6 +1,6 @@
 import { command_switch_avatar } from '@/lib/commands';
 import { AvatarSortOrder } from '@/lib/models';
-import { notifyError, notifySuccess } from '@/lib/notify';
+import { getErrorMessage, notifyError, notifySuccess } from '@/lib/notify';
 import { queryKeys } from '@/lib/queryKeys';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AvatarListData } from './useAvatarListQuery';
@@ -20,7 +20,7 @@ export const useSwitchAvatarMutation = (avatarSortOrder: AvatarSortOrder | undef
       notifySuccess('成功', 'アバターの切り替えに成功しました');
     },
     onError: (error) => {
-      notifyError('エラー', `アバターの切り替えに失敗しました: ${error.message}`);
+      notifyError('エラー', `アバターの切り替えに失敗しました: ${getErrorMessage(error, '不明なエラー')}`);
     },
   });
 

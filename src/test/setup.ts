@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest';
+import { afterEach, beforeEach, vi } from 'vitest';
 
 // Mantine v8 を jsdom で描画するためのポリフィル
 // https://mantine.dev/guides/vitest/
@@ -27,3 +28,11 @@ class ResizeObserverStub {
   disconnect() {}
 }
 window.ResizeObserver = ResizeObserverStub as unknown as typeof ResizeObserver;
+
+beforeEach(() => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});

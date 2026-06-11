@@ -1,7 +1,6 @@
 import { Button, Divider, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
 import { useState } from 'react';
 import { command_new_auth, command_2fa, command_email_2fa } from '@/lib/commands';
-import { saveCookies } from '@/lib/db';
 import { getErrorMessage, notifyError } from '@/lib/notify';
 
 type LoginStep = 'login' | '2fa' | 'email2fa' | 'done';
@@ -15,8 +14,6 @@ const LoginForm = (props: LoginFormProps) => {
     username: '',
     password: '',
     code: '',
-    authCookie: '',
-    twofaCookie: ''
   });
 
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,22 +32,22 @@ const LoginForm = (props: LoginFormProps) => {
     }
   };
 
-  const completeLogin = async (authCookie: string, twofaCookie: string | null) => {
+  const completeLogin = () => {
     setStep('done');
-    await saveCookies(authCookie, twofaCookie);
     props.onLoginSuccess();
   };
 
   const handleLoginSubmit = async () => {
     try {
-      const result = await command_new_auth(loginFormData.username, loginFormData.password);
-      if (result.status === 'Success') {
-        await completeLogin(result.auth_cookie, result.two_fa_cookie);
-      } else if (result.status === 'Requires2FA' || result.status === 'RequiresEmail2FA') {
-        setLoginFormData({ ...loginFormData, authCookie: result.auth_cookie, twofaCookie: result.two_fa_cookie || '' });
-        setStep(result.status === 'Requires2FA' ? '2fa' : 'email2fa');
+      const status = await command_new_auth(loginFormData.username, loginFormData.password);
+      if (status === 'Success') {
+        completeLogin();
+      } else if (status === 'Requires2FA') {
+        setStep('2fa');
+      } else if (status === 'RequiresEmail2FA') {
+        setStep('email2fa');
       } else {
-        console.error('Unknown login status:', result.status);
+        console.error('Unknown login status:', status);
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -60,14 +57,12 @@ const LoginForm = (props: LoginFormProps) => {
 
   const handle2FASubmit = (verify: typeof command_2fa) => async () => {
     try {
-      const result = await verify(
-        loginFormData.authCookie,
-        loginFormData.twofaCookie,
+      await verify(
         loginFormData.username,
         loginFormData.password,
         loginFormData.code
       );
-      await completeLogin(result.auth_cookie, result.two_fa_cookie);
+      completeLogin();
     } catch (error) {
       console.error('2FA login failed:', error);
       notifyError(

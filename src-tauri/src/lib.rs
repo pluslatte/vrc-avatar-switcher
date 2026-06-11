@@ -5,12 +5,14 @@ mod commands;
 mod cookie_jar;
 mod migrations;
 mod models;
+mod session;
 mod users;
 
 use crate::commands::{
     command_2fa, command_check_auth, command_email_2fa, command_fetch_avatars,
-    command_fetch_current_user, command_new_auth, command_switch_avatar,
+    command_fetch_current_user, command_logout, command_new_auth, command_switch_avatar,
 };
+use crate::session::SessionState;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -21,6 +23,7 @@ pub fn run() {
                 .build(),
         )
         .plugin(tauri_plugin_opener::init())
+        .manage(SessionState::default())
         .invoke_handler(tauri::generate_handler![
             command_fetch_avatars,
             command_new_auth,
@@ -28,7 +31,8 @@ pub fn run() {
             command_email_2fa,
             command_check_auth,
             command_fetch_current_user,
-            command_switch_avatar
+            command_switch_avatar,
+            command_logout
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

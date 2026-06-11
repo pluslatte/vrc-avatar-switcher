@@ -27,4 +27,4 @@ vrchatapi = "1.20.7"
 reqwest = "0.12.24"
 url = "2.5.7"
 tauri-plugin-sql = { version = "2", features = ["sqlite"] }
-tokio = { version = "1", features = ["time"] }
+tokio = { version = "1", features = ["time", "sync"] }

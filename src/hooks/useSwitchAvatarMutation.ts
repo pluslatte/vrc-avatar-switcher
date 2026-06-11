@@ -1,13 +1,14 @@
-import { AvatarListData, switchAvatar } from '@/lib/api';
+import { command_switch_avatar } from '@/lib/commands';
 import { AvatarSortOrder } from '@/lib/models';
 import { notifyError, notifySuccess } from '@/lib/notify';
 import { queryKeys } from '@/lib/queryKeys';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AvatarListData } from './useAvatarListQuery';
 
 export const useSwitchAvatarMutation = (avatarSortOrder: AvatarSortOrder | undefined) => {
   const queryClient = useQueryClient();
   const switchAvatarMutation = useMutation({
-    mutationFn: switchAvatar,
+    mutationFn: command_switch_avatar,
     onSuccess: (currentUser) => {
       queryClient.setQueryData(
         queryKeys.avatarList(avatarSortOrder),

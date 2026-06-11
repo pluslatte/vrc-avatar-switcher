@@ -1,4 +1,4 @@
-import { checkAuth } from '@/lib/api';
+import { command_check_auth } from '@/lib/commands';
 import { queryKeys } from '@/lib/queryKeys';
 import MainAppShell from '@/components/MainAppShell';
 import LoginForm from '@/components/LoginForm';
@@ -11,7 +11,7 @@ function App() {
     queryKey: queryKeys.authCheck,
     queryFn: async () => {
       try {
-        return await checkAuth();
+        return await command_check_auth();
       } catch (error) {
         console.error('Error during auth check:', error);
         return false;

@@ -12,38 +12,16 @@ pub enum CommandLoginStatus {
     Requires2FA,
     RequiresEmail2FA,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CommandLoginOk {
-    status: CommandLoginStatus,
-    auth_cookie: String,
-    two_fa_cookie: Option<String>,
-}
-
-impl CommandLoginOk {
-    pub fn new(
-        status: CommandLoginStatus,
-        auth_cookie: String,
-        two_fa_cookie: Option<String>,
-    ) -> Self {
-        Self {
-            status,
-            auth_cookie,
-            two_fa_cookie,
-        }
-    }
+    pub status: CommandLoginStatus,
+    pub auth_cookie: String,
+    pub two_fa_cookie: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Command2FAOk {
-    auth_cookie: String,
-    two_fa_cookie: String,
-}
-
-impl Command2FAOk {
-    pub fn new(auth_cookie: String, two_fa_cookie: String) -> Self {
-        Self {
-            auth_cookie,
-            two_fa_cookie,
-        }
-    }
+    pub auth_cookie: String,
+    pub two_fa_cookie: String,
 }

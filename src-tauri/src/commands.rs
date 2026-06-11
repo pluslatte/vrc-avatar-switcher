@@ -2,7 +2,10 @@ use std::sync::Arc;
 
 use reqwest::cookie::Jar;
 use vrchatapi::{
-    apis::authentication_api::{verify2_fa, verify2_fa_email_code},
+    apis::{
+        authentication_api::{verify2_fa, verify2_fa_email_code},
+        configuration::Configuration,
+    },
     models::{Avatar, CurrentUser, TwoFactorAuthCode, TwoFactorEmailCode},
 };
 
@@ -15,15 +18,41 @@ use crate::{
     users,
 };
 
+fn build_authed_client(
+    raw_auth_cookie: &str,
+    raw_2fa_cookie: &str,
+) -> Result<(Configuration, Arc<Jar>), String> {
+    let jar = Arc::new(Jar::default());
+    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
+    let config = create_configuration(&jar)?;
+    Ok((config, jar))
+}
+
+async fn finish_2fa_login(
+    jar: &Arc<Jar>,
+    username: &str,
+    password: &str,
+) -> Result<Command2FAOk, String> {
+    let config = create_configuration_for_login(jar, username, password)?;
+    match try_login_without_2fa(&config).await? {
+        AuthCookieOk::Success => {
+            let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(jar);
+            Ok(Command2FAOk {
+                auth_cookie,
+                two_fa_cookie,
+            })
+        }
+        _ => Err("2FA verification failed.".to_string()),
+    }
+}
+
 #[tauri::command]
 pub async fn command_fetch_avatars(
     raw_auth_cookie: &str,
     raw_2fa_cookie: &str,
     sort_option: AvatarSortOption,
 ) -> Result<Vec<Avatar>, String> {
-    let jar = Arc::new(Jar::default());
-    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
-    let config = create_configuration(&jar)?;
+    let (config, _) = build_authed_client(raw_auth_cookie, raw_2fa_cookie)?;
 
     let sort_option = match sort_option {
         AvatarSortOption::Name => vrchatapi::models::SortOption::Name,
@@ -37,32 +66,19 @@ pub async fn command_fetch_avatars(
 pub async fn command_new_auth(username: &str, password: &str) -> Result<CommandLoginOk, String> {
     let jar = Arc::new(Jar::default());
     let config = create_configuration_for_login(&jar, username, password)?;
-    match try_login_without_2fa(&config).await? {
-        AuthCookieOk::Success => {
-            let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);
-            Ok(CommandLoginOk::new(
-                CommandLoginStatus::Success,
-                auth_cookie,
-                Some(two_fa_cookie),
-            ))
-        }
-        AuthCookieOk::RequiresEmail2FA => {
-            let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);
-            Ok(CommandLoginOk::new(
-                CommandLoginStatus::RequiresEmail2FA,
-                auth_cookie,
-                Some(two_fa_cookie),
-            ))
-        }
-        AuthCookieOk::Requires2FA => {
-            let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);
-            Ok(CommandLoginOk::new(
-                CommandLoginStatus::Requires2FA,
-                auth_cookie,
-                Some(two_fa_cookie),
-            ))
-        }
-    }
+
+    let status = match try_login_without_2fa(&config).await? {
+        AuthCookieOk::Success => CommandLoginStatus::Success,
+        AuthCookieOk::Requires2FA => CommandLoginStatus::Requires2FA,
+        AuthCookieOk::RequiresEmail2FA => CommandLoginStatus::RequiresEmail2FA,
+    };
+
+    let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);
+    Ok(CommandLoginOk {
+        status,
+        auth_cookie,
+        two_fa_cookie: Some(two_fa_cookie),
+    })
 }
 
 #[tauri::command]
@@ -73,22 +89,13 @@ pub async fn command_2fa(
     password: &str,
     two_fa_code: &str,
 ) -> Result<Command2FAOk, String> {
-    let jar = Arc::new(Jar::default());
-    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
-    let config = create_configuration(&jar)?;
+    let (config, jar) = build_authed_client(raw_auth_cookie, raw_2fa_cookie)?;
 
     verify2_fa(&config, TwoFactorAuthCode::new(two_fa_code.to_string()))
         .await
         .map_err(|e| e.to_string())?;
 
-    let config = create_configuration_for_login(&jar, username, password)?;
-    match try_login_without_2fa(&config).await? {
-        AuthCookieOk::Success => {
-            let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);
-            Ok(Command2FAOk::new(auth_cookie, two_fa_cookie))
-        }
-        _ => Err("2FA verification failed.".to_string()),
-    }
+    finish_2fa_login(&jar, username, password).await
 }
 
 #[tauri::command]
@@ -99,22 +106,13 @@ pub async fn command_email_2fa(
     password: &str,
     two_fa_code: &str,
 ) -> Result<Command2FAOk, String> {
-    let jar = Arc::new(Jar::default());
-    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
-    let config = create_configuration(&jar)?;
+    let (config, jar) = build_authed_client(raw_auth_cookie, raw_2fa_cookie)?;
 
     verify2_fa_email_code(&config, TwoFactorEmailCode::new(two_fa_code.to_string()))
         .await
         .map_err(|e| e.to_string())?;
 
-    let config = create_configuration_for_login(&jar, username, password)?;
-    match try_login_without_2fa(&config).await? {
-        AuthCookieOk::Success => {
-            let (auth_cookie, two_fa_cookie) = extract_cookies_from_jar(&jar);
-            Ok(Command2FAOk::new(auth_cookie, two_fa_cookie))
-        }
-        _ => Err("2FA verification failed.".to_string()),
-    }
+    finish_2fa_login(&jar, username, password).await
 }
 
 #[tauri::command]
@@ -122,9 +120,7 @@ pub async fn command_check_auth(
     raw_auth_cookie: &str,
     raw_2fa_cookie: &str,
 ) -> Result<bool, String> {
-    let jar = Arc::new(Jar::default());
-    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
-    let config = create_configuration(&jar)?;
+    let (config, _) = build_authed_client(raw_auth_cookie, raw_2fa_cookie)?;
     is_auth_cookie_valid(&config).await
 }
 
@@ -133,9 +129,7 @@ pub async fn command_fetch_current_user(
     raw_auth_cookie: &str,
     raw_2fa_cookie: &str,
 ) -> Result<CurrentUser, String> {
-    let jar = Arc::new(Jar::default());
-    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
-    let config = create_configuration(&jar)?;
+    let (config, _) = build_authed_client(raw_auth_cookie, raw_2fa_cookie)?;
     users::fetch_user_data(&config).await
 }
 
@@ -145,8 +139,6 @@ pub async fn command_switch_avatar(
     raw_2fa_cookie: &str,
     avatar_id: &str,
 ) -> Result<CurrentUser, String> {
-    let jar = Arc::new(Jar::default());
-    set_raw_cookies_into_jar(&jar, raw_auth_cookie, raw_2fa_cookie)?;
-    let config = create_configuration(&jar)?;
+    let (config, _) = build_authed_client(raw_auth_cookie, raw_2fa_cookie)?;
     avatars::switch_avatar(&config, avatar_id).await
 }

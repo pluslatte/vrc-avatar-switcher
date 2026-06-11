@@ -1,32 +1,41 @@
-import { Tag, updateTag, dropTag } from '@/lib/db';
-import { Avatar } from '@/lib/models';
-import { notifications } from '@mantine/notifications';
+import { updateTag, dropTag } from '@/lib/db';
+import { Tag } from '@/lib/models';
+import { getErrorMessage, notifyError, notifySuccess } from '@/lib/notify';
+import { queryKeys } from '@/lib/queryKeys';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useState, useCallback } from 'react';
-import { availableTagsQueryKey } from './useAvailableTagsQuery';
-import { tagAvatarRelationQueryKey } from './useTagAvatarsRelationQuery';
 
-export const useTagEditDialog = (onCloseSuper: () => void, avatars: Array<Avatar>, currentUserId: string) => {
+const DEFAULT_COLOR = '#868e96';
+
+export const useTagEditDialog = (onCloseSuper: () => void, currentUserId: string) => {
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [tagDisplayName, setTagDisplayName] = useState('');
-  const [color, setColor] = useState('#868e96');
-  const onClose = useCallback(() => {
+  const [color, setColor] = useState(DEFAULT_COLOR);
+
+  const resetForm = useCallback(() => {
     setSelectedTag(null);
     setTagDisplayName('');
-    setColor('#868e96');
+    setColor(DEFAULT_COLOR);
+  }, []);
+
+  const onClose = useCallback(() => {
+    resetForm();
     onCloseSuper();
-  }, [onCloseSuper]);
+  }, [onCloseSuper, resetForm]);
 
   const queryClient = useQueryClient();
+  const invalidateTagQueries = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.availableTags(currentUserId) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.tagAvatarRelationsAll(currentUserId) });
+  }, [queryClient, currentUserId]);
+
   const updateTagMutation = useMutation({
     mutationFn: async ({
-      tag, avatars, newTagDisplayName, newColor, currentUserId
+      tag, newTagDisplayName, newColor
     }: {
       tag: Tag,
-      avatars: Array<Avatar>,
       newTagDisplayName: string,
       newColor: string,
-      currentUserId: string
     }) => {
       await updateTag(
         tag.display_name,
@@ -34,109 +43,59 @@ export const useTagEditDialog = (onCloseSuper: () => void, avatars: Array<Avatar
         newColor,
         currentUserId
       );
-      return { oldName: tag.display_name, newTagDisplayName, currentUserId, avatars };
+      return { oldName: tag.display_name, newTagDisplayName };
     },
-    onSuccess: ({ oldName, newTagDisplayName, currentUserId, avatars }) => {
-      queryClient.invalidateQueries({ queryKey: availableTagsQueryKey(currentUserId) });
-      queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(avatars, currentUserId) });
-      setTagDisplayName('');
-      setSelectedTag(null);
-      setColor('#868e96');
-      notifications.show({
-        title: '成功',
-        message: `タグ「${oldName}」を更新しました > ${newTagDisplayName}`,
-        color: 'green',
-      });
+    onSuccess: ({ oldName, newTagDisplayName }) => {
+      invalidateTagQueries();
+      resetForm();
+      notifySuccess('成功', `タグ「${oldName}」を更新しました > ${newTagDisplayName}`);
     },
     onError: (error, variables) => {
       const { tag } = variables;
       console.error('Error updating tag:', error);
-
-      let errorMessage = 'タグの更新中にエラーが発生しました';
-      if (error instanceof Error && error.message) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-
-      notifications.show({
-        title: 'エラー',
-        message: `タグ「${tag.display_name}」の更新に失敗しました: ${errorMessage}`,
-        color: 'red',
-      });
+      const message = getErrorMessage(error, 'タグの更新中にエラーが発生しました');
+      notifyError('エラー', `タグ「${tag.display_name}」の更新に失敗しました: ${message}`);
     }
   });
 
+  const { mutate: mutateUpdateTag } = updateTagMutation;
   const handleSave = useCallback(() => {
     if (!selectedTag) return;
     if (tagDisplayName.trim() === '') {
-      notifications.show({
-        title: 'エラー',
-        message: 'タグ名を入力してください',
-        color: 'red',
-      });
+      notifyError('エラー', 'タグ名を入力してください');
       return;
     }
 
-    updateTagMutation.mutate({
+    mutateUpdateTag({
       tag: selectedTag,
-      avatars,
       newTagDisplayName: tagDisplayName.trim(),
       newColor: color,
-      currentUserId,
     });
-  }, [selectedTag, tagDisplayName, color, avatars, currentUserId]);
+  }, [selectedTag, tagDisplayName, color, mutateUpdateTag]);
 
   const dropTagMutation = useMutation({
-    mutationFn: async ({
-      tagName,
-      currentUserId
-    }: {
-      tagName: string,
-      currentUserId: string
-    }) => {
+    mutationFn: async ({ tagName }: { tagName: string }) => {
       await dropTag(tagName, currentUserId);
-      return { tagName, currentUserId };
+      return { tagName };
     },
-    onSuccess: ({ tagName, currentUserId }) => {
-      queryClient.invalidateQueries({ queryKey: availableTagsQueryKey(currentUserId) });
-      queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(avatars, currentUserId) });
-      setTagDisplayName('');
-      setSelectedTag(null);
-      setColor('#868e96');
-      notifications.show({
-        title: 'タグ削除',
-        message: `タグ「${tagName}」を削除しました（関連付けられたアバターからも削除されました）`,
-        color: 'green',
-      });
+    onSuccess: ({ tagName }) => {
+      invalidateTagQueries();
+      resetForm();
+      notifySuccess('タグ削除', `タグ「${tagName}」を削除しました（関連付けられたアバターからも削除されました）`);
     },
     onError: (error, variables) => {
       const { tagName } = variables;
       console.error('Error dropping tag:', error);
-
-      let errorMessage = 'タグの削除中にエラーが発生しました';
-      if (error instanceof Error && error.message) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-
-      notifications.show({
-        title: 'タグ削除エラー',
-        message: `タグ「${tagName}」: ${errorMessage}`,
-        color: 'red',
-      });
+      const message = getErrorMessage(error, 'タグの削除中にエラーが発生しました');
+      notifyError('タグ削除エラー', `タグ「${tagName}」: ${message}`);
     }
   });
 
+  const { mutate: mutateDropTag } = dropTagMutation;
   const handleDelete = useCallback(() => {
     if (!selectedTag) return;
-
-    dropTagMutation.mutate({
-      tagName: selectedTag.display_name,
-      currentUserId,
-    });
-  }, [selectedTag, currentUserId]);
+    mutateDropTag({ tagName: selectedTag.display_name });
+  }, [selectedTag, mutateDropTag]);
 
   return {
     selectedTag,
@@ -145,6 +104,7 @@ export const useTagEditDialog = (onCloseSuper: () => void, avatars: Array<Avatar
     setTagDisplayName,
     color,
     setColor,
+    resetForm,
     handleSave,
     handleDelete,
     updateTagMutation,

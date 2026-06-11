@@ -1,14 +1,12 @@
-import { Tag } from '@/lib/db';
-import { Avatar, CurrentUser } from '@/lib/models';
+import { Avatar, Tag } from '@/lib/models';
 import { Group, Badge, ActionIcon, Text } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import TagManagerButton from './TagManagerButton';
 
 interface AvatarTagsProps {
   avatar: Avatar;
-  avatars: Array<Avatar>;
   avatarTags: Array<Tag>;
-  currentUser: CurrentUser;
+  currentUserId: string;
   onTagRemove: (params: { tagName: string; avatarId: string; currentUserId: string }) => void;
 }
 const AvatarTags = (props: AvatarTagsProps) => {
@@ -25,7 +23,7 @@ const AvatarTags = (props: AvatarTagsProps) => {
               props.onTagRemove({
                 tagName: tag.display_name,
                 avatarId: props.avatar.id,
-                currentUserId: props.currentUser.id
+                currentUserId: props.currentUserId
               });
             }}
             style={{ marginLeft: 4, paddingTop: 3 }}
@@ -36,10 +34,9 @@ const AvatarTags = (props: AvatarTagsProps) => {
       ))}
       {props.avatarTags.length === 0 && <Text c="dimmed" fz="sm">タグが設定されていません</Text>}
       <TagManagerButton
-        avatars={props.avatars}
         avatarId={props.avatar.id}
         tags={props.avatarTags}
-        currentUserId={props.currentUser.id}
+        currentUserId={props.currentUserId}
       />
     </Group>
   );

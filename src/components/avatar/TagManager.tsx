@@ -1,12 +1,10 @@
-import type { Tag } from '@/lib/db';
-import type { Avatar } from '@/lib/models';
+import type { Tag } from '@/lib/models';
 import { Badge, Box, Button, ColorPicker, Divider, Group, Stack, Text, TextInput } from '@mantine/core';
 import { IconTagFilled } from '@tabler/icons-react';
 import { useTagManager } from '@/hooks/useTagManager';
 import { COLOR_SWATCHES } from '@/lib/colorSwatchesPalette';
 
 interface TagManagerProps {
-  avatars: Array<Avatar>;
   avatarIds: Array<string>;
   tags: Array<Tag>;
   currentUserId: string;
@@ -25,7 +23,6 @@ const TagManager = (props: TagManagerProps) => {
     handleExistingTagClick,
     handleCreateNewTag,
   } = useTagManager({
-    avatars: props.avatars,
     avatarIds: props.avatarIds,
     tags: props.tags,
     currentUserId: props.currentUserId,
@@ -39,7 +36,7 @@ const TagManager = (props: TagManagerProps) => {
       {tagsAvailableQuery.data && tagsAvailableQuery.data.length === 0 && <Text c="dimmed" fz="xs" mb="xs">利用可能なタグがありません</Text>}
       {tagsAvailableQuery.data && tagsAvailableQuery.data.length > 0 && (
         <Group gap="xs" mb="xs">
-          {tagsAvailableQuery.data.length > 0 && tagsAvailableQuery.data
+          {tagsAvailableQuery.data
             .filter(tag => !(disabledTagNames.includes(tag.display_name)))
             .map(tag => (
               <Badge

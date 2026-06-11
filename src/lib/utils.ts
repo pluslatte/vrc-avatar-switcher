@@ -1,9 +1,9 @@
-import { Avatar } from './models';
+import { Avatar, Tag } from './models';
 
 export const avatarTagSearchFilterAvatars = (
   avatars: Array<Avatar>,
   selectedTags: Array<string>,
-  tagAvatarRelation: Record<string, Array<{ display_name: string; color: string }>> | undefined
+  tagAvatarRelation: Record<string, Array<Tag>> | undefined
 ): Array<Avatar> => (
   avatars.filter(avatar => {
     if (selectedTags.length === 0) {

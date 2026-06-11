@@ -1,9 +1,7 @@
 import { Avatar, Box, Divider, Group, Text } from '@mantine/core';
 import AvatarListRefreshButton from '@/components/header/AvatarListRefreshButton';
-import { AvatarSortOrder } from '@/lib/models';
 
 interface HeaderContentsProps {
-  avatarSortOrder: AvatarSortOrder;
   currentUserDisplayName: string;
   currentUserThumbnailImageUrl: string;
   currentUserAvatarName: string;
@@ -27,7 +25,7 @@ const HeaderContents = (props: HeaderContentsProps) => {
         現在のアバター: {props.currentUserAvatarName}
       </Text>
       <Box style={{ marginLeft: 'auto' }} >
-        <AvatarListRefreshButton avatarSortOrder={props.avatarSortOrder} />
+        <AvatarListRefreshButton />
       </Box>
     </Group>
   );

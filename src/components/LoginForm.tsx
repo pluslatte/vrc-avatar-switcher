@@ -7,6 +7,7 @@ type LoginStep = 'login' | '2fa' | 'email2fa' | 'done';
 
 interface LoginFormProps {
   onLoginSuccess: () => void;
+  fullHeight?: boolean;
 }
 const LoginForm = (props: LoginFormProps) => {
   const [step, setStep] = useState<LoginStep>('login');
@@ -73,7 +74,7 @@ const LoginForm = (props: LoginFormProps) => {
   };
 
   return (
-    <Stack align="center" justify="center" style={{ height: '100vh' }}>
+    <Stack align="center" justify="center" style={{ height: props.fullHeight === false ? undefined : '100vh' }}>
       {step === '2fa' && (
         <Text size="xl" fw={700}>2FAコードを入力してください</Text>
       )}

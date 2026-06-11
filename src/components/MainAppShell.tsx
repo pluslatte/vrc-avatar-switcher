@@ -1,5 +1,5 @@
 import AvatarList from '@/components/avatar/AvatarList';
-import { AppShell, LoadingOverlay, ScrollArea } from '@mantine/core';
+import { Alert, AppShell, LoadingOverlay, ScrollArea } from '@mantine/core';
 import HeaderContents from '@/components/header/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
 import FooterContents from '@/components/footer/FooterContents';
@@ -15,8 +15,11 @@ import {
 import { isAvatarSortOrder } from '@/lib/models';
 import { useState } from 'react';
 import { useAvatarSearchByName } from '@/hooks/useAvatarSearchByName';
+import { AuthStatus } from '@/lib/authStatus';
 
-interface MainAppShellProps {
+export interface MainAppShellProps {
+  authStatus: AuthStatus;
+  onLoginClick: () => void;
   onLogoutSuccess: () => void;
 }
 const MainAppShell = (props: MainAppShellProps) => {
@@ -42,11 +45,11 @@ const MainAppShell = (props: MainAppShellProps) => {
     }
   };
 
-  if (avatarListQuery.isPending || avatarListQuery.isFetching) return <LoaderFullWindow message="アバターを読み込んでいます..." />;
-  if (avatarListQuery.isError) return (<div>Error AvatarList: {avatarListQuery.error.message}</div>);
-  if (avatarSortOrder === undefined) return <div>Error AvatarSortOrder: avatarSortOrder is undefined</div>;
-
-  const { avatars, currentUser } = avatarListQuery.data;
+  const avatars = avatarListQuery.data?.avatars ?? [];
+  const currentUser = avatarListQuery.data?.currentUser;
+  const currentUserAvatarName = currentUser
+    ? avatars.find(avatar => avatar.id === currentUser.currentAvatar)?.name || 'No Avatar'
+    : '未取得';
 
   return (
     <AppShell
@@ -56,15 +59,29 @@ const MainAppShell = (props: MainAppShellProps) => {
     >
       <AppShell.Header>
         <HeaderContents
-          currentUserDisplayName={currentUser.displayName}
-          currentUserThumbnailImageUrl={currentUser.currentAvatarThumbnailImageUrl}
-          currentUserAvatarName={avatars.find(avatar => avatar.id === currentUser.currentAvatar)?.name || 'No Avatar'}
+          authStatus={props.authStatus}
+          onLoginClick={props.onLoginClick}
+          currentUserDisplayName={currentUser?.displayName ?? 'ユーザー未取得'}
+          currentUserThumbnailImageUrl={currentUser?.currentAvatarThumbnailImageUrl}
+          currentUserAvatarName={currentUserAvatarName}
         />
       </AppShell.Header>
 
       <AppShell.Main>
-        {(cardImageSize === undefined || cardNumberPerRow === undefined) ? (
-          <LoaderFullWindow message="設定を読み込んでいます..." />
+        {avatarSortOrder === undefined ? (
+          <LoaderFullWindow message="設定を読み込んでいます..." withAppShell={true} />
+        ) : avatarListQuery.isPending || avatarListQuery.isFetching ? (
+          <LoaderFullWindow message="アバターを読み込んでいます..." withAppShell={true} />
+        ) : avatarListQuery.isError ? (
+          <Alert color="red" title="アバター一覧を読み込めませんでした">
+            {avatarListQuery.error.message}
+          </Alert>
+        ) : currentUser === undefined ? (
+          <Alert color="red" title="アバター一覧を読み込めませんでした">
+            ユーザー情報を取得できませんでした。
+          </Alert>
+        ) : (cardImageSize === undefined || cardNumberPerRow === undefined) ? (
+          <LoaderFullWindow message="設定を読み込んでいます..." withAppShell={true} />
         ) : (
           <AvatarList
             avatars={avatars}
@@ -84,7 +101,7 @@ const MainAppShell = (props: MainAppShellProps) => {
       <AppShell.Footer>
         <ScrollArea h="100%">
           <LoadingOverlay visible={availableTagsQuery.isPending} overlayProps={{ radius: 'md', blur: 2 }} />
-          {availableTagsQuery.data !== undefined && (
+          {currentUser !== undefined && avatarSortOrder !== undefined && availableTagsQuery.data !== undefined && (
             <FooterContents
               currentUserId={currentUser.id}
               selectedSort={avatarSortOrder}

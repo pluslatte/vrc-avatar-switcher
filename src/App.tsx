@@ -3,10 +3,13 @@ import { queryKeys } from '@/lib/queryKeys';
 import MainAppShell from '@/components/MainAppShell';
 import LoginForm from '@/components/LoginForm';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { LoaderFullWindow } from './components/LoaderFullWindow';
+import { Modal } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { AuthStatus } from '@/lib/authStatus';
 
 function App() {
   const queryClient = useQueryClient();
+  const [loginModalOpened, { open: openLoginModal, close: closeLoginModal }] = useDisclosure(false);
   const query = useQuery({
     queryKey: queryKeys.authCheck,
     queryFn: async () => {
@@ -23,12 +26,33 @@ function App() {
     queryClient.invalidateQueries({ queryKey: queryKeys.authCheck });
   };
 
+  const handleLoginSuccess = () => {
+    closeLoginModal();
+    invalidateAuthCheck();
+    queryClient.invalidateQueries({ queryKey: queryKeys.avatarListAll });
+  };
+
+  const authStatus: AuthStatus = query.isPending
+    ? 'checking'
+    : query.data === true
+      ? 'authenticated'
+      : 'unauthenticated';
+
   return (
     <main>
-      {query.isPending && <LoaderFullWindow message="認証情報を確認しています..." />}
-      {query.isError && <div>Error Auth: {(query.error as Error).message}</div>}
-      {query.data === true && <MainAppShell onLogoutSuccess={invalidateAuthCheck} />}
-      {query.data === false && <LoginForm onLoginSuccess={invalidateAuthCheck} />}
+      <MainAppShell
+        authStatus={authStatus}
+        onLoginClick={openLoginModal}
+        onLogoutSuccess={invalidateAuthCheck}
+      />
+      <Modal
+        opened={loginModalOpened}
+        onClose={closeLoginModal}
+        title="再ログイン"
+        centered
+      >
+        <LoginForm onLoginSuccess={handleLoginSuccess} fullHeight={false} />
+      </Modal>
     </main>
   );
 }

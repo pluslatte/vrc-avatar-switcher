@@ -61,7 +61,6 @@ const MainAppShell = (props: MainAppShellProps) => {
       <AppShell.Header>
         <HeaderContents
           authStatus={props.authStatus}
-          onLoginClick={props.onLoginClick}
           currentUserDisplayName={currentUser?.displayName ?? 'ユーザー未取得'}
           currentUserThumbnailImageUrl={currentUser?.currentAvatarThumbnailImageUrl}
           currentUserAvatarName={currentUserAvatarName}

@@ -1,10 +1,9 @@
-import { Avatar, Badge, Box, Button, Divider, Group, Text } from '@mantine/core';
+import { Avatar, Badge, Box, Divider, Group, Text } from '@mantine/core';
 import AvatarListRefreshButton from '@/components/header/AvatarListRefreshButton';
 import { AuthStatus } from '@/lib/authStatus';
 
 interface HeaderContentsProps {
   authStatus: AuthStatus;
-  onLoginClick: () => void;
   currentUserDisplayName: string;
   currentUserThumbnailImageUrl?: string;
   currentUserAvatarName: string;
@@ -38,14 +37,7 @@ const HeaderContents = (props: HeaderContentsProps) => {
         {authStatusView.label}
       </Badge>
       <Box style={{ marginLeft: 'auto' }} >
-        <Group gap="xs">
-          {(props.authStatus === 'needs-reauth' || props.authStatus === 'logged-out') && (
-            <Button size="xs" variant="light" onClick={props.onLoginClick}>
-              {props.authStatus === 'needs-reauth' ? '再ログイン' : 'ログイン'}
-            </Button>
-          )}
-          <AvatarListRefreshButton />
-        </Group>
+        <AvatarListRefreshButton />
       </Box>
     </Group>
   );

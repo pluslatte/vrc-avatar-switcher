@@ -1,5 +1,5 @@
 import AvatarList from '@/components/avatar/AvatarList';
-import { Alert, AppShell, LoadingOverlay, ScrollArea } from '@mantine/core';
+import { Alert, AppShell, Button, Center, LoadingOverlay, ScrollArea, Stack, Text } from '@mantine/core';
 import HeaderContents from '@/components/header/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
 import FooterContents from '@/components/footer/FooterContents';
@@ -23,8 +23,9 @@ export interface MainAppShellProps {
   onLogoutSuccess: () => void;
 }
 const MainAppShell = (props: MainAppShellProps) => {
+  const isAuthenticated = props.authStatus === 'authenticated';
   const { avatarSortOrder, setAvatarSortOrder } = useAvatarSortOrderSetting();
-  const avatarListQuery = useAvatarListQuery(avatarSortOrder);
+  const avatarListQuery = useAvatarListQuery(avatarSortOrder, isAuthenticated);
   const switchAvatarMutation = useSwitchAvatarMutation(avatarSortOrder);
 
   const currentUserId = avatarListQuery.data?.currentUser.id;
@@ -68,7 +69,22 @@ const MainAppShell = (props: MainAppShellProps) => {
       </AppShell.Header>
 
       <AppShell.Main>
-        {avatarSortOrder === undefined ? (
+        {props.authStatus === 'checking' ? (
+          <LoaderFullWindow message="認証状態を確認しています..." withAppShell={true} />
+        ) : !isAuthenticated ? (
+          <Center h="100%">
+            <Stack align="center" gap="md">
+              <Text c="dimmed">
+                {props.authStatus === 'needs-reauth'
+                  ? 'セッションの有効期限が切れています。再ログインしてください。'
+                  : 'VRChat にログインすると、アバター一覧が表示されます。'}
+              </Text>
+              <Button onClick={props.onLoginClick}>
+                {props.authStatus === 'needs-reauth' ? '再ログイン' : 'ログイン'}
+              </Button>
+            </Stack>
+          </Center>
+        ) : avatarSortOrder === undefined ? (
           <LoaderFullWindow message="設定を読み込んでいます..." withAppShell={true} />
         ) : avatarListQuery.isPending || avatarListQuery.isFetching ? (
           <LoaderFullWindow message="アバターを読み込んでいます..." withAppShell={true} />
@@ -100,7 +116,7 @@ const MainAppShell = (props: MainAppShellProps) => {
 
       <AppShell.Footer>
         <ScrollArea h="100%">
-          <LoadingOverlay visible={availableTagsQuery.isPending} overlayProps={{ radius: 'md', blur: 2 }} />
+          <LoadingOverlay visible={isAuthenticated && availableTagsQuery.isPending} overlayProps={{ radius: 'md', blur: 2 }} />
           {currentUser !== undefined && avatarSortOrder !== undefined && availableTagsQuery.data !== undefined && (
             <FooterContents
               currentUserId={currentUser.id}

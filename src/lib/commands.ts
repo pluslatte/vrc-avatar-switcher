@@ -6,6 +6,8 @@ import { Avatar, AvatarSortOrder, CurrentUser } from '@/lib/models';
 
 export type LoginStatus = 'Success' | 'Requires2FA' | 'RequiresEmail2FA';
 
+export type AuthCheckResult = 'LoggedOut' | 'NeedsReauth' | 'Authenticated';
+
 export const command_fetch_avatars = async (
   sortOption: AvatarSortOrder
 ): Promise<Avatar[]> => {
@@ -46,8 +48,8 @@ export const command_email_2fa = async (
   });
 };
 
-export const command_check_auth = async (): Promise<boolean> => {
-  return await invoke<boolean>('command_check_auth');
+export const command_check_auth = async (): Promise<AuthCheckResult> => {
+  return await invoke<AuthCheckResult>('command_check_auth');
 };
 
 export const command_fetch_current_user = async (): Promise<CurrentUser> => {

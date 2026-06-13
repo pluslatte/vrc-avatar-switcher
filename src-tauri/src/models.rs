@@ -12,3 +12,13 @@ pub enum CommandLoginStatus {
     Requires2FA,
     RequiresEmail2FA,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum CommandAuthState {
+    /// セッション（auth cookie）がそもそも無い
+    LoggedOut,
+    /// auth cookie はあるが無効
+    NeedsReauth,
+    /// 認証済み
+    Authenticated,
+}

@@ -11,7 +11,7 @@ use crate::{
     api_config::{create_configuration, create_configuration_for_login},
     auth::{is_auth_cookie_valid, try_login_without_2fa, AuthCookieOk},
     avatars::{self, fetch_avatars},
-    models::{AvatarSortOption, CommandLoginStatus},
+    models::{AvatarSortOption, CommandAuthState, CommandLoginStatus},
     session::{delete_session, has_auth_cookie, persist_session, SessionState},
     users,
 };
@@ -108,13 +108,16 @@ pub async fn command_email_2fa(
 pub async fn command_check_auth(
     app: AppHandle,
     session: State<'_, SessionState>,
-) -> Result<bool, String> {
+) -> Result<CommandAuthState, String> {
     let jar = session.jar(&app).await?;
     if !has_auth_cookie(&jar) {
-        return Ok(false);
+        return Ok(CommandAuthState::LoggedOut);
     }
     let config = create_configuration(&jar)?;
-    is_auth_cookie_valid(&config).await
+    match is_auth_cookie_valid(&config).await {
+        Ok(true) => Ok(CommandAuthState::Authenticated),
+        Ok(false) | Err(_) => Ok(CommandAuthState::NeedsReauth),
+    }
 }
 
 #[tauri::command]

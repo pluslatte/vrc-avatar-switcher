@@ -17,7 +17,7 @@ function App() {
         return await command_check_auth();
       } catch (error) {
         console.error('Error during auth check:', error);
-        return false;
+        return 'LoggedOut' as const;
       }
     },
   });
@@ -32,24 +32,32 @@ function App() {
     queryClient.invalidateQueries({ queryKey: queryKeys.avatarListAll });
   };
 
+  const handleLogoutSuccess = () => {
+    invalidateAuthCheck();
+    // 直前のユーザーのアバター一覧がヘッダー等に残らないよう破棄する
+    queryClient.removeQueries({ queryKey: queryKeys.avatarListAll });
+  };
+
   const authStatus: AuthStatus = query.isPending
     ? 'checking'
-    : query.data === true
+    : query.data === 'Authenticated'
       ? 'authenticated'
-      : 'unauthenticated';
+      : query.data === 'NeedsReauth'
+        ? 'needs-reauth'
+        : 'logged-out';
 
   return (
     <main>
       <MainAppShell
         authStatus={authStatus}
         onLoginClick={openLoginModal}
-        onLogoutSuccess={invalidateAuthCheck}
+        onLogoutSuccess={handleLogoutSuccess}
       />
       <Modal
         opened={loginModalOpened}
         onClose={closeLoginModal}
         closeOnClickOutside={false}
-        title="再ログイン"
+        title={authStatus === 'needs-reauth' ? '再ログイン' : 'ログイン'}
         centered
       >
         <LoginForm onLoginSuccess={handleLoginSuccess} fullHeight={false} />

@@ -13,7 +13,8 @@ const HeaderContents = (props: HeaderContentsProps) => {
   const authStatusView = {
     checking: { label: '認証確認中', color: 'blue' },
     authenticated: { label: '認証済み', color: 'green' },
-    unauthenticated: { label: '再ログインが必要', color: 'yellow' },
+    'needs-reauth': { label: '再ログインが必要', color: 'yellow' },
+    'logged-out': { label: '未ログイン', color: 'gray' },
   }[props.authStatus];
 
   return (
@@ -38,9 +39,9 @@ const HeaderContents = (props: HeaderContentsProps) => {
       </Badge>
       <Box style={{ marginLeft: 'auto' }} >
         <Group gap="xs">
-          {props.authStatus === 'unauthenticated' && (
+          {(props.authStatus === 'needs-reauth' || props.authStatus === 'logged-out') && (
             <Button size="xs" variant="light" onClick={props.onLoginClick}>
-              再ログイン
+              {props.authStatus === 'needs-reauth' ? '再ログイン' : 'ログイン'}
             </Button>
           )}
           <AvatarListRefreshButton />

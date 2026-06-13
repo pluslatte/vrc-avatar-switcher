@@ -9,7 +9,10 @@ export interface AvatarListData {
   currentUser: CurrentUser;
 }
 
-export const useAvatarListQuery = (avatarSortOrder: AvatarSortOrder | undefined) => {
+export const useAvatarListQuery = (
+  avatarSortOrder: AvatarSortOrder | undefined,
+  enabled = true,
+) => {
   const avatarListQuery = useQuery<AvatarListData>({
     queryKey: queryKeys.avatarList(avatarSortOrder),
     queryFn: async () => {
@@ -26,7 +29,7 @@ export const useAvatarListQuery = (avatarSortOrder: AvatarSortOrder | undefined)
         throw new Error(`Failed to fetch avatar list: ${message}`);
       }
     },
-    enabled: !!avatarSortOrder,
+    enabled: enabled && !!avatarSortOrder,
   });
   return avatarListQuery;
 };

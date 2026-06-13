@@ -49,6 +49,18 @@ describe('useAvatarListQuery', () => {
     expect(command_fetch_avatars).not.toHaveBeenCalled();
   });
 
+  it('enabled が false なら（未認証時）フェッチしない', () => {
+    const queryClient = createTestQueryClient();
+
+    const { result } = renderHook(() => useAvatarListQuery('Name', false), {
+      wrapper: createQueryWrapper(queryClient),
+    });
+
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(command_fetch_avatars).not.toHaveBeenCalled();
+    expect(command_fetch_current_user).not.toHaveBeenCalled();
+  });
+
   it('取得に失敗するとエラー通知が表示されクエリはエラーになる (B4)', async () => {
     const showSpy = vi.spyOn(notifications, 'show');
     // Tauri コマンドは string で reject する

@@ -33,7 +33,7 @@ describe('App', () => {
   });
 
   it('有効なセッションがあればログイン画面を経ずにメイン画面が表示される (A1)', async () => {
-    vi.mocked(command_check_auth).mockResolvedValue(true);
+    vi.mocked(command_check_auth).mockResolvedValue('Authenticated');
     renderWithProviders(<App />);
 
     expect(await screen.findByTestId('main-app-shell')).toBeInTheDocument();
@@ -41,12 +41,12 @@ describe('App', () => {
     expect(screen.queryByText('ログインしてください')).not.toBeInTheDocument();
   });
 
-  it('セッションがなくてもメイン画面を表示し、再ログインボタンからログインフォームを開く (A2)', async () => {
-    vi.mocked(command_check_auth).mockResolvedValue(false);
+  it('セッションが無い場合は未ログイン状態として扱う (A2)', async () => {
+    vi.mocked(command_check_auth).mockResolvedValue('LoggedOut');
     const user = userEvent.setup();
     renderWithProviders(<App />);
 
-    await waitFor(() => expect(screen.getByTestId('auth-status')).toHaveTextContent('unauthenticated'));
+    await waitFor(() => expect(screen.getByTestId('auth-status')).toHaveTextContent('logged-out'));
     expect(screen.getByTestId('main-app-shell')).toBeInTheDocument();
     expect(screen.queryByText('ログインしてください')).not.toBeInTheDocument();
 
@@ -55,18 +55,26 @@ describe('App', () => {
     expect(await screen.findByText('ログインしてください')).toBeInTheDocument();
   });
 
-  it('認証チェック自体が失敗した場合もメイン画面を表示して未認証として扱う (A2)', async () => {
+  it('セッションはあるが無効な場合は再ログインが必要な状態として扱う (A2)', async () => {
+    vi.mocked(command_check_auth).mockResolvedValue('NeedsReauth');
+    renderWithProviders(<App />);
+
+    await waitFor(() => expect(screen.getByTestId('auth-status')).toHaveTextContent('needs-reauth'));
+    expect(screen.getByTestId('main-app-shell')).toBeInTheDocument();
+  });
+
+  it('認証チェック自体が失敗した場合は未ログインとして扱う (A2)', async () => {
     vi.mocked(command_check_auth).mockRejectedValue('network error');
     renderWithProviders(<App />);
 
-    await waitFor(() => expect(screen.getByTestId('auth-status')).toHaveTextContent('unauthenticated'));
+    await waitFor(() => expect(screen.getByTestId('auth-status')).toHaveTextContent('logged-out'));
     expect(screen.getByTestId('main-app-shell')).toBeInTheDocument();
   });
 
   it('ログイン成功後に認証状態が再確認されメイン画面へ遷移する (A3)', async () => {
     vi.mocked(command_check_auth)
-      .mockResolvedValueOnce(false)
-      .mockResolvedValue(true);
+      .mockResolvedValueOnce('LoggedOut')
+      .mockResolvedValue('Authenticated');
     vi.mocked(command_new_auth).mockResolvedValue('Success');
     const user = userEvent.setup();
     renderWithProviders(<App />);

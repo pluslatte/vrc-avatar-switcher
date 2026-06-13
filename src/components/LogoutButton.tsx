@@ -1,4 +1,4 @@
-import { dropCookies } from '@/lib/db';
+import { command_logout } from '@/lib/commands';
 import { Button } from '@mantine/core';
 
 interface LogoutButtonProps {
@@ -6,7 +6,7 @@ interface LogoutButtonProps {
 }
 const LogoutButton = (props: LogoutButtonProps) => {
   const handleLogout = async () => {
-    await dropCookies();
+    await command_logout();
     props.onLogoutSuccess();
   };
 

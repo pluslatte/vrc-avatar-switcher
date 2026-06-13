@@ -1,7 +1,6 @@
 import { useTagEditDialog } from '@/hooks/useTagEditDialog';
 import { COLOR_SWATCHES } from '@/lib/colorSwatchesPalette';
-import { Tag } from '@/lib/db';
-import { Avatar } from '@/lib/models';
+import { Tag } from '@/lib/models';
 import { Button, ColorPicker, Group, Modal, TextInput } from '@mantine/core';
 import { IconEdit } from '@tabler/icons-react';
 import React from 'react';
@@ -9,7 +8,6 @@ import React from 'react';
 interface TagEditDialogProps {
   opened: boolean;
   onClose: () => void;
-  avatars: Array<Avatar>;
   tags: Array<Tag>;
   currentUserId: string;
 }
@@ -21,16 +19,13 @@ const TagEditDialog = (props: TagEditDialogProps) => {
     setTagDisplayName,
     color,
     setColor,
+    resetForm,
     handleSave,
     handleDelete,
     updateTagMutation,
     dropTagMutation,
     onClose,
-  } = useTagEditDialog(
-    props.onClose,
-    props.avatars,
-    props.currentUserId
-  );
+  } = useTagEditDialog(props.onClose, props.currentUserId);
 
   return (
     <Modal
@@ -89,11 +84,7 @@ const TagEditDialog = (props: TagEditDialogProps) => {
                 <Button
                   variant="subtle"
                   color="gray"
-                  onClick={() => {
-                    setSelectedTag(null);
-                    setTagDisplayName('');
-                    setColor('#868e96');
-                  }}
+                  onClick={resetForm}
                   disabled={updateTagMutation.isPending || dropTagMutation.isPending}
                 >
                   キャンセル

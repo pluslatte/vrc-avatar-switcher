@@ -40,13 +40,7 @@ pub async fn try_login_without_2fa(config: &Configuration) -> Result<AuthCookieO
 
 pub async fn is_auth_cookie_valid(config: &Configuration) -> Result<bool, String> {
     match verify_auth_token(config).await {
-        Ok(result) => {
-            if result.ok {
-                Ok(true)
-            } else {
-                Ok(false)
-            }
-        }
+        Ok(result) => Ok(result.ok),
         Err(e) => Err(format!("Error verifying auth token: {e}")),
     }
 }

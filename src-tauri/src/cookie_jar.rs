@@ -3,6 +3,8 @@ use std::{str::FromStr, sync::Arc};
 use reqwest::cookie::{self, CookieStore, Jar};
 use tauri::http::HeaderValue;
 
+pub const VRCHAT_API_URL: &str = "https://api.vrchat.cloud";
+
 pub fn set_raw_cookies_into_jar(
     jar: &Arc<Jar>,
     raw_auth_cookie: &str,
@@ -14,34 +16,32 @@ pub fn set_raw_cookies_into_jar(
                 .map_err(|e| e.to_string())?,
         ]
         .iter(),
-        &url::Url::from_str("https://api.vrchat.cloud").map_err(|e| e.to_string())?,
+        &url::Url::from_str(VRCHAT_API_URL).map_err(|e| e.to_string())?,
     );
     Ok(())
+}
+
+fn find_cookie(cookies: &str, name: &str) -> String {
+    cookies
+        .split(';')
+        .map(str::trim)
+        .find(|cookie| cookie.starts_with(name))
+        .map(str::to_string)
+        .unwrap_or_default()
 }
 
 pub fn extract_cookies_from_jar<C>(jar: &Arc<C>) -> (String, String)
 where
     C: cookie::CookieStore + 'static,
 {
-    let cookies = jar
-        .cookies(&url::Url::parse("https://api.vrchat.cloud").expect("Invalid URL"))
-        .unwrap_or(HeaderValue::from_str("").unwrap());
+    let header = jar.cookies(&url::Url::parse(VRCHAT_API_URL).expect("Invalid URL"));
+    let cookies = header
+        .as_ref()
+        .and_then(|value| value.to_str().ok())
+        .unwrap_or("");
 
-    let auth_cookie = cookies
-        .to_str()
-        .unwrap_or("")
-        .split(';')
-        .find(|cookie| cookie.trim().starts_with("auth="))
-        .map(|cookie| cookie.trim().to_string())
-        .unwrap_or_default();
-
-    let two_factor_cookie = cookies
-        .to_str()
-        .unwrap_or("")
-        .split(';')
-        .find(|cookie| cookie.trim().starts_with("twoFactorAuth="))
-        .map(|cookie| cookie.trim().to_string())
-        .unwrap_or_default();
-
-    (auth_cookie, two_factor_cookie)
+    (
+        find_cookie(cookies, "auth="),
+        find_cookie(cookies, "twoFactorAuth="),
+    )
 }

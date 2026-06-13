@@ -1,13 +1,11 @@
-import { Avatar, CurrentUser } from '@/lib/models';
+import { Avatar, Tag } from '@/lib/models';
 import { BackgroundImage, Box, Button, Card, Checkbox, Divider, Text, Tooltip } from '@mantine/core';
-import { Tag } from '@/lib/db';
 import AvatarTags from './AvatarTags';
 
 interface AvatarCardProps {
   avatar: Avatar;
-  avatars: Array<Avatar>;
   avatarTags: Array<Tag>;
-  currentUser: CurrentUser;
+  currentUserId: string;
   isActiveAvatar: boolean;
   pendingSwitch: boolean;
   imageSize: number | null;
@@ -95,9 +93,8 @@ const AvatarCard = (props: AvatarCardProps) => {
       <Card.Section p="sm">
         <AvatarTags
           avatar={props.avatar}
-          avatars={props.avatars}
           avatarTags={props.avatarTags}
-          currentUser={props.currentUser}
+          currentUserId={props.currentUserId}
           onTagRemove={props.onTagRemove}
         />
       </Card.Section>

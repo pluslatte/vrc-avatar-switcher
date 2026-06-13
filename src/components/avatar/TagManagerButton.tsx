@@ -1,11 +1,9 @@
 import { Popover, Tooltip, ActionIcon } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import TagManager from './TagManager';
-import { Tag } from '@/lib/db';
-import { Avatar } from '@/lib/models';
+import { Tag } from '@/lib/models';
 
 interface TagManagerButtonProps {
-  avatars: Array<Avatar>;
   avatarId: string;
   tags: Array<Tag>;
   currentUserId: string;
@@ -30,7 +28,6 @@ const TagManagerButton = (props: TagManagerButtonProps) => {
       </Popover.Target>
       <Popover.Dropdown w={300}>
         <TagManager
-          avatars={props.avatars}
           avatarIds={[props.avatarId]}
           tags={props.tags}
           currentUserId={props.currentUserId}

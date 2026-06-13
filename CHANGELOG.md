@@ -8,7 +8,16 @@ and this project adheres to
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.4.4...HEAD
+[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.5.0...HEAD
+
+## [0.5.0] - 2026-06-13
+
+### Changed
+
+- アプリの起動後、認証確認の成功・失敗を待たずにアバター一覧の読み込みへ進むように変更
+- 認証情報の取り扱い変更により、再ログインが必要になります
+
+[0.5.0]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.5.0
 
 ## [0.4.4] - 2026-05-07
 

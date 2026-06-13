@@ -1,5 +1,12 @@
 use tauri_plugin_sql::{Migration, MigrationKind};
 
+// 注意:
+// - sqlx は適用済みマイグレーションの checksum（SQL 文字列のハッシュ）を検証するため、
+//   既存の sql 文字列は空白や改行を含め一切変更しないこと（既存環境の起動が失敗する）。
+//   スキーマ変更は必ず新しいバージョンの Migration を追加して行う。
+// - フロントエンドのテスト（src/test/inMemoryDb.ts）がこのファイルをパースして
+//   同じ SQL をテスト用 DB に適用している。`version: N` と `sql: "..."` の
+//   記述形式を変える場合はパーサ側も更新すること。
 pub fn migrations() -> Vec<Migration> {
     vec![
         Migration {

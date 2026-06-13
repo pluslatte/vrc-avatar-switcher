@@ -5172,7 +5172,7 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "vrc-avatar-switcher"
-version = "0.4.4"
+version = "0.5.0"
 dependencies = [
  "reqwest",
  "serde",
@@ -5181,6 +5181,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-opener",
  "tauri-plugin-sql",
+ "tokio",
  "url",
  "vrchatapi",
 ]

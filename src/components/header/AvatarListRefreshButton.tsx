@@ -1,13 +1,9 @@
-import { avatarListQueryKey } from '@/hooks/useAvatarListQuery';
-import { AvatarSortOrder } from '@/lib/models';
+import { queryKeys } from '@/lib/queryKeys';
 import { Tooltip, ActionIcon } from '@mantine/core';
 import { IconReload } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 
-interface AvatarListRefreshButtonProps {
-  avatarSortOrder: AvatarSortOrder;
-}
-const AvatarListRefreshButton = (props: AvatarListRefreshButtonProps) => {
+const AvatarListRefreshButton = () => {
   const queryClient = useQueryClient();
   return (
     <Tooltip label="アバターリストを更新" withArrow position="top" bg="dark" c="white">
@@ -16,7 +12,7 @@ const AvatarListRefreshButton = (props: AvatarListRefreshButtonProps) => {
         size="xl"
         onClick={(e) => {
           e.preventDefault();
-          queryClient.invalidateQueries({ queryKey: avatarListQueryKey(props.avatarSortOrder) });
+          queryClient.invalidateQueries({ queryKey: queryKeys.avatarListAll });
         }}
       >
         <IconReload />

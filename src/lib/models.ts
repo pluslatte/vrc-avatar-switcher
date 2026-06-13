@@ -12,6 +12,11 @@ export interface CurrentUser {
   currentAvatarThumbnailImageUrl: string;
 }
 
+export interface Tag {
+  display_name: string;
+  color: string;
+}
+
 export type AvatarSortOrder = 'Name' | 'Updated';
 export const isAvatarSortOrder = (option: unknown): option is AvatarSortOrder => {
   return option === 'Name' || option === 'Updated';

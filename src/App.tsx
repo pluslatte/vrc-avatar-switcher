@@ -1,41 +1,67 @@
 import { command_check_auth } from '@/lib/commands';
-import { loadCookies } from '@/lib/db';
+import { queryKeys } from '@/lib/queryKeys';
 import MainAppShell from '@/components/MainAppShell';
 import LoginForm from '@/components/LoginForm';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { LoaderFullWindow } from './components/LoaderFullWindow';
+import { Modal } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { AuthStatus } from '@/lib/authStatus';
 
 function App() {
   const queryClient = useQueryClient();
+  const [loginModalOpened, { open: openLoginModal, close: closeLoginModal }] = useDisclosure(false);
   const query = useQuery({
-    queryKey: ['auth_check'],
+    queryKey: queryKeys.authCheck,
     queryFn: async () => {
       try {
-        const { authCookie, twofaCookie } = await loadCookies();
-        if (authCookie === '' || twofaCookie === '') {
-          return false;
-        }
-        return await command_check_auth(authCookie, twofaCookie);
+        return await command_check_auth();
       } catch (error) {
         console.error('Error during auth check:', error);
-        return false;
+        return 'LoggedOut' as const;
       }
     },
   });
 
-  const onLoginSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['auth_check'] });
+  const invalidateAuthCheck = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.authCheck });
   };
-  const onLogoutSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['auth_check'] });
+
+  const handleLoginSuccess = () => {
+    closeLoginModal();
+    invalidateAuthCheck();
+    queryClient.invalidateQueries({ queryKey: queryKeys.avatarListAll });
   };
+
+  const handleLogoutSuccess = () => {
+    invalidateAuthCheck();
+    // 直前のユーザーのアバター一覧がヘッダー等に残らないよう破棄する
+    queryClient.removeQueries({ queryKey: queryKeys.avatarListAll });
+  };
+
+  const authStatus: AuthStatus = query.isPending
+    ? 'checking'
+    : query.data === 'Authenticated'
+      ? 'authenticated'
+      : query.data === 'NeedsReauth'
+        ? 'needs-reauth'
+        : 'logged-out';
 
   return (
     <main>
-      {query.isPending && <LoaderFullWindow message="認証情報を確認しています..." />}
-      {query.isError && <div>Error Auth: {(query.error as Error).message}</div>}
-      {query.data === true && <MainAppShell onLogoutSuccess={onLogoutSuccess} />}
-      {query.data === false && <LoginForm onLoginSuccess={onLoginSuccess} />}
+      <MainAppShell
+        authStatus={authStatus}
+        onLoginClick={openLoginModal}
+        onLogoutSuccess={handleLogoutSuccess}
+      />
+      <Modal
+        opened={loginModalOpened}
+        onClose={closeLoginModal}
+        closeOnClickOutside={false}
+        title={authStatus === 'needs-reauth' ? '再ログイン' : 'ログイン'}
+        centered
+      >
+        <LoginForm onLoginSuccess={handleLoginSuccess} fullHeight={false} />
+      </Modal>
     </main>
   );
 }

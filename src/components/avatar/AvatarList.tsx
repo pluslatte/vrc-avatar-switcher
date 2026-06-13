@@ -2,9 +2,8 @@ import { Button, Checkbox, Grid, Group, Indicator, Stack, Text } from '@mantine/
 import { memo, useMemo } from 'react';
 import AvatarCard from './AvatarCard';
 import BulkTagManagerDialog from './BulkTagManagerDialog';
-import { Avatar, CurrentUser } from '@/lib/models';
+import { Avatar, CurrentUser, Tag } from '@/lib/models';
 import { LoaderFullWindow } from '../LoaderFullWindow';
-import { Tag } from '@/lib/db';
 import { useAvatarListTagManager } from '@/hooks/useAvatarListTagManager';
 import { avatarNameSearchFilterAvatars, avatarTagSearchFilterAvatars } from '@/lib/utils';
 
@@ -44,9 +43,8 @@ const AvatarListComponent = (props: AvatarListProps) => {
     closeBulkDialog,
     handleBulkTagRemove,
   } = useAvatarListTagManager({
-    avatars: props.avatars,
     filteredAvatars,
-    currentUser: props.currentUser,
+    currentUserId: props.currentUser.id,
   });
 
   if (props.tagAvatarRelationLoading) return <LoaderFullWindow message="タグ情報を読み込み中..." withAppShell={true} />;
@@ -92,9 +90,8 @@ const AvatarListComponent = (props: AvatarListProps) => {
           const card = (
             <AvatarCard
               avatar={avatar}
-              avatars={props.avatars}
               avatarTags={avatarTags}
-              currentUser={props.currentUser}
+              currentUserId={props.currentUser.id}
               isActiveAvatar={isActive}
               pendingSwitch={props.pendingSwitch}
               imageSize={props.cardImageSize}
@@ -130,7 +127,7 @@ const AvatarListComponent = (props: AvatarListProps) => {
         onClose={closeBulkDialog}
         avatars={props.avatars}
         selectedAvatarIds={selectedAvatarIds}
-        currentUser={props.currentUser}
+        currentUserId={props.currentUser.id}
         tagAvatarRelation={tagAvatarRelation}
         onBulkTagRemove={handleBulkTagRemove}
         removingTagName={removingTagName}

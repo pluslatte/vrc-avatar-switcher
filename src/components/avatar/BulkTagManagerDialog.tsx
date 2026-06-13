@@ -1,6 +1,5 @@
 import TagManager from './TagManager';
-import { Avatar, CurrentUser } from '@/lib/models';
-import { Tag } from '@/lib/db';
+import { Avatar, Tag } from '@/lib/models';
 import { ActionIcon, Badge, Divider, Group, Modal, Stack, Text } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { useMemo } from 'react';
@@ -10,14 +9,14 @@ interface BulkTagManagerDialogProps {
   onClose: () => void;
   avatars: Array<Avatar>;
   selectedAvatarIds: Array<string>;
-  currentUser: CurrentUser;
+  currentUserId: string;
   tagAvatarRelation: Record<string, Array<Tag>>;
   onBulkTagRemove: (tagName: string) => Promise<void>;
   removingTagName: string | null;
 }
 
 const BulkTagManagerDialog = (props: BulkTagManagerDialogProps) => {
-  const { opened, onClose, avatars, selectedAvatarIds, currentUser, tagAvatarRelation, onBulkTagRemove, removingTagName } = props;
+  const { opened, onClose, avatars, selectedAvatarIds, currentUserId, tagAvatarRelation, onBulkTagRemove, removingTagName } = props;
   const selectedCount = selectedAvatarIds.length;
 
   const selectedAvatars = useMemo(
@@ -99,10 +98,9 @@ const BulkTagManagerDialog = (props: BulkTagManagerDialogProps) => {
         <Divider />
 
         <TagManager
-          avatars={avatars}
           avatarIds={selectedAvatarIds}
           tags={commonTags}
-          currentUserId={currentUser.id}
+          currentUserId={currentUserId}
           tagAvatarRelation={tagAvatarRelation}
         />
       </Stack>

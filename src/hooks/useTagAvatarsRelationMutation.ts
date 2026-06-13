@@ -1,11 +1,9 @@
 import { dropTagRelation, countTagRelationsOf, dropTag } from '@/lib/db';
-import { notifications } from '@mantine/notifications';
+import { getErrorMessage, notifyError, notifySuccess } from '@/lib/notify';
+import { queryKeys } from '@/lib/queryKeys';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { availableTagsQueryKey } from './useAvailableTagsQuery';
-import { tagAvatarRelationQueryKey } from './useTagAvatarsRelationQuery';
-import { Avatar } from '@/lib/models';
 
-export const useTagAvatarsRelationMutation = (avatars: Array<Avatar>) => {
+export const useTagAvatarsRelationMutation = () => {
   const queryClient = useQueryClient();
   const removeTagAvatarsRelationMutation = useMutation({
     mutationFn: async (params: { tagName: string; avatarId: string; currentUserId: string }) => {
@@ -17,31 +15,16 @@ export const useTagAvatarsRelationMutation = (avatars: Array<Avatar>) => {
       const remainingTagRelations = await countTagRelationsOf(tagName, currentUserId);
       if (remainingTagRelations === 0) {
         await dropTag(tagName, currentUserId);
-        notifications.show({
-          title: 'タグ削除',
-          message: `タグ「${tagName}」は他に関連付けられたアバターがないため削除されました`,
-          color: 'green',
-        });
-        queryClient.invalidateQueries({ queryKey: availableTagsQueryKey(currentUserId) });
+        notifySuccess('タグ削除', `タグ「${tagName}」は他に関連付けられたアバターがないため削除されました`);
+        queryClient.invalidateQueries({ queryKey: queryKeys.availableTags(currentUserId) });
       }
-      queryClient.invalidateQueries({ queryKey: tagAvatarRelationQueryKey(avatars, currentUserId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.tagAvatarRelationsAll(currentUserId) });
     },
     onError: (error, variables) => {
       const { tagName } = variables;
       console.error('Error removing avatar tag:', error);
-
-      let errorMessage = 'タグの削除中にエラーが発生しました';
-      if (error instanceof Error && error.message) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-
-      notifications.show({
-        title: 'タグ削除エラー',
-        message: `タグ「${tagName}」: ${errorMessage}`,
-        color: 'red',
-      });
+      const message = getErrorMessage(error, 'タグの削除中にエラーが発生しました');
+      notifyError('タグ削除エラー', `タグ「${tagName}」: ${message}`);
     },
   });
 

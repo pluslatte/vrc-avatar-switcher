@@ -48,6 +48,7 @@ function App() {
       <Modal
         opened={loginModalOpened}
         onClose={closeLoginModal}
+        closeOnClickOutside={false}
         title="再ログイン"
         centered
       >

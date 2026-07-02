@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+- VRChat のアバター検索 API からの返答が、アバターサムネイル画像の URL を格納する項目が欠落して送られてきうることによるエラーを修正
+
 [Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.5.0...HEAD
 
 ## [0.5.0] - 2026-06-13

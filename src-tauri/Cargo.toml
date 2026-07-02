@@ -1,6 +1,6 @@
 [package]
 name = "vrc-avatar-switcher"
-version = "0.5.0"
+version = "0.5.1"
 description = "A Tauri App"
 authors = ["pluslatte"]
 license = "Apache-2.0"
@@ -23,7 +23,7 @@ tauri = { version = "2.9.5", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-vrchatapi = "1.20.7"
+vrchatapi = { git = "https://github.com/pluslatte/vrchatapi-rust.git", branch = "v1.20.7-pluslatte.1" }
 reqwest = "0.12.24"
 url = "2.5.7"
 tauri-plugin-sql = { version = "2", features = ["sqlite"] }

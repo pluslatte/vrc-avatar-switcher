@@ -5172,7 +5172,7 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "vrc-avatar-switcher"
-version = "0.5.0"
+version = "0.5.1"
 dependencies = [
  "reqwest",
  "serde",
@@ -5188,9 +5188,8 @@ dependencies = [
 
 [[package]]
 name = "vrchatapi"
-version = "1.20.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6efa3632adbeeb900c76b0ea9130cf9b50cac9b535f1af4361f2264445e53132"
+version = "1.20.8-nightly.0"
+source = "git+https://github.com/pluslatte/vrchatapi-rust.git?branch=v1.20.7-pluslatte.1#0beeb259ac1911d62da1539b939d2ed70d15cdcf"
 dependencies = [
  "reqwest",
  "serde",

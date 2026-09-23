@@ -10,24 +10,18 @@ pub fn create_configuration_for_login(
     username: &str,
     password: &str,
 ) -> Result<Configuration, String> {
-    Ok(Configuration {
-        basic_auth: Some((username.to_string(), Some(password.to_string()))),
-        user_agent: Some(USER_AGENT.to_string()),
-        client: reqwest::Client::builder()
-            .cookie_provider(jar.clone())
-            .build()
-            .map_err(|e| e.to_string())?,
-        ..Default::default()
-    })
+    let mut config = create_configuration(jar)?;
+    config.basic_auth = Some((username.to_string(), Some(password.to_string())));
+    Ok(config)
 }
 
 pub fn create_configuration(jar: &Arc<Jar>) -> Result<Configuration, String> {
-    Ok(Configuration {
-        user_agent: Some(USER_AGENT.to_string()),
-        client: reqwest::Client::builder()
-            .cookie_provider(jar.clone())
-            .build()
-            .map_err(|e| e.to_string())?,
-        ..Default::default()
-    })
+    let client = reqwest::Client::builder()
+        .cookie_provider(jar.clone())
+        .build()
+        .map_err(|e| e.to_string())?;
+    let mut config = Configuration::new();
+    config.user_agent = Some(USER_AGENT.to_string());
+    config.client = reqwest_middleware::ClientBuilder::new(client).build();
+    Ok(config)
 }

@@ -4,7 +4,7 @@ use vrchatapi::{
         configuration::Configuration,
     },
     models::{
-        EitherUserOrTwoFactor::{CurrentUser, RequiresTwoFactorAuth},
+        RegisterUserAccount200Response::{CurrentUser, RequiresTwoFactorAuth},
         TwoFactorAuthType,
     },
 };

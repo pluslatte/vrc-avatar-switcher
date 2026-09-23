@@ -20,7 +20,7 @@
     "@mantine/notifications": "^8.3.10",
     "@tabler/icons-react": "^3.36.0",
     "@tanstack/react-query": "^5.90.12",
-    "@tauri-apps/api": "^2.9.1",
+    "@tauri-apps/api": "^2.11.1",
     "@tauri-apps/plugin-opener": "^2.5.2",
     "@tauri-apps/plugin-sql": "~2.3.1",
     "react": "^19.2.3",
@@ -29,7 +29,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@tanstack/eslint-plugin-query": "^5.91.2",
-    "@tauri-apps/cli": "^2.9.6",
+    "@tauri-apps/cli": "^2.11.5",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

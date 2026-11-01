@@ -2,7 +2,8 @@ import AvatarList from '@/components/avatar/AvatarList';
 import { Alert, AppShell, Button, Center, LoadingOverlay, ScrollArea, Stack, Text } from '@mantine/core';
 import HeaderContents from '@/components/header/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
-import FooterContents from '@/components/footer/FooterContents';
+import AvatarToolbar from '@/components/footer/AvatarToolbar';
+import AuthStatusBar from '@/components/footer/AuthStatusBar';
 import { useAvatarBrowser } from '@/hooks/useAvatarBrowser';
 import { AuthStatus } from '@/lib/authStatus';
 
@@ -32,11 +33,10 @@ const MainAppShell = (props: MainAppShellProps) => {
     <AppShell
       padding="md"
       header={{ height: 60 }}
-      footer={{ height: 60 }}
+      footer={{ height: 88 }}
     >
       <AppShell.Header>
         <HeaderContents
-          authStatus={props.authStatus}
           currentUserDisplayName={currentUser?.displayName ?? 'ユーザー未取得'}
           currentUserThumbnailImageUrl={currentUser?.currentAvatarThumbnailImageUrl}
           currentUserAvatarName={currentUserAvatarName}
@@ -86,10 +86,10 @@ const MainAppShell = (props: MainAppShellProps) => {
       </AppShell.Main>
 
       <AppShell.Footer>
-        <ScrollArea h="100%">
+        <ScrollArea h={60}>
           <LoadingOverlay visible={isAuthenticated && availableTagsQuery.isPending} overlayProps={{ radius: 'md', blur: 2 }} />
           {currentUser !== undefined && avatarSortOrder !== undefined && availableTagsQuery.data !== undefined && (
-            <FooterContents
+            <AvatarToolbar
               currentUserId={currentUser.id}
               selectedSort={avatarSortOrder}
               updateAvatarSearchInputString={setAvatarSearchQueryValue}
@@ -106,6 +106,7 @@ const MainAppShell = (props: MainAppShellProps) => {
             />
           )}
         </ScrollArea>
+        <AuthStatusBar authStatus={props.authStatus} />
       </AppShell.Footer>
 
     </AppShell>

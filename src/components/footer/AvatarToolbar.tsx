@@ -7,7 +7,7 @@ import AvatarSearchBox from './AvatarSearchBox';
 import TagEditDialog from '../avatar/TagEditDialog';
 import { useDisclosure } from '@mantine/hooks';
 
-interface FooterContentsProps {
+interface AvatarToolbarProps {
   currentUserId: string;
   selectedSort: AvatarSortOrder;
   cardImageSize: number | undefined;
@@ -22,7 +22,7 @@ interface FooterContentsProps {
   onTagFilterChange: (tags: Array<string>) => void;
   onLogoutSuccess: () => void;
 }
-const FooterContents = (props: FooterContentsProps) => {
+const AvatarToolbar = (props: AvatarToolbarProps) => {
   const [tagEditDialogOpened, { open: openTagEditDialog, close: closeTagEditDialog }] = useDisclosure(false);
 
   return (
@@ -79,4 +79,4 @@ const FooterContents = (props: FooterContentsProps) => {
   );
 };
 
-export default FooterContents;
+export default AvatarToolbar;

@@ -1,37 +1,11 @@
 import { AvatarSortOrder } from '@/lib/models';
-import { getDb } from './client';
+import { invokeDatabaseCommand } from './client';
 
-export const queryClientConfig = async (
-  key: string,
-): Promise<string> => {
-  const db = await getDb();
-  const rows = await db.select<Array<{ value: string }>>(
-    `SELECT
-      value
-    FROM
-      client_settings
-    WHERE
-      key = $1`,
-    [key]
-  );
-  if (rows.length === 0) return '';
-  return rows[0].value;
-};
+export const queryClientConfig = (key: string): Promise<string> =>
+  invokeDatabaseCommand('command_query_client_config', { key });
 
-export const updateClientConfig = async (
-  key: string,
-  value: string,
-): Promise<void> => {
-  const db = await getDb();
-  await db.execute(`
-    INSERT INTO
-      client_settings (key, value)
-    VALUES
-      ($1, $2)
-    ON CONFLICT (key) DO UPDATE SET
-      value = $2
-  `, [key, value]);
-};
+export const updateClientConfig = (key: string, value: string): Promise<void> =>
+  invokeDatabaseCommand('command_update_client_config', { key, value });
 
 export const saveAvatarSortOrder = async (order: AvatarSortOrder): Promise<void> => {
   await updateClientConfig('avatar_sort_order', order);

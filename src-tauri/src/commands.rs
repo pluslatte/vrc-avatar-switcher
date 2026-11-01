@@ -1,5 +1,8 @@
 mod auth;
 mod avatars;
+pub mod settings;
+pub mod tag_relations;
+pub mod tags;
 mod users;
 
 pub use auth::{

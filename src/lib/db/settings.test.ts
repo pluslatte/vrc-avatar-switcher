@@ -1,4 +1,4 @@
-import { createTestDb, type TestDb } from '@/test/inMemoryDb';
+import { invoke } from '@tauri-apps/api/core';
 import {
   loadAvatarSortOrder,
   loadCardImageSize,
@@ -10,18 +10,18 @@ import {
   updateClientConfig,
 } from '@/lib/db';
 
-let db: TestDb;
-
-vi.mock('@/lib/db/client', () => ({
-  getDb: async () => db,
-}));
+vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
 
 beforeEach(() => {
-  db = createTestDb();
-});
-
-afterEach(() => {
-  db.close();
+  const values = new Map<string, string>();
+  vi.mocked(invoke).mockImplementation(async (command, args) => {
+    if (command === 'command_query_client_config') {
+      const { key } = args as { key: string };
+      return values.get(key) ?? '';
+    }
+    const { key, value } = args as { key: string; value: string };
+    values.set(key, value);
+  });
 });
 
 describe('queryClientConfig / updateClientConfig', () => {

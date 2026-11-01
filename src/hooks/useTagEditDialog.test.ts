@@ -1,24 +1,21 @@
 import { notifications } from '@mantine/notifications';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { countTagRelationsOf, createTag, createTagRelation, fetchAvatarsTags, queryAllTagsAvailable, queryTagExists } from '@/lib/db';
-import { createTestDb, type TestDb } from '@/test/inMemoryDb';
+import { createTestTagStore, type TestTagStore } from '@/test/tagStore';
 import { createQueryWrapper, createTestQueryClient } from '@/test/testUtils';
 import { useTagEditDialog } from './useTagEditDialog';
 
-vi.mock('@/lib/db/client', () => ({
-  getDb: async () => db,
-}));
+vi.mock('@/lib/db', async () => {
+  const { createTagStoreProxy } = await import('@/test/tagStore');
+  return createTagStoreProxy(() => db);
+});
 
-let db: TestDb;
+let db: TestTagStore;
 const userA = 'usr_aaaa';
 
 beforeEach(() => {
   vi.clearAllMocks();
-  db = createTestDb();
-});
-
-afterEach(() => {
-  db.close();
+  db = createTestTagStore();
 });
 
 const renderDialog = (onCloseSuper: () => void) =>

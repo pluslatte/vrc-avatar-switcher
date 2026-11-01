@@ -1,9 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 import { afterEach, beforeEach, vi } from 'vitest';
 
-// Mantine v8 を jsdom で描画するためのポリフィル
 // https://mantine.dev/guides/vitest/
-// vi.clearAllMocks 等の影響を受けないよう、あえて vi.fn は使わない
 const { getComputedStyle } = window;
 window.getComputedStyle = (elt) => getComputedStyle(elt);
 window.HTMLElement.prototype.scrollIntoView = () => {};

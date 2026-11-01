@@ -34,7 +34,6 @@ function App() {
 
   const handleLogoutSuccess = () => {
     invalidateAuthCheck();
-    // 直前のユーザーのアバター一覧がヘッダー等に残らないよう破棄する
     queryClient.removeQueries({ queryKey: queryKeys.avatarListAll });
   };
 

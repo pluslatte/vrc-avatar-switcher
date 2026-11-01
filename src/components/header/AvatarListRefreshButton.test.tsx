@@ -5,7 +5,7 @@ import { queryKeys } from '@/lib/queryKeys';
 import { createTestQueryClient, renderWithProviders } from '@/test/testUtils';
 
 describe('AvatarListRefreshButton', () => {
-  it('クリックするとアバター一覧クエリが（ソート順を問わず）無効化される (B3)', async () => {
+  it('invalidates avatar list queries for every sort order when clicked (B3)', async () => {
     const queryClient = createTestQueryClient();
     const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
     const user = userEvent.setup();

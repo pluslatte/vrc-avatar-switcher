@@ -1,6 +1,6 @@
 import { Popover, ActionIcon, Group, Divider, Text, Anchor } from '@mantine/core';
 import { IconSettings, IconImageInPicture, IconTableColumn } from '@tabler/icons-react';
-import AvatarCardColumnSizeSelector from './AvatarCardColumnSizeSelector';
+import AvatarCardColumnsSelector from './AvatarCardColumnsSelector';
 import AvatarCardImageSizeSelector from './AvatarCardImageSizeSelector';
 import LogoutButton from '@/components/LogoutButton';
 import { useDisclosure } from '@mantine/hooks';
@@ -10,10 +10,10 @@ import React from 'react';
 interface SettingsPopoverProps {
   cardImageSize: number | undefined;
   cardImageSizeLoading: boolean;
-  cardNumberPerRow: number | undefined;
-  cardNumberPerRowLoading: boolean;
-  setCardImageSize: (size: string | null) => void;
-  setCardNumberPerRow: (number: string | null) => void;
+  cardColumnSpan: number | undefined;
+  cardColumnSpanLoading: boolean;
+  setCardImageSize: (size: number) => void;
+  setCardColumnSpan: (number: number) => void;
   onLogoutSuccess: () => void;
 }
 const SettingsPopover = (props: SettingsPopoverProps) => {
@@ -34,7 +34,7 @@ const SettingsPopover = (props: SettingsPopoverProps) => {
         <Popover.Dropdown>
           <Group justify="space-between" style={{ width: '100%' }}>
             <Text fz="xs" c="dimmed">
-              {'© 2025 pluslatte'}
+              © 2025 pluslatte
               <br />
               <Anchor
                 onClick={openLicense}
@@ -43,7 +43,7 @@ const SettingsPopover = (props: SettingsPopoverProps) => {
                 underline="always"
                 style={{ cursor: 'pointer' }}
               >
-                {'Licensed under Apache-2.0'}
+                Licensed under Apache-2.0
               </Anchor>
             </Text>
           </Group>
@@ -59,10 +59,10 @@ const SettingsPopover = (props: SettingsPopoverProps) => {
           <Divider my="xs" />
           <Group>
             <IconTableColumn />
-            <AvatarCardColumnSizeSelector
-              cardNumberPerRow={props.cardNumberPerRow}
-              cardNumberPerRowLoading={props.cardNumberPerRowLoading}
-              setCardNumberPerRow={props.setCardNumberPerRow}
+            <AvatarCardColumnsSelector
+              cardColumnSpan={props.cardColumnSpan}
+              cardColumnSpanLoading={props.cardColumnSpanLoading}
+              setCardColumnSpan={props.setCardColumnSpan}
             />
           </Group>
           <Divider my="xs" />

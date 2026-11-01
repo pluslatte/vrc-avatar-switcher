@@ -2,11 +2,11 @@ import { createTestDb, type TestDb } from '@/test/inMemoryDb';
 import {
   loadAvatarSortOrder,
   loadCardImageSize,
-  loadCardNumberPerRow,
+  loadCardColumnSpan,
   queryClientConfig,
   saveAvatarSortOrder,
   saveCardImageSize,
-  saveCardNumberPerRow,
+  saveCardColumnSpan,
   updateClientConfig,
 } from '@/lib/db';
 
@@ -25,71 +25,63 @@ afterEach(() => {
 });
 
 describe('queryClientConfig / updateClientConfig', () => {
-  it('未設定のキーは空文字を返す', async () => {
+  it('returns an empty string for an unset key', async () => {
     expect(await queryClientConfig('unknown_key')).toBe('');
   });
 
-  it('同じキーに保存すると上書きされる (UPSERT)', async () => {
+  it('overwrites an existing value for the same key (UPSERT)', async () => {
     await updateClientConfig('some_key', 'first');
     await updateClientConfig('some_key', 'second');
     expect(await queryClientConfig('some_key')).toBe('second');
   });
 });
 
-describe('アバターのソート順設定 (H1)', () => {
-  it('未設定なら Updated を返す', async () => {
+describe('avatar sort order setting (H1)', () => {
+  it('defaults to Updated when unset', async () => {
     expect(await loadAvatarSortOrder()).toBe('Updated');
   });
 
-  it('保存したソート順が復元される', async () => {
+  it('restores the saved sort order', async () => {
     await saveAvatarSortOrder('Name');
     expect(await loadAvatarSortOrder()).toBe('Name');
   });
 
-  it('不正な値が保存されていたら Updated にフォールバックする', async () => {
+  it('falls back to Updated for an invalid stored value', async () => {
     await updateClientConfig('avatar_sort_order', 'Bogus');
     expect(await loadAvatarSortOrder()).toBe('Updated');
   });
 
-  it('null を保存すると Updated として保存される', async () => {
-    await saveAvatarSortOrder(null);
-    expect(await loadAvatarSortOrder()).toBe('Updated');
-  });
 });
 
-describe('カード画像サイズ設定 (H2)', () => {
-  it('未設定なら 160 を返す', async () => {
+describe('card image size setting (H2)', () => {
+  it('defaults to 160 when unset', async () => {
     expect(await loadCardImageSize()).toBe(160);
   });
 
-  it('保存したサイズが復元される', async () => {
+  it('restores the saved image size', async () => {
     await saveCardImageSize(240);
     expect(await loadCardImageSize()).toBe(240);
   });
 
-  it('数値でない値が保存されていたら 160 にフォールバックする', async () => {
+  it('falls back to 160 for a nonnumeric stored value', async () => {
     await updateClientConfig('card_image_size', 'not-a-number');
     expect(await loadCardImageSize()).toBe(160);
   });
 
-  it('null を保存すると 160 として保存される', async () => {
-    await saveCardImageSize(null);
-    expect(await loadCardImageSize()).toBe(160);
-  });
 });
 
-describe('1 行あたりのカード数設定 (H3)', () => {
-  it('未設定なら 3 を返す', async () => {
-    expect(await loadCardNumberPerRow()).toBe(3);
+describe('card column span setting (H3)', () => {
+  it('defaults to 3 when unset', async () => {
+    expect(await loadCardColumnSpan()).toBe(3);
   });
 
-  it('保存した値が復元される', async () => {
-    await saveCardNumberPerRow(5);
-    expect(await loadCardNumberPerRow()).toBe(5);
+  it('restores the saved value', async () => {
+    await saveCardColumnSpan(5);
+    expect(await loadCardColumnSpan()).toBe(5);
   });
 
-  it('数値でない値が保存されていたら 3 にフォールバックする', async () => {
+  it('falls back to 3 for a nonnumeric stored value', async () => {
     await updateClientConfig('card_number_per_row', 'not-a-number');
-    expect(await loadCardNumberPerRow()).toBe(3);
+    expect(await loadCardColumnSpan()).toBe(3);
   });
 });

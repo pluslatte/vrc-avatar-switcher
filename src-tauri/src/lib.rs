@@ -6,6 +6,7 @@ mod cookie_jar;
 mod migrations;
 mod models;
 mod session;
+mod session_storage;
 mod users;
 
 use crate::commands::{

@@ -12,13 +12,13 @@ interface FooterContentsProps {
   selectedSort: AvatarSortOrder;
   cardImageSize: number | undefined;
   cardImageSizeLoading: boolean;
-  cardNumberPerRow: number | undefined;
-  cardNumberPerRowLoading: boolean;
+  cardColumnSpan: number | undefined;
+  cardColumnSpanLoading: boolean;
   updateAvatarSearchInputString: (input: string) => void;
   availableTags: Array<Tag>;
-  setCardImageSize: (size: string | null) => void;
+  setCardImageSize: (size: number) => void;
   onSortSettingChange: (option: string | null) => void;
-  setCardNumberPerRow: (number: string | null) => void;
+  setCardColumnSpan: (number: number) => void;
   onTagFilterChange: (tags: Array<string>) => void;
   onLogoutSuccess: () => void;
 }
@@ -69,10 +69,10 @@ const FooterContents = (props: FooterContentsProps) => {
       <SettingsPopover
         cardImageSize={props.cardImageSize}
         cardImageSizeLoading={props.cardImageSizeLoading}
-        cardNumberPerRow={props.cardNumberPerRow}
-        cardNumberPerRowLoading={props.cardNumberPerRowLoading}
+        cardColumnSpan={props.cardColumnSpan}
+        cardColumnSpanLoading={props.cardColumnSpanLoading}
         setCardImageSize={props.setCardImageSize}
-        setCardNumberPerRow={props.setCardNumberPerRow}
+        setCardColumnSpan={props.setCardColumnSpan}
         onLogoutSuccess={props.onLogoutSuccess}
       />
     </Group>

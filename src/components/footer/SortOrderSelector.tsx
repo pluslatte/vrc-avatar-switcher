@@ -1,7 +1,8 @@
 import { Select } from '@mantine/core';
+import { AvatarSortOrder } from '@/lib/models';
 
 const SortOrderSelector = (props: {
-  selectedSort: string | null;
+  selectedSort: AvatarSortOrder;
   onSortSettingChange: (option: string | null) => void;
 }) => {
   return (

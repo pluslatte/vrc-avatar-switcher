@@ -15,7 +15,7 @@ export const queryClientConfig = async (
     [key]
   );
   if (rows.length === 0) return '';
-  return rows[0].value || '';
+  return rows[0].value;
 };
 
 export const updateClientConfig = async (
@@ -33,8 +33,8 @@ export const updateClientConfig = async (
   `, [key, value]);
 };
 
-export const saveAvatarSortOrder = async (order: AvatarSortOrder | null): Promise<void> => {
-  await updateClientConfig('avatar_sort_order', order || 'Updated');
+export const saveAvatarSortOrder = async (order: AvatarSortOrder): Promise<void> => {
+  await updateClientConfig('avatar_sort_order', order);
 };
 
 export const loadAvatarSortOrder = async (): Promise<AvatarSortOrder> => {
@@ -45,8 +45,8 @@ export const loadAvatarSortOrder = async (): Promise<AvatarSortOrder> => {
   ) ? value : 'Updated';
 };
 
-export const saveCardImageSize = async (size: number | null): Promise<void> => {
-  await updateClientConfig('card_image_size', (size || 160).toString());
+export const saveCardImageSize = async (size: number): Promise<void> => {
+  await updateClientConfig('card_image_size', size.toString());
 };
 
 export const loadCardImageSize = async (): Promise<number> => {
@@ -55,11 +55,11 @@ export const loadCardImageSize = async (): Promise<number> => {
   return isNaN(size) ? 160 : size;
 };
 
-export const saveCardNumberPerRow = async (number: number | null): Promise<void> => {
-  await updateClientConfig('card_number_per_row', (number || 3).toString());
+export const saveCardColumnSpan = async (number: number): Promise<void> => {
+  await updateClientConfig('card_number_per_row', number.toString());
 };
 
-export const loadCardNumberPerRow = async (): Promise<number> => {
+export const loadCardColumnSpan = async (): Promise<number> => {
   const value = await queryClientConfig('card_number_per_row');
   const number = parseInt(value, 10);
   return isNaN(number) ? 3 : number;

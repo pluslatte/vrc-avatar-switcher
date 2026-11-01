@@ -42,7 +42,6 @@ pub async fn fetch_avatars(
         }
         out.extend(page);
 
-        // To avoid hitting rate limits
         tokio::time::sleep(Duration::from_millis(100)).await;
     }
 }

@@ -9,23 +9,20 @@ use vrchatapi::{
     },
 };
 
-pub enum AuthCookieOk {
-    Success,
-    RequiresEmail2FA,
-    Requires2FA,
-}
-pub async fn try_login_without_2fa(config: &Configuration) -> Result<AuthCookieOk, String> {
+use crate::models::LoginStatus;
+
+pub async fn try_login_without_2fa(config: &Configuration) -> Result<LoginStatus, String> {
     match get_current_user(config).await {
         Ok(ok) => match ok {
-            CurrentUser(_) => Ok(AuthCookieOk::Success),
+            CurrentUser(_) => Ok(LoginStatus::Success),
             RequiresTwoFactorAuth(auth_required) => {
                 if auth_required
                     .requires_two_factor_auth
                     .contains(&TwoFactorAuthType::EmailOtp)
                 {
-                    Ok(AuthCookieOk::RequiresEmail2FA)
+                    Ok(LoginStatus::RequiresEmail2FA)
                 } else {
-                    Ok(AuthCookieOk::Requires2FA)
+                    Ok(LoginStatus::Requires2FA)
                 }
             }
         },

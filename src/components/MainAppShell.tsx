@@ -3,18 +3,7 @@ import { Alert, AppShell, Button, Center, LoadingOverlay, ScrollArea, Stack, Tex
 import HeaderContents from '@/components/header/HeaderContents';
 import { LoaderFullWindow } from '@/components/LoaderFullWindow';
 import FooterContents from '@/components/footer/FooterContents';
-import { useAvatarListQuery } from '@/hooks/useAvatarListQuery';
-import { useSwitchAvatarMutation } from '@/hooks/useSwitchAvatarMutation';
-import { useAvailableTagsQuery } from '@/hooks/useAvailableTagsQuery';
-import { useTagAvatarsRelationQuery } from '@/hooks/useTagAvatarsRelationQuery';
-import {
-  useAvatarSortOrderSetting,
-  useCardImageSizeSetting,
-  useCardNumberPerRowSetting,
-} from '@/hooks/useClientSettings';
-import { isAvatarSortOrder } from '@/lib/models';
-import { useState } from 'react';
-import { useAvatarSearchByName } from '@/hooks/useAvatarSearchByName';
+import { useAvatarBrowser } from '@/hooks/useAvatarBrowser';
 import { AuthStatus } from '@/lib/authStatus';
 
 export interface MainAppShellProps {
@@ -24,27 +13,14 @@ export interface MainAppShellProps {
 }
 const MainAppShell = (props: MainAppShellProps) => {
   const isAuthenticated = props.authStatus === 'authenticated';
-  const { avatarSortOrder, setAvatarSortOrder } = useAvatarSortOrderSetting();
-  const avatarListQuery = useAvatarListQuery(avatarSortOrder, isAuthenticated);
-  const switchAvatarMutation = useSwitchAvatarMutation(avatarSortOrder);
-
-  const currentUserId = avatarListQuery.data?.currentUser.id;
-  const availableTagsQuery = useAvailableTagsQuery(currentUserId);
-  const tagAvatarsRelationQuery = useTagAvatarsRelationQuery(
-    currentUserId,
-    avatarListQuery.data?.avatars.map(avatar => avatar.id) ?? [],
-  );
-
-  const { cardImageSizeLoading, cardImageSize, setCardImageSize } = useCardImageSizeSetting();
-  const { cardNumberPerRowLoading, cardNumberPerRow, setCardNumberPerRow } = useCardNumberPerRowSetting();
-  const { avatarSearchQueryValueDeferred, setAvatarSearchQueryValue } = useAvatarSearchByName();
-  const [selectedTags, setSelectedTags] = useState<Array<string>>([]);
-
-  const handleSortOrderChange = (option: string | null) => {
-    if (isAvatarSortOrder(option)) {
-      void setAvatarSortOrder(option);
-    }
-  };
+  const {
+    avatarSortOrder, avatarListQuery, switchAvatarMutation,
+    availableTagsQuery, tagAvatarsRelationQuery,
+    cardImageSizeLoading, cardImageSize, setCardImageSize,
+    cardColumnSpanLoading, cardColumnSpan, setCardColumnSpan,
+    avatarSearchQueryValueDeferred, setAvatarSearchQueryValue,
+    selectedTags, setSelectedTags, handleSortOrderChange,
+  } = useAvatarBrowser(props.authStatus);
 
   const avatars = avatarListQuery.data?.avatars ?? [];
   const currentUser = avatarListQuery.data?.currentUser;
@@ -91,22 +67,18 @@ const MainAppShell = (props: MainAppShellProps) => {
           <Alert color="red" title="アバター一覧を読み込めませんでした">
             {avatarListQuery.error.message}
           </Alert>
-        ) : currentUser === undefined ? (
-          <Alert color="red" title="アバター一覧を読み込めませんでした">
-            ユーザー情報を取得できませんでした。
-          </Alert>
-        ) : (cardImageSize === undefined || cardNumberPerRow === undefined) ? (
+        ) : (cardImageSize === undefined || cardColumnSpan === undefined) ? (
           <LoaderFullWindow message="設定を読み込んでいます..." withAppShell={true} />
         ) : (
           <AvatarList
             avatars={avatars}
             tagAvatarRelation={tagAvatarsRelationQuery.data}
             tagAvatarRelationLoading={tagAvatarsRelationQuery.isPending}
-            currentUser={currentUser}
+            currentUser={avatarListQuery.data.currentUser}
             pendingSwitch={switchAvatarMutation.isPending}
             searchQuery={avatarSearchQueryValueDeferred}
             cardImageSize={cardImageSize}
-            cardNumberPerRow={cardNumberPerRow}
+            cardColumnSpan={cardColumnSpan}
             selectedTags={selectedTags}
             handlerAvatarSwitch={switchAvatarMutation.mutate}
           />
@@ -123,11 +95,11 @@ const MainAppShell = (props: MainAppShellProps) => {
               updateAvatarSearchInputString={setAvatarSearchQueryValue}
               cardImageSize={cardImageSize}
               cardImageSizeLoading={cardImageSizeLoading}
-              cardNumberPerRow={cardNumberPerRow}
-              cardNumberPerRowLoading={cardNumberPerRowLoading}
+              cardColumnSpan={cardColumnSpan}
+              cardColumnSpanLoading={cardColumnSpanLoading}
               availableTags={availableTagsQuery.data}
               setCardImageSize={setCardImageSize}
-              setCardNumberPerRow={setCardNumberPerRow}
+              setCardColumnSpan={setCardColumnSpan}
               onSortSettingChange={handleSortOrderChange}
               onTagFilterChange={setSelectedTags}
               onLogoutSuccess={props.onLogoutSuccess}

@@ -7,16 +7,7 @@ export const COLOR_SWATCHES: string[] = (() => {
     const colorNamesB = [
         'teal', 'green', 'lime', 'yellow', 'orange', 'gray', 'dark'
     ] as const;
-    const colorSwatches: string[] = [];
-    for (let shade = 2; shade <= 7; shade += 2) {
-        for (const colorName of colorNamesA) {
-            colorSwatches.push(DEFAULT_THEME.colors[colorName][shade]);
-        }
-    }
-    for (let shade = 2; shade <= 7; shade += 2) {
-        for (const colorName of colorNamesB) {
-            colorSwatches.push(DEFAULT_THEME.colors[colorName][shade]);
-        }
-    }
-    return colorSwatches;
+    return [colorNamesA, colorNamesB].flatMap(names =>
+        [2, 4, 6].flatMap(shade => names.map(name => DEFAULT_THEME.colors[name][shade])),
+    );
 })();

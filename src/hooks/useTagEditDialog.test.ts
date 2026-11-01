@@ -21,20 +21,20 @@ afterEach(() => {
   db.close();
 });
 
-const renderDialog = (onCloseSuper: () => void = vi.fn()) =>
+const renderDialog = (onCloseSuper: () => void) =>
   renderHook(() => useTagEditDialog(onCloseSuper, userA), {
     wrapper: createQueryWrapper(createTestQueryClient()),
   });
 
 describe('useTagEditDialog', () => {
-  it('タグ名と色を変更して保存でき、フォームがリセットされる (F1)', async () => {
+  it('saves the new tag name and color and resets the form (F1)', async () => {
     const showSpy = vi.spyOn(notifications, 'show');
-    await createTag('旧名', userA, '#ff0000');
-    const { result } = renderDialog();
+    await createTag('Old name', userA, '#ff0000');
+    const { result } = renderDialog(vi.fn());
 
     act(() => {
-      result.current.setSelectedTag({ display_name: '旧名', color: '#ff0000' });
-      result.current.setTagDisplayName('新名');
+      result.current.selectTag({ display_name: 'Old name', color: '#ff0000' });
+      result.current.setTagDisplayName('New name');
       result.current.setColor('#00ff00');
     });
     act(() => {
@@ -43,7 +43,7 @@ describe('useTagEditDialog', () => {
 
     await waitFor(async () => {
       expect(await queryAllTagsAvailable(userA)).toEqual([
-        { display_name: '新名', color: '#00ff00' },
+        { display_name: 'New name', color: '#00ff00' },
       ]);
     });
     expect(showSpy).toHaveBeenCalledWith(expect.objectContaining({
@@ -53,15 +53,15 @@ describe('useTagEditDialog', () => {
     await waitFor(() => expect(result.current.selectedTag).toBeNull());
   });
 
-  it('既存タグ名へのリネームはエラー通知になり保存されない (F2)', async () => {
+  it('rejects renaming a tag to an existing name and shows an error (F2)', async () => {
     const showSpy = vi.spyOn(notifications, 'show');
-    await createTag('タグ1', userA, '#ff0000');
-    await createTag('タグ2', userA, '#00ff00');
-    const { result } = renderDialog();
+    await createTag('Tag 1', userA, '#ff0000');
+    await createTag('Tag 2', userA, '#00ff00');
+    const { result } = renderDialog(vi.fn());
 
     act(() => {
-      result.current.setSelectedTag({ display_name: 'タグ1', color: '#ff0000' });
-      result.current.setTagDisplayName('タグ2');
+      result.current.selectTag({ display_name: 'Tag 1', color: '#ff0000' });
+      result.current.setTagDisplayName('Tag 2');
     });
     act(() => {
       result.current.handleSave();
@@ -69,19 +69,19 @@ describe('useTagEditDialog', () => {
 
     await waitFor(() => expect(showSpy).toHaveBeenCalledWith(expect.objectContaining({
       title: 'エラー',
-      message: 'タグ「タグ1」の更新に失敗しました: タグ名「タグ2」は既に存在します',
+      message: 'タグ「Tag 1」の更新に失敗しました: タグ名「Tag 2」は既に存在します',
       color: 'red',
     })));
-    expect(await queryTagExists('タグ1', userA)).toBe(true);
+    expect(await queryTagExists('Tag 1', userA)).toBe(true);
   });
 
-  it('タグ名を空にして保存しようとするとエラー通知が出る (F3)', async () => {
+  it('shows an error when saving an empty tag name (F3)', async () => {
     const showSpy = vi.spyOn(notifications, 'show');
-    await createTag('タグ1', userA, '#ff0000');
-    const { result } = renderDialog();
+    await createTag('Tag 1', userA, '#ff0000');
+    const { result } = renderDialog(vi.fn());
 
     act(() => {
-      result.current.setSelectedTag({ display_name: 'タグ1', color: '#ff0000' });
+      result.current.selectTag({ display_name: 'Tag 1', color: '#ff0000' });
       result.current.setTagDisplayName('   ');
     });
     act(() => {
@@ -93,42 +93,41 @@ describe('useTagEditDialog', () => {
       message: 'タグ名を入力してください',
       color: 'red',
     })));
-    // タグは変更されていない
-    expect(await queryTagExists('タグ1', userA)).toBe(true);
+    expect(await queryTagExists('Tag 1', userA)).toBe(true);
   });
 
-  it('タグを削除すると全アバターからの関連付けも消えて通知される (F4)', async () => {
+  it('deletes the tag and all its assignments and shows a notification (F4)', async () => {
     const showSpy = vi.spyOn(notifications, 'show');
-    await createTag('消すタグ', userA, '#ff0000');
-    await createTagRelation('消すタグ', 'avtr_1', userA);
-    await createTagRelation('消すタグ', 'avtr_2', userA);
-    const { result } = renderDialog();
+    await createTag('Deleted tag', userA, '#ff0000');
+    await createTagRelation('Deleted tag', 'avtr_1', userA);
+    await createTagRelation('Deleted tag', 'avtr_2', userA);
+    const { result } = renderDialog(vi.fn());
 
     act(() => {
-      result.current.setSelectedTag({ display_name: '消すタグ', color: '#ff0000' });
+      result.current.selectTag({ display_name: 'Deleted tag', color: '#ff0000' });
     });
     act(() => {
       result.current.handleDelete();
     });
 
     await waitFor(async () => {
-      expect(await queryTagExists('消すタグ', userA)).toBe(false);
+      expect(await queryTagExists('Deleted tag', userA)).toBe(false);
     });
-    expect(await countTagRelationsOf('消すタグ', userA)).toBe(0);
+    expect(await countTagRelationsOf('Deleted tag', userA)).toBe(0);
     expect(await fetchAvatarsTags(['avtr_1', 'avtr_2'], userA)).toEqual({});
     expect(showSpy).toHaveBeenCalledWith(expect.objectContaining({
       title: 'タグ削除',
-      message: 'タグ「消すタグ」を削除しました（関連付けられたアバターからも削除されました）',
+      message: 'タグ「Deleted tag」を削除しました（関連付けられたアバターからも削除されました）',
     }));
   });
 
-  it('onClose でフォームがリセットされ親のクローズ処理が呼ばれる', () => {
+  it('resets the form and calls the parent close handler on close', () => {
     const onCloseSuper = vi.fn();
     const { result } = renderDialog(onCloseSuper);
 
     act(() => {
-      result.current.setSelectedTag({ display_name: 'タグ1', color: '#ff0000' });
-      result.current.setTagDisplayName('編集中');
+      result.current.selectTag({ display_name: 'Tag 1', color: '#ff0000' });
+      result.current.setTagDisplayName('Editing');
     });
     act(() => {
       result.current.onClose();

@@ -1,6 +1,6 @@
 import { fetchAvatarsTags } from '@/lib/db';
 import { queryKeys } from '@/lib/queryKeys';
-import { useQuery } from '@tanstack/react-query';
+import { skipToken, useQuery } from '@tanstack/react-query';
 
 export const useTagAvatarsRelationQuery = (
   currentUserId: string | undefined,
@@ -8,11 +8,9 @@ export const useTagAvatarsRelationQuery = (
 ) => {
   const tagAvatarsRelationQuery = useQuery({
     queryKey: queryKeys.tagAvatarRelations(currentUserId, avatarIds),
-    queryFn: async () => {
-      if (!currentUserId) throw new Error('Current user ID is undefined');
-      return await fetchAvatarsTags(avatarIds, currentUserId);
-    },
-    enabled: !!currentUserId,
+    queryFn: currentUserId === undefined
+      ? skipToken
+      : () => fetchAvatarsTags(avatarIds, currentUserId),
   });
 
   return tagAvatarsRelationQuery;

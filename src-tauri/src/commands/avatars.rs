@@ -1,5 +1,5 @@
 use tauri::{AppHandle, State};
-use vrchatapi::models::{Avatar, CurrentUser, SortOption};
+use vrchatapi::models::{Avatar, CurrentUser};
 
 use crate::{
     api_config::create_configuration, avatars, models::AvatarSortOption, session::SessionState,
@@ -13,11 +13,6 @@ pub async fn command_fetch_avatars(
 ) -> Result<Vec<Avatar>, String> {
     let jar = session.jar(&app).await?;
     let config = create_configuration(&jar)?;
-
-    let sort_option = match sort_option {
-        AvatarSortOption::Name => SortOption::Name,
-        AvatarSortOption::Updated => vrchatapi::models::SortOption::Updated,
-    };
 
     avatars::fetch_avatars(&config, sort_option).await
 }

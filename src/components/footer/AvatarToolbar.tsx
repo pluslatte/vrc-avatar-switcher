@@ -26,7 +26,7 @@ const AvatarToolbar = (props: AvatarToolbarProps) => {
   const [tagEditDialogOpened, { open: openTagEditDialog, close: closeTagEditDialog }] = useDisclosure(false);
 
   return (
-    <Group px="md" mt="8">
+    <Group mih={60} px="md" py="xs" align="center">
       <IconSortAscendingShapes />
       <SortOrderSelector
         selectedSort={props.selectedSort}

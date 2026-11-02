@@ -3,6 +3,7 @@ import { Avatar, Tag } from '@/lib/models';
 import { ActionIcon, Badge, Divider, Group, Modal, Stack, Text } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { useMemo } from 'react';
+import { commonAvatarTags } from '@/lib/avatarTags';
 
 interface BulkTagManagerDialogProps {
   opened: boolean;
@@ -24,15 +25,10 @@ const BulkTagManagerDialog = (props: BulkTagManagerDialogProps) => {
     [avatars, selectedAvatarIds]
   );
 
-  const commonTags = useMemo(() => {
-    if (selectedAvatarIds.length === 0) return [] as Array<Tag>;
-    const [firstId, ...restIds] = selectedAvatarIds;
-    const firstTags = [...(tagAvatarRelation[firstId] ?? [])];
-    return restIds.reduce<Array<Tag>>((acc, avatarId) => {
-      const tags = tagAvatarRelation[avatarId] ?? [];
-      return acc.filter(tag => tags.some(t => t.display_name === tag.display_name));
-    }, firstTags);
-  }, [selectedAvatarIds, tagAvatarRelation]);
+  const commonTags = useMemo(
+    () => commonAvatarTags(selectedAvatarIds, tagAvatarRelation),
+    [selectedAvatarIds, tagAvatarRelation],
+  );
 
   if (selectedCount === 0) {
     return null;
@@ -99,7 +95,6 @@ const BulkTagManagerDialog = (props: BulkTagManagerDialogProps) => {
 
         <TagManager
           avatarIds={selectedAvatarIds}
-          tags={commonTags}
           currentUserId={currentUserId}
           tagAvatarRelation={tagAvatarRelation}
         />

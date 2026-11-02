@@ -3,7 +3,7 @@ import { Box, LoadingOverlay, SegmentedControl } from '@mantine/core';
 const AvatarCardImageSizeSelector = (props: {
   cardImageSize: number | undefined;
   cardImageSizeLoading: boolean;
-  setCardImageSize: (size: string | null) => void;
+  setCardImageSize: (size: number) => void;
 }) => {
   return (
     <Box pos="relative">
@@ -11,7 +11,7 @@ const AvatarCardImageSizeSelector = (props: {
       <SegmentedControl
         disabled={!props.cardImageSize || props.cardImageSizeLoading}
         value={props.cardImageSize?.toString()}
-        onChange={props.setCardImageSize}
+        onChange={value => props.setCardImageSize(Number(value))}
         data={[
           { label: '小', value: '80' },
           { label: '中', value: '120' },

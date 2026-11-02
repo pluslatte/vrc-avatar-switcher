@@ -7,26 +7,26 @@ import AvatarSearchBox from './AvatarSearchBox';
 import TagEditDialog from '../avatar/TagEditDialog';
 import { useDisclosure } from '@mantine/hooks';
 
-interface FooterContentsProps {
+interface AvatarToolbarProps {
   currentUserId: string;
   selectedSort: AvatarSortOrder;
   cardImageSize: number | undefined;
   cardImageSizeLoading: boolean;
-  cardNumberPerRow: number | undefined;
-  cardNumberPerRowLoading: boolean;
+  cardColumnSpan: number | undefined;
+  cardColumnSpanLoading: boolean;
   updateAvatarSearchInputString: (input: string) => void;
   availableTags: Array<Tag>;
-  setCardImageSize: (size: string | null) => void;
+  setCardImageSize: (size: number) => void;
   onSortSettingChange: (option: string | null) => void;
-  setCardNumberPerRow: (number: string | null) => void;
+  setCardColumnSpan: (number: number) => void;
   onTagFilterChange: (tags: Array<string>) => void;
   onLogoutSuccess: () => void;
 }
-const FooterContents = (props: FooterContentsProps) => {
+const AvatarToolbar = (props: AvatarToolbarProps) => {
   const [tagEditDialogOpened, { open: openTagEditDialog, close: closeTagEditDialog }] = useDisclosure(false);
 
   return (
-    <Group px="md" mt="8">
+    <Group mih={60} px="md" py="xs" align="center">
       <IconSortAscendingShapes />
       <SortOrderSelector
         selectedSort={props.selectedSort}
@@ -69,14 +69,14 @@ const FooterContents = (props: FooterContentsProps) => {
       <SettingsPopover
         cardImageSize={props.cardImageSize}
         cardImageSizeLoading={props.cardImageSizeLoading}
-        cardNumberPerRow={props.cardNumberPerRow}
-        cardNumberPerRowLoading={props.cardNumberPerRowLoading}
+        cardColumnSpan={props.cardColumnSpan}
+        cardColumnSpanLoading={props.cardColumnSpanLoading}
         setCardImageSize={props.setCardImageSize}
-        setCardNumberPerRow={props.setCardNumberPerRow}
+        setCardColumnSpan={props.setCardColumnSpan}
         onLogoutSuccess={props.onLogoutSuccess}
       />
     </Group>
   );
 };
 
-export default FooterContents;
+export default AvatarToolbar;

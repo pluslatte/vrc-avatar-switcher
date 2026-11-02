@@ -3,7 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LoginForm from '@/components/LoginForm';
 import { command_2fa, command_email_2fa, command_new_auth } from '@/lib/commands';
-import { renderWithProviders } from '@/test/testUtils';
+import { renderWithProviders, createTestQueryClient } from '@/test/testUtils';
 
 vi.mock('@/lib/commands');
 
@@ -18,11 +18,11 @@ const fillAndSubmitLogin = async (user: ReturnType<typeof userEvent.setup>) => {
 };
 
 describe('LoginForm', () => {
-  it('ユーザー名とパスワードでログインに成功するとログイン完了する (A3)', async () => {
+  it('completes login with a valid username and password (A3)', async () => {
     vi.mocked(command_new_auth).mockResolvedValue('Success');
     const onLoginSuccess = vi.fn();
     const user = userEvent.setup();
-    renderWithProviders(<LoginForm onLoginSuccess={onLoginSuccess} />);
+    renderWithProviders(<LoginForm onLoginSuccess={onLoginSuccess} fullHeight={true} />, createTestQueryClient());
 
     await fillAndSubmitLogin(user);
 
@@ -30,12 +30,12 @@ describe('LoginForm', () => {
     expect(command_new_auth).toHaveBeenCalledWith('alice', 'hunter2');
   });
 
-  it('2FA が要求されるとコード入力に切り替わり、正しいコードでログイン完了する (A4)', async () => {
+  it('requests a 2FA code and completes login after verification (A4)', async () => {
     vi.mocked(command_new_auth).mockResolvedValue('Requires2FA');
     vi.mocked(command_2fa).mockResolvedValue(undefined);
     const onLoginSuccess = vi.fn();
     const user = userEvent.setup();
-    renderWithProviders(<LoginForm onLoginSuccess={onLoginSuccess} />);
+    renderWithProviders(<LoginForm onLoginSuccess={onLoginSuccess} fullHeight={true} />, createTestQueryClient());
 
     await fillAndSubmitLogin(user);
 
@@ -49,12 +49,12 @@ describe('LoginForm', () => {
     expect(command_2fa).toHaveBeenCalledWith('alice', 'hunter2', '123456');
   });
 
-  it('メール 2FA が要求されると専用のコード入力に切り替わる (A5)', async () => {
+  it('requests an email code when email 2FA is required (A5)', async () => {
     vi.mocked(command_new_auth).mockResolvedValue('RequiresEmail2FA');
     vi.mocked(command_email_2fa).mockResolvedValue(undefined);
     const onLoginSuccess = vi.fn();
     const user = userEvent.setup();
-    renderWithProviders(<LoginForm onLoginSuccess={onLoginSuccess} />);
+    renderWithProviders(<LoginForm onLoginSuccess={onLoginSuccess} fullHeight={true} />, createTestQueryClient());
 
     await fillAndSubmitLogin(user);
 
@@ -67,13 +67,12 @@ describe('LoginForm', () => {
     expect(command_email_2fa).toHaveBeenCalledWith('alice', 'hunter2', '654321');
   });
 
-  it('ログイン失敗時はエラー通知が表示されログイン画面に留まる (A6)', async () => {
+  it('shows an error and stays on the login form after a failed login (A6)', async () => {
     const showSpy = vi.spyOn(notifications, 'show');
-    // Tauri コマンドは string で reject する
     vi.mocked(command_new_auth).mockRejectedValue('Invalid Username/Email or Password');
     const onLoginSuccess = vi.fn();
     const user = userEvent.setup();
-    renderWithProviders(<LoginForm onLoginSuccess={onLoginSuccess} />);
+    renderWithProviders(<LoginForm onLoginSuccess={onLoginSuccess} fullHeight={true} />, createTestQueryClient());
 
     await fillAndSubmitLogin(user);
 
@@ -86,13 +85,13 @@ describe('LoginForm', () => {
     expect(onLoginSuccess).not.toHaveBeenCalled();
   });
 
-  it('2FA コードが誤っているとエラー通知が表示され再入力できる (A7)', async () => {
+  it('shows an error and allows retrying an invalid 2FA code (A7)', async () => {
     const showSpy = vi.spyOn(notifications, 'show');
     vi.mocked(command_new_auth).mockResolvedValue('Requires2FA');
     vi.mocked(command_2fa).mockRejectedValue('Invalid two-factor code');
     const onLoginSuccess = vi.fn();
     const user = userEvent.setup();
-    renderWithProviders(<LoginForm onLoginSuccess={onLoginSuccess} />);
+    renderWithProviders(<LoginForm onLoginSuccess={onLoginSuccess} fullHeight={true} />, createTestQueryClient());
 
     await fillAndSubmitLogin(user);
     await user.type(await screen.findByLabelText('2FA Code'), '000000');
@@ -103,7 +102,6 @@ describe('LoginForm', () => {
       message: 'Invalid two-factor code',
       color: 'red',
     })));
-    // 2FA ステップに留まり再入力できる
     expect(screen.getByText('2FAコードを入力してください')).toBeInTheDocument();
     expect(onLoginSuccess).not.toHaveBeenCalled();
   });

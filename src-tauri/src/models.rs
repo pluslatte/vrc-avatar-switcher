@@ -7,7 +7,7 @@ pub enum AvatarSortOption {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum CommandLoginStatus {
+pub enum LoginStatus {
     Success,
     Requires2FA,
     RequiresEmail2FA,
@@ -15,10 +15,7 @@ pub enum CommandLoginStatus {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum CommandAuthState {
-    /// セッション（auth cookie）がそもそも無い
     LoggedOut,
-    /// auth cookie はあるが無効
     NeedsReauth,
-    /// 認証済み
     Authenticated,
 }

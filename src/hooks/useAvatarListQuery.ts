@@ -2,7 +2,7 @@ import { command_fetch_avatars, command_fetch_current_user } from '@/lib/command
 import { Avatar, AvatarSortOrder, CurrentUser } from '@/lib/models';
 import { getErrorMessage, notifyError } from '@/lib/notify';
 import { queryKeys } from '@/lib/queryKeys';
-import { useQuery } from '@tanstack/react-query';
+import { skipToken, useQuery } from '@tanstack/react-query';
 
 export interface AvatarListData {
   avatars: Array<Avatar>;
@@ -11,12 +11,11 @@ export interface AvatarListData {
 
 export const useAvatarListQuery = (
   avatarSortOrder: AvatarSortOrder | undefined,
-  enabled = true,
+  enabled: boolean,
 ) => {
   const avatarListQuery = useQuery<AvatarListData>({
     queryKey: queryKeys.avatarList(avatarSortOrder),
-    queryFn: async () => {
-      if (!avatarSortOrder) throw new Error('avatarSortOrder is undefined');
+    queryFn: avatarSortOrder === undefined ? skipToken : async () => {
       try {
         return {
           avatars: await command_fetch_avatars(avatarSortOrder),
@@ -29,7 +28,7 @@ export const useAvatarListQuery = (
         throw new Error(`Failed to fetch avatar list: ${message}`);
       }
     },
-    enabled: enabled && !!avatarSortOrder,
+    enabled,
   });
   return avatarListQuery;
 };

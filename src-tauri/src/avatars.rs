@@ -2,13 +2,19 @@ use std::time::Duration;
 
 use vrchatapi::{
     apis::configuration::Configuration,
-    models::{Avatar, CurrentUser, OrderOption, SortOption},
+    models::{Avatar, CurrentUser, OrderOption, ReleaseStatus, SortOption},
 };
+
+use crate::models::AvatarSortOption;
 
 pub async fn fetch_avatars(
     config: &Configuration,
-    sort_option: SortOption,
+    sort_option: AvatarSortOption,
 ) -> Result<Vec<Avatar>, String> {
+    let (sort_option, order_option) = match sort_option {
+        AvatarSortOption::Name => (SortOption::Name, OrderOption::Ascending),
+        AvatarSortOption::Updated => (SortOption::Updated, OrderOption::Descending),
+    };
     let mut out: Vec<Avatar> = Vec::new();
 
     loop {
@@ -20,15 +26,11 @@ pub async fn fetch_avatars(
             Some("me"),
             None,
             Some(60),
-            if sort_option == SortOption::Updated {
-                Some(OrderOption::Descending)
-            } else {
-                Some(OrderOption::Ascending)
-            },
+            Some(order_option),
             Some(offset),
             None,
             None,
-            Some(vrchatapi::models::ReleaseStatus::All),
+            Some(ReleaseStatus::All),
             None,
             None,
             None,
@@ -42,7 +44,6 @@ pub async fn fetch_avatars(
         }
         out.extend(page);
 
-        // To avoid hitting rate limits
         tokio::time::sleep(Duration::from_millis(100)).await;
     }
 }

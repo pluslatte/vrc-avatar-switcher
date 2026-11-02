@@ -1,8 +1,5 @@
 import { AvatarSortOrder } from '@/lib/models';
 
-// TanStack Query のキーはここで一元管理する。
-// invalidateQueries はプレフィックス一致なので、
-// 引数を省略した形のキーで配下のクエリをまとめて無効化できる。
 export const queryKeys = {
   authCheck: ['auth_check'] as const,
   avatarListAll: ['avatar_list'] as const,
@@ -16,5 +13,5 @@ export const queryKeys = {
     ['tag_avatar_relations', currentUserId, avatarIds] as const,
   avatarSortOrder: ['avatar_sort_order'] as const,
   cardImageSize: ['card_image_size'] as const,
-  cardNumberPerRow: ['card_number_per_row'] as const,
+  cardColumnSpan: ['card_number_per_row'] as const,
 };

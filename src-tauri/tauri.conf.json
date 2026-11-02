@@ -31,12 +31,5 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
-  },
-  "plugins": {
-    "sql": {
-      "preload": [
-        "sqlite:vrc-avatar-switcher.db"
-      ]
-    }
   }
 }

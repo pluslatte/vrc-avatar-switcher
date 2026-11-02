@@ -7,10 +7,16 @@ import { useState, useCallback } from 'react';
 
 const DEFAULT_COLOR = '#868e96';
 
-export const useTagEditDialog = (onCloseSuper: () => void, currentUserId: string) => {
+export const useTagEditDialog = (closeDialog: () => void, currentUserId: string) => {
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [tagDisplayName, setTagDisplayName] = useState('');
   const [color, setColor] = useState(DEFAULT_COLOR);
+
+  const selectTag = useCallback((tag: Tag) => {
+    setSelectedTag(tag);
+    setTagDisplayName(tag.display_name);
+    setColor(tag.color);
+  }, []);
 
   const resetForm = useCallback(() => {
     setSelectedTag(null);
@@ -20,8 +26,8 @@ export const useTagEditDialog = (onCloseSuper: () => void, currentUserId: string
 
   const onClose = useCallback(() => {
     resetForm();
-    onCloseSuper();
-  }, [onCloseSuper, resetForm]);
+    closeDialog();
+  }, [closeDialog, resetForm]);
 
   const queryClient = useQueryClient();
   const invalidateTagQueries = useCallback(() => {
@@ -99,7 +105,7 @@ export const useTagEditDialog = (onCloseSuper: () => void, currentUserId: string
 
   return {
     selectedTag,
-    setSelectedTag,
+    selectTag,
     tagDisplayName,
     setTagDisplayName,
     color,

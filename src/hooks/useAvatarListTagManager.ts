@@ -12,7 +12,7 @@ export const useAvatarListTagManager = ({
   filteredAvatars,
   currentUserId,
 }: UseAvatarListTagManagerParams) => {
-  const { removeTagAvatarsRelation, removeTagAvatarsRelationAsync, isRemovingTagRelation } = useTagAvatarsRelationMutation();
+  const { removeTagAvatarsRelation, removeTagAvatarsRelationAsync } = useTagAvatarsRelationMutation();
 
   const [selectedAvatarIds, setSelectedAvatarIds] = useState<Array<string>>([]);
   const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
@@ -91,7 +91,6 @@ export const useAvatarListTagManager = ({
     indeterminate,
     isBulkDialogOpen,
     removingTagName,
-    isRemovingTagRelation,
     removeTagAvatarsRelation,
     handleAvatarSelectionChange,
     handleSelectAllToggle,

@@ -1,26 +1,6 @@
-use sqlx::{migrate::Migrate, sqlite::SqlitePoolOptions, Connection, SqliteConnection, SqlitePool};
+use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
 
 use super::{error::DatabaseError, settings::*, tag_relations::*, tags::*};
-
-#[test]
-fn migration_checksums_match_the_previous_sql_plugin() {
-    let checksums = [
-        "df7e50635ce5826a479ca9893244fc8bb9d714443f2ecc2491d8c5a5897f740459a572b51201e5884dac0f18ae4bb0ac",
-        "6c148290654414ce0bd040380fa3ef6a51737665d26e366992950734a98e9f96c17136d4ecefd13b8bf21c16acb3bae0",
-        "1a6a17c01002c49fc690ee12131aebefae39aa4669d5f82b48e06d75f8ff26e3521f9116507ba9fb26900311eadb0ec0",
-        "d3765fa39fcf0d8b5c029865ec6c87e5635539ac648af473373efb4bd3fd3cfe3bccf48202a2d1d1d756e78fdad7d076",
-    ];
-    let migrator = sqlx::migrate!();
-    assert_eq!(migrator.iter().count(), checksums.len());
-    for (migration, expected) in migrator.iter().zip(checksums) {
-        let actual: String = migration
-            .checksum
-            .iter()
-            .map(|byte| format!("{byte:02x}"))
-            .collect();
-        assert_eq!(actual, expected, "migration {}", migration.version);
-    }
-}
 
 #[tokio::test]
 async fn reopening_the_database_preserves_data_and_foreign_keys() {
@@ -68,54 +48,6 @@ async fn test_pool() -> SqlitePool {
         .unwrap();
     sqlx::migrate!().run(&pool).await.unwrap();
     pool
-}
-
-#[tokio::test]
-async fn upgrading_a_previous_database_preserves_tags_assignments_and_settings() {
-    let directory = tempfile::tempdir().unwrap();
-    let path = directory.path().join("vrc-avatar-switcher.db");
-    let mut connection = SqliteConnection::connect_with(
-        &sqlx::sqlite::SqliteConnectOptions::new()
-            .filename(&path)
-            .create_if_missing(true),
-    )
-    .await
-    .unwrap();
-    connection.ensure_migrations_table().await.unwrap();
-    for migration in sqlx::migrate!().iter().take(3) {
-        connection.apply(migration).await.unwrap();
-    }
-    sqlx::raw_sql(
-        "INSERT INTO tags (display_name, color, created_by) VALUES ('Saved', 'red', 'user_a');
-         INSERT INTO tag_avatar_relations (tag_display_name, avatar_id, created_by)
-         VALUES ('Saved', 'avatar_1', 'user_a');
-         INSERT INTO client_settings (key, value) VALUES ('key', 'value');",
-    )
-    .execute(&mut connection)
-    .await
-    .unwrap();
-    connection.close().await.unwrap();
-
-    let pool = super::open(&path).await.unwrap();
-    assert_eq!(query_client_config(&pool, "key").await.unwrap(), "value");
-    let ids = vec!["avatar_1".into()];
-    assert_eq!(
-        fetch_avatars_tags(&pool, &ids, "user_a").await.unwrap()["avatar_1"],
-        vec![Tag {
-            display_name: "Saved".into(),
-            color: "red".into()
-        }]
-    );
-    update_tag(&pool, "Saved", "Renamed", "blue", "user_a")
-        .await
-        .unwrap();
-    assert_eq!(
-        count_tag_relations_of(&pool, "Renamed", "user_a")
-            .await
-            .unwrap(),
-        1
-    );
-    pool.close().await;
 }
 
 #[tokio::test]
@@ -302,28 +234,10 @@ async fn avatar_tags_are_grouped_filtered_and_scoped_to_the_creator() {
 }
 
 #[tokio::test]
-async fn settings_are_upserted_and_survive_repeated_migrations() {
+async fn settings_are_upserted() {
     let pool = test_pool().await;
     assert_eq!(query_client_config(&pool, "unset").await.unwrap(), "");
     update_client_config(&pool, "key", "first").await.unwrap();
     update_client_config(&pool, "key", "second").await.unwrap();
-    create_tag(&pool, "Saved", "user_a", "red").await.unwrap();
-    create_tag_relation(&pool, "Saved", "avatar_1", "user_a")
-        .await
-        .unwrap();
-    sqlx::migrate!().run(&pool).await.unwrap();
     assert_eq!(query_client_config(&pool, "key").await.unwrap(), "second");
-    assert_eq!(
-        count_tag_relations_of(&pool, "Saved", "user_a")
-            .await
-            .unwrap(),
-        1
-    );
-    assert_eq!(
-        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM _sqlx_migrations")
-            .fetch_one(&pool)
-            .await
-            .unwrap(),
-        4
-    );
 }

@@ -8,11 +8,15 @@ and this project adheres to
 
 ## [Unreleased]
 
+[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.7.0...HEAD
+
+## [0.7.0] - 2026-11-22
+
 ### Changed
 
 - 認証状態表示を画面下部へ移動、目立たないように 
 
-[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.6.0...HEAD
+[0.7.0]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.7.0
 
 ## [0.6.0] - 2026-09-23
 
@@ -20,13 +24,15 @@ and this project adheres to
 
 - 認証できなくなっていたのを修正
 
+[0.6.0]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.6.0
+
 ## [0.5.1] - 2026-07-02
 
 ### Fixed
 
 - VRChat のアバター検索 API からの返答が、アバターサムネイル画像の URL を格納する項目が欠落して送られてきうることによるエラーを修正
 
-[Unreleased]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.5.1
+[0.5.1]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.5.1
 
 ## [0.5.0] - 2026-06-13
 

@@ -14,9 +14,10 @@ and this project adheres to
 
 ### Changed
 
-- 認証状態表示を画面下部へ移動、目立たないように 
+- 認証状態の表示を画面下部のステータスバーに移動
+- アバター一覧の操作バーの配置と間隔を調整
 
-[0.7.0]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.7.0
+[0.7.0]: https://github.com/pluslatte/vrc-avatar-switcher/compare/v0.6.0...v0.7.0
 
 ## [0.6.0] - 2026-09-23
 

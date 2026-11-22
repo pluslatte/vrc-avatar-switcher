@@ -12,8 +12,8 @@ beforeEach(() => {
 });
 
 const avatars: Array<Avatar> = [
-  { id: 'avtr_1', name: 'アバター1', imageUrl: '', thumbnailImageUrl: '' },
-  { id: 'avtr_2', name: 'アバター2', imageUrl: '', thumbnailImageUrl: '' },
+  { id: 'avtr_1', name: 'Avatar 1', imageUrl: '', thumbnailImageUrl: '' },
+  { id: 'avtr_2', name: 'Avatar 2', imageUrl: '', thumbnailImageUrl: '' },
 ];
 
 const currentUser: CurrentUser = {
@@ -24,12 +24,12 @@ const currentUser: CurrentUser = {
 };
 
 describe('useAvatarListQuery', () => {
-  it('選択中のソート順でアバター一覧と現在のユーザーを取得する (B1, B2)', async () => {
+  it('fetches avatars in the selected sort order and the current user (B1, B2)', async () => {
     vi.mocked(command_fetch_avatars).mockResolvedValue(avatars);
     vi.mocked(command_fetch_current_user).mockResolvedValue(currentUser);
     const queryClient = createTestQueryClient();
 
-    const { result } = renderHook(() => useAvatarListQuery('Name'), {
+    const { result } = renderHook(() => useAvatarListQuery('Name', true), {
       wrapper: createQueryWrapper(queryClient),
     });
 
@@ -38,10 +38,10 @@ describe('useAvatarListQuery', () => {
     expect(command_fetch_avatars).toHaveBeenCalledWith('Name');
   });
 
-  it('ソート順設定がロードされるまでフェッチしない', () => {
+  it('waits for the sort order setting before fetching', () => {
     const queryClient = createTestQueryClient();
 
-    const { result } = renderHook(() => useAvatarListQuery(undefined), {
+    const { result } = renderHook(() => useAvatarListQuery(undefined, true), {
       wrapper: createQueryWrapper(queryClient),
     });
 
@@ -49,7 +49,7 @@ describe('useAvatarListQuery', () => {
     expect(command_fetch_avatars).not.toHaveBeenCalled();
   });
 
-  it('enabled が false なら（未認証時）フェッチしない', () => {
+  it('does not fetch when disabled for an unauthenticated session', () => {
     const queryClient = createTestQueryClient();
 
     const { result } = renderHook(() => useAvatarListQuery('Name', false), {
@@ -61,13 +61,12 @@ describe('useAvatarListQuery', () => {
     expect(command_fetch_current_user).not.toHaveBeenCalled();
   });
 
-  it('取得に失敗するとエラー通知が表示されクエリはエラーになる (B4)', async () => {
+  it('shows an error notification when the query fails (B4)', async () => {
     const showSpy = vi.spyOn(notifications, 'show');
-    // Tauri コマンドは string で reject する
     vi.mocked(command_fetch_avatars).mockRejectedValue('VRChat API unavailable');
     const queryClient = createTestQueryClient();
 
-    const { result } = renderHook(() => useAvatarListQuery('Updated'), {
+    const { result } = renderHook(() => useAvatarListQuery('Updated', true), {
       wrapper: createQueryWrapper(queryClient),
     });
 

@@ -1,5 +1,5 @@
 import { notifications } from '@mantine/notifications';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { command_switch_avatar } from '@/lib/commands';
 import { Avatar, CurrentUser } from '@/lib/models';
 import { queryKeys } from '@/lib/queryKeys';
@@ -13,8 +13,8 @@ beforeEach(() => {
 });
 
 const avatars: Array<Avatar> = [
-  { id: 'avtr_1', name: 'アバター1', imageUrl: '', thumbnailImageUrl: '' },
-  { id: 'avtr_2', name: 'アバター2', imageUrl: '', thumbnailImageUrl: '' },
+  { id: 'avtr_1', name: 'Avatar 1', imageUrl: '', thumbnailImageUrl: '' },
+  { id: 'avtr_2', name: 'Avatar 2', imageUrl: '', thumbnailImageUrl: '' },
 ];
 
 const makeUser = (currentAvatar: string): CurrentUser => ({
@@ -25,7 +25,24 @@ const makeUser = (currentAvatar: string): CurrentUser => ({
 });
 
 describe('useSwitchAvatarMutation', () => {
-  it('切替に成功すると着用中アバターが再フェッチなしで更新され成功通知が出る (C1)', async () => {
+  it('updates every cached sort order without creating incomplete entries', async () => {
+    const queryClient = createTestQueryClient();
+    const newUser = makeUser('avtr_2');
+    vi.mocked(command_switch_avatar).mockResolvedValue(newUser);
+    queryClient.setQueryData(queryKeys.avatarList('Name'), { avatars, currentUser: makeUser('avtr_1') });
+    queryClient.setQueryData(queryKeys.avatarList('Updated'), { avatars: [...avatars].reverse(), currentUser: makeUser('avtr_1') });
+    const { result } = renderHook(() => useSwitchAvatarMutation(), {
+      wrapper: createQueryWrapper(queryClient),
+    });
+
+    await act(async () => { await result.current.mutateAsync('avtr_2'); });
+
+    expect(queryClient.getQueryData(queryKeys.avatarList('Name'))).toEqual({ avatars, currentUser: newUser });
+    expect(queryClient.getQueryData(queryKeys.avatarList('Updated'))).toEqual({ avatars: [...avatars].reverse(), currentUser: newUser });
+    expect(queryClient.getQueryData(queryKeys.avatarList(undefined))).toBeUndefined();
+  });
+
+  it('updates the current avatar without refetching and shows a success notification (C1)', async () => {
     const showSpy = vi.spyOn(notifications, 'show');
     const newUser = makeUser('avtr_2');
     vi.mocked(command_switch_avatar).mockResolvedValue(newUser);
@@ -36,15 +53,13 @@ describe('useSwitchAvatarMutation', () => {
       { avatars, currentUser: makeUser('avtr_1') },
     );
 
-    const { result } = renderHook(() => useSwitchAvatarMutation('Updated'), {
+    const { result } = renderHook(() => useSwitchAvatarMutation(), {
       wrapper: createQueryWrapper(queryClient),
     });
     result.current.mutate('avtr_2');
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    // TanStack Query は mutationFn に第 2 引数（context）も渡すため、第 1 引数のみ検証する
     expect(vi.mocked(command_switch_avatar).mock.calls[0][0]).toBe('avtr_2');
-    // アバター一覧はそのままに currentUser だけ差し替わる
     expect(queryClient.getQueryData(queryKeys.avatarList('Updated')))
       .toEqual({ avatars, currentUser: newUser });
     expect(showSpy).toHaveBeenCalledWith(expect.objectContaining({
@@ -53,16 +68,15 @@ describe('useSwitchAvatarMutation', () => {
     }));
   });
 
-  it('切替に失敗するとエラー内容つきの通知が出てキャッシュは変わらない (C2)', async () => {
+  it('shows the error and preserves the cache when switching fails (C2)', async () => {
     const showSpy = vi.spyOn(notifications, 'show');
-    // Tauri コマンドは string で reject する
     vi.mocked(command_switch_avatar).mockRejectedValue('avatar is not available');
 
     const queryClient = createTestQueryClient();
     const before = { avatars, currentUser: makeUser('avtr_1') };
     queryClient.setQueryData(queryKeys.avatarList('Updated'), before);
 
-    const { result } = renderHook(() => useSwitchAvatarMutation('Updated'), {
+    const { result } = renderHook(() => useSwitchAvatarMutation(), {
       wrapper: createQueryWrapper(queryClient),
     });
     result.current.mutate('avtr_2');

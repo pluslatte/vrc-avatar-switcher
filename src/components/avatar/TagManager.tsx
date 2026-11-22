@@ -1,4 +1,4 @@
-import type { Tag } from '@/lib/models';
+import { AvatarTags } from '@/lib/avatarTags';
 import { Badge, Box, Button, ColorPicker, Divider, Group, Stack, Text, TextInput } from '@mantine/core';
 import { IconTagFilled } from '@tabler/icons-react';
 import { useTagManager } from '@/hooks/useTagManager';
@@ -6,9 +6,8 @@ import { COLOR_SWATCHES } from '@/lib/colorSwatchesPalette';
 
 interface TagManagerProps {
   avatarIds: Array<string>;
-  tags: Array<Tag>;
   currentUserId: string;
-  tagAvatarRelation?: Record<string, Array<Tag>>;
+  tagAvatarRelation: AvatarTags;
 }
 const TagManager = (props: TagManagerProps) => {
   const {
@@ -24,7 +23,6 @@ const TagManager = (props: TagManagerProps) => {
     handleCreateNewTag,
   } = useTagManager({
     avatarIds: props.avatarIds,
-    tags: props.tags,
     currentUserId: props.currentUserId,
     tagAvatarRelation: props.tagAvatarRelation,
   });

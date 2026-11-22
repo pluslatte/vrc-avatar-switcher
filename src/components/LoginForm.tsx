@@ -1,80 +1,15 @@
 import { Button, Divider, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
-import { useState } from 'react';
-import { command_new_auth, command_2fa, command_email_2fa } from '@/lib/commands';
-import { getErrorMessage, notifyError } from '@/lib/notify';
-
-type LoginStep = 'login' | '2fa' | 'email2fa' | 'done';
+import { useLogin } from '@/hooks/useLogin';
 
 interface LoginFormProps {
   onLoginSuccess: () => void;
-  fullHeight?: boolean;
+  fullHeight: boolean;
 }
 const LoginForm = (props: LoginFormProps) => {
-  const [step, setStep] = useState<LoginStep>('login');
-  const [loginFormData, setLoginFormData] = useState({
-    username: '',
-    password: '',
-    code: '',
-  });
-
-  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLoginFormData({ ...loginFormData, [field]: e.target.value });
-  };
-
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>,
-    action: Promise<void>
-  ) => {
-    e.preventDefault();
-    try {
-      await action;
-    } catch (error) {
-      console.error('Submission failed:', error);
-    }
-  };
-
-  const completeLogin = () => {
-    setStep('done');
-    props.onLoginSuccess();
-  };
-
-  const handleLoginSubmit = async () => {
-    try {
-      const status = await command_new_auth(loginFormData.username, loginFormData.password);
-      if (status === 'Success') {
-        completeLogin();
-      } else if (status === 'Requires2FA') {
-        setStep('2fa');
-      } else if (status === 'RequiresEmail2FA') {
-        setStep('email2fa');
-      } else {
-        console.error('Unknown login status:', status);
-      }
-    } catch (error) {
-      console.error('Login failed:', error);
-      notifyError('ログインに失敗しました', getErrorMessage(error, '不明なエラー'));
-    }
-  };
-
-  const handle2FASubmit = (verify: typeof command_2fa) => async () => {
-    try {
-      await verify(
-        loginFormData.username,
-        loginFormData.password,
-        loginFormData.code
-      );
-      completeLogin();
-    } catch (error) {
-      console.error('2FA login failed:', error);
-      notifyError(
-        '二段階認証に失敗しました。コードが間違っている可能性があります',
-        getErrorMessage(error, '不明なエラー')
-      );
-    }
-  };
+  const { step, loginFormData, handleChange, submit } = useLogin(props.onLoginSuccess);
 
   return (
-    <Stack align="center" justify="center" style={{ height: props.fullHeight === false ? undefined : '100vh' }}>
+    <Stack align="center" justify="center" style={{ height: props.fullHeight ? '100vh' : undefined }}>
       {step === '2fa' && (
         <Text size="xl" fw={700}>2FAコードを入力してください</Text>
       )}
@@ -86,7 +21,7 @@ const LoginForm = (props: LoginFormProps) => {
       )}
 
       {step === 'login' && (
-        <form onSubmit={e => handleSubmit(e, handleLoginSubmit())}>
+        <form onSubmit={submit}>
           <TextInput
             type="text"
             id="username"
@@ -107,7 +42,7 @@ const LoginForm = (props: LoginFormProps) => {
         </form>
       )}
       {step === '2fa' && (
-        <form onSubmit={e => handleSubmit(e, handle2FASubmit(command_2fa)())}>
+        <form onSubmit={submit}>
           <TextInput
             id="2fa-code"
             name="2fa-code"
@@ -120,7 +55,7 @@ const LoginForm = (props: LoginFormProps) => {
         </form>
       )}
       {step === 'email2fa' && (
-        <form onSubmit={e => handleSubmit(e, handle2FASubmit(command_email_2fa)())}>
+        <form onSubmit={submit}>
           <TextInput
             id="email-2fa-code"
             name="email-2fa-code"

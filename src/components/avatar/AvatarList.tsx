@@ -5,7 +5,7 @@ import BulkTagManagerDialog from './BulkTagManagerDialog';
 import { Avatar, CurrentUser, Tag } from '@/lib/models';
 import { LoaderFullWindow } from '../LoaderFullWindow';
 import { useAvatarListTagManager } from '@/hooks/useAvatarListTagManager';
-import { avatarNameSearchFilterAvatars, avatarTagSearchFilterAvatars } from '@/lib/utils';
+import { filterAvatarsByName, filterAvatarsByTags } from '@/lib/avatarFilters';
 
 interface AvatarListProps {
   avatars: Array<Avatar>;
@@ -15,16 +15,16 @@ interface AvatarListProps {
   pendingSwitch: boolean;
   searchQuery: string;
   cardImageSize: number;
-  cardNumberPerRow: number;
+  cardColumnSpan: number;
   selectedTags: Array<string>;
   handlerAvatarSwitch: (avatarId: string) => void;
 }
 const AvatarListComponent = (props: AvatarListProps) => {
   const filteredAvatars = useMemo(() => (
-    avatarTagSearchFilterAvatars(
-      avatarNameSearchFilterAvatars(props.avatars, props.searchQuery),
+    filterAvatarsByTags(
+      filterAvatarsByName(props.avatars, props.searchQuery),
       props.selectedTags,
-      props.tagAvatarRelation,
+      props.tagAvatarRelation ?? {},
     )
   ), [props.avatars, props.searchQuery, props.selectedTags, props.tagAvatarRelation]);
 
@@ -102,7 +102,7 @@ const AvatarListComponent = (props: AvatarListProps) => {
             />
           );
           return (
-            <Grid.Col span={props.cardNumberPerRow} key={avatar.id}>
+            <Grid.Col span={props.cardColumnSpan} key={avatar.id}>
               {isActive ? (
                 <Indicator
                   processing

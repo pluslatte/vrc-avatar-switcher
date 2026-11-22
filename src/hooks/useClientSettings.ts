@@ -1,62 +1,27 @@
 import {
   loadAvatarSortOrder,
   loadCardImageSize,
-  loadCardNumberPerRow,
+  loadCardColumnSpan,
   saveAvatarSortOrder,
   saveCardImageSize,
-  saveCardNumberPerRow,
+  saveCardColumnSpan,
 } from '@/lib/db';
-import { AvatarSortOrder } from '@/lib/models';
 import { queryKeys } from '@/lib/queryKeys';
-import { QueryKey, useQuery } from '@tanstack/react-query';
-
-const useNumericSetting = (
-  queryKey: QueryKey,
-  load: () => Promise<number>,
-  save: (value: number) => Promise<void>,
-) => {
-  const storeQuery = useQuery({
-    queryKey,
-    queryFn: load,
-    staleTime: Infinity,
-  });
-
-  const setValue = async (newValue: string | null) => {
-    if (!newValue) return;
-    const parsed = parseInt(newValue, 10);
-    if (isNaN(parsed)) return;
-    await save(parsed);
-    await storeQuery.refetch();
-  };
-
-  return {
-    loading: storeQuery.isFetching || storeQuery.isPending,
-    value: storeQuery.data,
-    setValue,
-  };
-};
+import { useStoredSetting } from './useStoredSetting';
 
 export const useAvatarSortOrderSetting = () => {
-  const storeQuery = useQuery({
-    queryKey: queryKeys.avatarSortOrder,
-    queryFn: loadAvatarSortOrder,
-    staleTime: Infinity,
-  });
-
-  const setAvatarSortOrder = async (newOrder: AvatarSortOrder | null) => {
-    if (!newOrder) return;
-    await saveAvatarSortOrder(newOrder);
-    await storeQuery.refetch();
-  };
+  const { value, setValue } = useStoredSetting(
+    queryKeys.avatarSortOrder, loadAvatarSortOrder, saveAvatarSortOrder,
+  );
 
   return {
-    avatarSortOrder: storeQuery.data,
-    setAvatarSortOrder,
+    avatarSortOrder: value,
+    setAvatarSortOrder: setValue,
   };
 };
 
 export const useCardImageSizeSetting = () => {
-  const { loading, value, setValue } = useNumericSetting(
+  const { loading, value, setValue } = useStoredSetting(
     queryKeys.cardImageSize,
     loadCardImageSize,
     saveCardImageSize,
@@ -68,15 +33,15 @@ export const useCardImageSizeSetting = () => {
   };
 };
 
-export const useCardNumberPerRowSetting = () => {
-  const { loading, value, setValue } = useNumericSetting(
-    queryKeys.cardNumberPerRow,
-    loadCardNumberPerRow,
-    saveCardNumberPerRow,
+export const useCardColumnSpanSetting = () => {
+  const { loading, value, setValue } = useStoredSetting(
+    queryKeys.cardColumnSpan,
+    loadCardColumnSpan,
+    saveCardColumnSpan,
   );
   return {
-    cardNumberPerRowLoading: loading,
-    cardNumberPerRow: value,
-    setCardNumberPerRow: setValue,
+    cardColumnSpanLoading: loading,
+    cardColumnSpan: value,
+    setCardColumnSpan: setValue,
   };
 };

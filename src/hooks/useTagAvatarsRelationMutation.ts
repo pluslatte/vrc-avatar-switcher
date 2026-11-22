@@ -31,6 +31,5 @@ export const useTagAvatarsRelationMutation = () => {
   return {
     removeTagAvatarsRelation: removeTagAvatarsRelationMutation.mutate,
     removeTagAvatarsRelationAsync: removeTagAvatarsRelationMutation.mutateAsync,
-    isRemovingTagRelation: removeTagAvatarsRelationMutation.isPending,
   };
 };

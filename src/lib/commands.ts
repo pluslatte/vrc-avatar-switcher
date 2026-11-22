@@ -1,9 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { Avatar, AvatarSortOrder, CurrentUser } from '@/lib/models';
 
-// セッション（cookie）は Rust 側の SessionState が保持・永続化する。
-// フロントエンドは認証情報に直接触れない。
-
 export type LoginStatus = 'Success' | 'Requires2FA' | 'RequiresEmail2FA';
 
 export type AuthCheckResult = 'LoggedOut' | 'NeedsReauth' | 'Authenticated';

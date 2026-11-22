@@ -2,24 +2,21 @@ import { notifications } from '@mantine/notifications';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { countTagRelationsOf, createTag, createTagRelation, queryTagExists } from '@/lib/db';
 import type { Avatar } from '@/lib/models';
-import { createTestDb, type TestDb } from '@/test/inMemoryDb';
+import { createTestTagStore, type TestTagStore } from '@/test/tagStore';
 import { createQueryWrapper, createTestQueryClient } from '@/test/testUtils';
 import { useAvatarListTagManager } from './useAvatarListTagManager';
 
-vi.mock('@/lib/db/client', () => ({
-  getDb: async () => db,
-}));
+vi.mock('@/lib/db', async () => {
+  const { createTagStoreProxy } = await import('@/test/tagStore');
+  return createTagStoreProxy(() => db);
+});
 
-let db: TestDb;
+let db: TestTagStore;
 const userA = 'usr_aaaa';
 
 beforeEach(() => {
   vi.clearAllMocks();
-  db = createTestDb();
-});
-
-afterEach(() => {
-  db.close();
+  db = createTestTagStore();
 });
 
 const makeAvatar = (id: string): Avatar => ({
@@ -31,7 +28,7 @@ const makeAvatar = (id: string): Avatar => ({
 
 const threeAvatars = [makeAvatar('avtr_1'), makeAvatar('avtr_2'), makeAvatar('avtr_3')];
 
-const renderManager = (filteredAvatars: Array<Avatar> = threeAvatars) =>
+const renderManager = (filteredAvatars: Array<Avatar>) =>
   renderHook(
     (props: { filteredAvatars: Array<Avatar> }) =>
       useAvatarListTagManager({ filteredAvatars: props.filteredAvatars, currentUserId: userA }),
@@ -42,8 +39,8 @@ const renderManager = (filteredAvatars: Array<Avatar> = threeAvatars) =>
   );
 
 describe('useAvatarListTagManager', () => {
-  it('アバターを個別に選択・解除でき、件数と中間状態が反映される (G1)', () => {
-    const { result } = renderManager();
+  it('selects individual avatars and updates the count and indeterminate state (G1)', () => {
+    const { result } = renderManager(threeAvatars);
 
     act(() => result.current.handleAvatarSelectionChange('avtr_1', true));
     expect(result.current.selectedAvatarIds).toEqual(['avtr_1']);
@@ -51,7 +48,6 @@ describe('useAvatarListTagManager', () => {
     expect(result.current.indeterminate).toBe(true);
     expect(result.current.allSelected).toBe(false);
 
-    // 同じアバターを再選択しても重複しない
     act(() => result.current.handleAvatarSelectionChange('avtr_1', true));
     expect(result.current.selectedAvatarIds).toEqual(['avtr_1']);
 
@@ -60,8 +56,8 @@ describe('useAvatarListTagManager', () => {
     expect(result.current.indeterminate).toBe(false);
   });
 
-  it('全選択で表示中の全アバターが選択され、解除で空になる (G2)', () => {
-    const { result } = renderManager();
+  it('selects all visible avatars and clears the selection (G2)', () => {
+    const { result } = renderManager(threeAvatars);
 
     act(() => result.current.handleSelectAllToggle(true));
     expect(result.current.selectedAvatarIds).toEqual(['avtr_1', 'avtr_2', 'avtr_3']);
@@ -72,8 +68,8 @@ describe('useAvatarListTagManager', () => {
     expect(result.current.selectedAvatarIds).toEqual([]);
   });
 
-  it('フィルタで非表示になったアバターは選択から自動的に外れる (G3)', async () => {
-    const { result, rerender } = renderManager();
+  it('removes hidden avatars from the selection when filters change (G3)', async () => {
+    const { result, rerender } = renderManager(threeAvatars);
 
     act(() => {
       result.current.handleAvatarSelectionChange('avtr_1', true);
@@ -86,8 +82,8 @@ describe('useAvatarListTagManager', () => {
     await waitFor(() => expect(result.current.selectedAvatarIds).toEqual(['avtr_1']));
   });
 
-  it('選択が 0 件になると一括タグダイアログが自動的に閉じる (G4)', async () => {
-    const { result } = renderManager();
+  it('closes the bulk tag dialog when the selection becomes empty (G4)', async () => {
+    const { result } = renderManager(threeAvatars);
 
     act(() => result.current.handleAvatarSelectionChange('avtr_1', true));
     act(() => result.current.openBulkDialog());
@@ -98,28 +94,27 @@ describe('useAvatarListTagManager', () => {
     await waitFor(() => expect(result.current.isBulkDialogOpen).toBe(false));
   });
 
-  it('選択中の全アバターからタグを一括で外せる（最後の関連ならタグも自動削除）(G6)', async () => {
+  it('removes a tag from all selected avatars and deletes it after the last assignment (G6)', async () => {
     const showSpy = vi.spyOn(notifications, 'show');
-    await createTag('一括削除', userA, '#ff0000');
-    await createTagRelation('一括削除', 'avtr_1', userA);
-    await createTagRelation('一括削除', 'avtr_2', userA);
+    await createTag('Bulk removal', userA, '#ff0000');
+    await createTagRelation('Bulk removal', 'avtr_1', userA);
+    await createTagRelation('Bulk removal', 'avtr_2', userA);
 
-    const { result } = renderManager();
+    const { result } = renderManager(threeAvatars);
     act(() => {
       result.current.handleAvatarSelectionChange('avtr_1', true);
       result.current.handleAvatarSelectionChange('avtr_2', true);
     });
 
     await act(async () => {
-      await result.current.handleBulkTagRemove('一括削除');
+      await result.current.handleBulkTagRemove('Bulk removal');
     });
 
-    expect(await countTagRelationsOf('一括削除', userA)).toBe(0);
-    // 最後の関連付けが消えたのでタグ自体も自動削除される (F5)
-    expect(await queryTagExists('一括削除', userA)).toBe(false);
+    expect(await countTagRelationsOf('Bulk removal', userA)).toBe(0);
+    expect(await queryTagExists('Bulk removal', userA)).toBe(false);
     expect(showSpy).toHaveBeenCalledWith(expect.objectContaining({
       title: 'タグ削除',
-      message: 'タグ「一括削除」を選択中のアバターから削除しました。',
+      message: 'タグ「Bulk removal」を選択中のアバターから削除しました。',
     }));
   });
 });

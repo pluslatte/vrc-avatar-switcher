@@ -8,7 +8,7 @@ interface AvatarCardProps {
   currentUserId: string;
   isActiveAvatar: boolean;
   pendingSwitch: boolean;
-  imageSize: number | null;
+  imageSize: number;
   onAvatarSwitchClicked: (avatarId: string) => void;
   onTagRemove: (params: { tagName: string; avatarId: string; currentUserId: string }) => void;
   isSelected: boolean;
@@ -59,7 +59,7 @@ const AvatarCard = (props: AvatarCardProps) => {
             fullWidth
             fz="h2"
             radius="sm"
-            h={props.imageSize || 120}
+            h={props.imageSize}
             disabled={props.isActiveAvatar}
             loading={props.pendingSwitch && !props.isActiveAvatar}
             onClick={handleSwitch}

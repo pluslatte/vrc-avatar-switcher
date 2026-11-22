@@ -14,7 +14,7 @@ interface TagEditDialogProps {
 const TagEditDialog = (props: TagEditDialogProps) => {
   const {
     selectedTag,
-    setSelectedTag,
+    selectTag,
     tagDisplayName,
     setTagDisplayName,
     color,
@@ -40,11 +40,7 @@ const TagEditDialog = (props: TagEditDialogProps) => {
           <Button
             key={tag.display_name}
             color={tag.color || 'gray'}
-            onClick={() => {
-              setSelectedTag(tag);
-              setTagDisplayName(tag.display_name);
-              setColor(tag.color || '#868e96');
-            }}
+            onClick={() => selectTag(tag)}
             rightSection={(
               <IconEdit size={16} />
             )}
